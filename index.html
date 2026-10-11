@@ -1,0 +1,88 @@
+<!doctype html>
+<html
+  lang="en"
+  class="notranslate"
+  translate="no"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Timer</title>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      href="/icons/favicon.ico"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/icons/icon.svg"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/icons/favicon-16x16.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/icons/favicon-32x32.png"
+    />
+    <meta
+      name="author"
+      content="Dr. Torben Menke"
+    />
+    <meta
+      name="google"
+      content="notranslate"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <meta
+      name="theme-color"
+      content="#1976d2"
+    />
+    <meta
+      name="description"
+      content="Timer toolbox: ETA (estimated time of arrival via linear regression), multiple countdown timers, multi-athlete lap stopwatch and Pomodoro timer."
+    />
+    <meta
+      name="keywords"
+      content="timer, multi-timer, stopwatch, lap timer, athletes, pomodoro, countdown, eta, estimated time of arrival, OpenSource, free"
+    />
+    <!-- Matomo -->
+    <script>
+      var _paq = (window._paq = window._paq || [])
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(['trackPageView'])
+      _paq.push(['enableLinkTracking'])
+      ;(() => {
+        var u = 'https://entorb.net/stats/matomo/'
+        _paq.push(['setTrackerUrl', u + 'matomo.php'])
+        _paq.push(['setSiteId', '2'])
+        var d = document,
+          g = d.createElement('script'),
+          s = d.getElementsByTagName('script')[0]
+        g.async = true
+        g.src = u + 'matomo.js'
+        s.parentNode.insertBefore(g, s)
+      })()
+    </script>
+    <!-- End Matomo Code -->
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <script
+      type="module"
+      src="/src/main.ts"
+    ></script>
+  </body>
+</html>
