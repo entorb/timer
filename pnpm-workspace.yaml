@@ -1,0 +1,7 @@
+---
+minimumReleaseAge: 10080  # 7 days (in minutes)
+allowBuilds:
+  "@parcel/watcher": false
+  esbuild: true
+overrides:
+  "workbox-build>glob": ^13.0.6
