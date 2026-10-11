@@ -1,0 +1,66 @@
+<!doctype html>
+<!-- dev only (not a build input): review all sounds of src/shared/feedback.ts at /timer/review-audio.html -->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Review Audio</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      max-width: 320px;
+    }
+
+    button {
+      font-size: 1.2rem;
+      padding: 12px;
+      width: 100%;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Sounds</h1>
+  <script type="module">
+    import { playSound, SOUNDS, unlockAudio } from "/src/shared/feedback.ts"
+
+    // where the sounds are used, keep in sync with callers of SOUNDS / playSound
+    const USAGE = {
+      bell: "Alarm via playSound(): ETA target reached, Multi-Timer ended, Pomodoro phase ended; Workout: end of work",
+      beep: "Workout: last 3 s of each phase",
+      tick: "Workout: half-way of work",
+      ding: "Workout: start of work",
+      dingDing: "Workout: end of work",
+      finish: "Workout: end of workout, via playSound(SOUNDS.finish)",
+      "playSound (bell + vibrate)": "Default alarm, see bell",
+    }
+
+    const sounds = { ...SOUNDS, "playSound (bell + vibrate)": playSound }
+    for (const [name, play] of Object.entries(sounds)) {
+      const div = document.createElement("div")
+      const usage = document.createElement("p")
+      usage.textContent = USAGE[name] ?? "unused"
+      const button = document.createElement("button")
+      button.type = "button"
+      button.textContent = name
+      button.addEventListener("click", () => {
+        unlockAudio()
+        play()
+      })
+      div.append(button, usage)
+      document.body.append(div)
+    }
+  </script>
+</body>
+
+</html>

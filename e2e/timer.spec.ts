@@ -46,6 +46,20 @@ test("Pomodoro: start and pause", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Start" })).toBeVisible()
 })
 
+test("Workout: prepare, work, add persists", async ({ page }) => {
+  await page.clock.install()
+  await page.goto("./workout")
+  await expect(page.locator("#wo-time")).toHaveText("0:05")
+  await page.locator("#btn-wo-toggle").click()
+  await page.clock.fastForward(6000)
+  await expect(page.locator("#wo-phase")).toHaveText("Work")
+  await page.getByRole("button", { name: "Pause" }).click()
+  await page.getByRole("button", { name: "Add workout" }).click()
+  const count = () =>
+    page.evaluate(() => JSON.parse(localStorage.getItem("timer_wo_workouts") ?? "[]").length)
+  await expect.poll(count).toBe(2)
+})
+
 test("ETA is default, select navigates", async ({ page }) => {
   await page.goto("./")
   await expect(page).toHaveURL(/\/timer\/eta$/)
@@ -54,6 +68,7 @@ test("ETA is default, select navigates", async ({ page }) => {
     ["Stopwatch", "stopwatch"],
     ["Pomodoro", "pomodoro"],
     ["Multi-Timer", "multitimer"],
+    ["Workout", "workout"],
   ]) {
     await select.click()
     await page.locator(".q-menu").getByText(name).click()
