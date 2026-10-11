@@ -1,0 +1,15 @@
+/* no double-tap zoom on fast repeated taps, pinch zoom stays */
+html {
+  touch-action: manipulation;
+}
+.page-gap {
+  gap: 16px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

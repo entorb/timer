@@ -18,6 +18,7 @@ test.beforeEach(async ({ page }) => {
 test("Up", async ({ page }) => {
   await enter(page, "#input-target", "20")
   await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("20")
+  await expect(page.locator("#input-items")).toBeFocused()
 
   await enter(page, "#input-items", "1")
   // 1
@@ -33,6 +34,11 @@ test("Up", async ({ page }) => {
   await page.locator("#btn-del-row-0").click()
   await expectFirstLast(page, 12, 13)
   // 12,13
+
+  await page.locator("#btn-edit-target").click()
+  await enter(page, "#input-target", "30")
+  await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("30")
+  await expect(page.locator("#btn-edit-target")).toContainText("30")
 })
 
 test("Down", async ({ page }) => {
@@ -49,6 +55,14 @@ test("Down", async ({ page }) => {
 
   await page.locator("#btn-del-row-2").click()
   await expectFirstLast(page, 99, 66)
+
+  await page.locator("#btn-unit").click()
+  await page.locator(".q-menu").getByText("/day").click()
+  await expect(page.locator("#btn-unit")).toContainText("/day")
+
+  await page.locator("#btn-del-all").click()
+  await page.getByRole("button", { name: "OK" }).click()
+  await expect(page.locator("#btn-plus-1")).toBeHidden()
 })
 
 test("Edit Dialog", async ({ page }) => {
