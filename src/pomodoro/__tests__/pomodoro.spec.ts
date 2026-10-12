@@ -5,6 +5,7 @@ import {
   cycleRound,
   DEFAULT_SETTINGS,
   initialState,
+  isInitial,
   next,
   type Phase,
   pause,
@@ -60,5 +61,12 @@ describe("pomodoro", () => {
   it("skip while paused does not start", () => {
     const st = next(initialState(s), s)
     expect(st).toEqual({ phase: "short", round: 1, remainingMs: 5 * MIN, endTs: undefined })
+  })
+
+  it("isInitial: only a fresh, not running state", () => {
+    const st = initialState(s)
+    expect(isInitial(st, s)).toBe(true)
+    expect(isInitial(start(st, 0), s)).toBe(false)
+    expect(isInitial(next(st, s), s)).toBe(false)
   })
 })

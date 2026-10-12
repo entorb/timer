@@ -14,7 +14,8 @@ import { formatClock } from "@/shared/time"
 import { cycleRound, DEFAULT_SETTINGS, type Phase } from "./pomodoro"
 import { usePomodoro } from "./usePomodoro"
 
-const { settings, state, running, remainingMs, progress, toggle, skip, reset } = usePomodoro()
+const { settings, state, running, canReset, remainingMs, progress, toggle, skip, reset } =
+  usePomodoro()
 
 const PHASES = computed<Record<Phase, { label: string; color: string }>>(() => ({
   focus: { label: t("Focus", "Fokus"), color: "negative" },
@@ -83,35 +84,46 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
       />
     </div>
 
-    <div class="row q-gutter-md items-center">
-      <q-btn
-        type="button"
-        flat
-        round
-        size="lg"
-        :icon="mdiRestart"
-        :aria-label="t('Reset', 'Zurücksetzen')"
-        @click="reset"
-      />
-      <q-btn
-        id="btn-pomo-toggle"
-        type="button"
-        round
-        size="xl"
-        :color="PHASES[state.phase].color"
-        :icon="running ? mdiPause : mdiPlay"
-        :aria-label="running ? t('Pause', 'Pause') : t('Start', 'Start')"
-        @click="toggle"
-      />
-      <q-btn
-        type="button"
-        flat
-        round
-        size="lg"
-        :icon="mdiSkipNext"
-        :aria-label="t('Skip to next phase', 'Zur nächsten Phase springen')"
-        @click="skip"
-      />
+    <div class="pomo-controls row q-col-gutter-sm no-wrap">
+      <div class="col">
+        <q-btn
+          id="btn-pomo-toggle"
+          type="button"
+          unelevated
+          no-caps
+          size="lg"
+          class="full-width"
+          :color="PHASES[state.phase].color"
+          :icon="running ? mdiPause : mdiPlay"
+          :label="running ? t('Pause', 'Pause') : t('Start', 'Start')"
+          @click="toggle"
+        />
+      </div>
+      <div class="col-auto">
+        <q-btn
+          type="button"
+          outline
+          size="lg"
+          :color="PHASES[state.phase].color"
+          :icon="mdiSkipNext"
+          :aria-label="t('Skip to next phase', 'Zur nächsten Phase springen')"
+          @click="skip"
+        />
+      </div>
+      <div
+        v-if="canReset"
+        class="col-auto"
+      >
+        <q-btn
+          type="button"
+          outline
+          size="lg"
+          color="negative"
+          :icon="mdiRestart"
+          :aria-label="t('Reset', 'Zurücksetzen')"
+          @click="reset"
+        />
+      </div>
     </div>
 
     <q-expansion-item
@@ -144,6 +156,10 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
 </template>
 
 <style scoped>
+.pomo-controls {
+  width: 100%;
+  max-width: 400px;
+}
 .pomo-time {
   font-size: 3.5rem;
   font-weight: 700;
