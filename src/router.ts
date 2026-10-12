@@ -1,4 +1,5 @@
 import {
+  mdiAccountClock,
   mdiAvTimer,
   mdiChartTimelineVariant,
   mdiDumbbell,
@@ -43,6 +44,13 @@ export const tabs = [
     nameDe: "Workout",
     icon: mdiDumbbell,
     component: () => import("./workout/WorkoutPage.vue"),
+  },
+  {
+    path: "/meeting",
+    name: "Meeting Meter",
+    nameDe: "Meeting-Meter",
+    icon: mdiAccountClock,
+    component: () => import("./meeting/MeetingPage.vue"),
   },
 ]
 
