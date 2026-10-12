@@ -1,0 +1,25 @@
+import { expect, test } from "@playwright/test"
+
+test("Stopwatch: start, lap, persists", async ({ page }) => {
+  await page.clock.install()
+  await page.goto("./stopwatch")
+  await page.getByRole("button", { name: "Start Athlete 1" }).click()
+  await page.clock.fastForward(300)
+  await page.getByRole("button", { name: "Lap Athlete 1" }).click()
+  await page.getByRole("button", { name: "Lap Athlete 1" }).click()
+  const laps = () =>
+    page.evaluate(() => JSON.parse(localStorage.getItem("timer_sw_data") ?? "[]")[0]?.laps.length)
+  await expect.poll(laps).toBe(2)
+  await page.getByRole("button", { name: "Delete lap 1 of Athlete 1" }).click()
+  await expect.poll(laps).toBe(1)
+  await page.getByRole("button", { name: "Hide laps Athlete 1" }).click()
+  await expect(page.getByRole("button", { name: "Delete lap 1 of Athlete 1" })).toHaveCount(0)
+  await page.locator("#btn-start-all").click()
+  await expect(page.getByRole("button", { name: "Lap Athlete 2" })).toBeVisible()
+  await page.locator("#btn-stop-all").click()
+  const total = page.locator(".current").first()
+  await expect(total).toHaveText(/^\d+:\d\d$/)
+  await page.locator("#btn-tenths").click()
+  await expect(total).toHaveText(/^\d+:\d\d\.\d$/)
+  await expect(page.getByRole("button", { name: "Start Athlete 1" })).toBeVisible()
+})
