@@ -33,6 +33,7 @@ import { useStopwatch } from "./useStopwatch"
 const $q = useQuasar()
 const sw = useStopwatch()
 const { athletes, now, anyRunning, showTenths } = sw
+const anyStarted = computed(() => athletes.value.some((a) => a.start != null))
 
 // derived once per tick, the template reads each value several times
 const tiles = computed(() => {
@@ -111,9 +112,10 @@ async function copyCsv() {
         @click="sw.stopAll"
       />
       <q-btn
+        v-if="anyStarted"
         type="button"
-        flat
-        round
+        outline
+        color="negative"
         :icon="mdiRestart"
         :aria-label="t('Reset all', 'Alle zurücksetzen')"
         @click="confirmResetAll"
