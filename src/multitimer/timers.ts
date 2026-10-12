@@ -21,9 +21,15 @@ export function parseTimeInput(raw: string): { time: number; unit: Unit } | unde
   const suffixUnit = SUFFIX_UNIT[input.slice(-1)]
   if (suffixUnit != null) input = input.slice(0, -1)
 
+  const unit = suffixUnit ?? "min"
   const clock = /^(\d+):(\d{2})$/.exec(input)
-  const time = clock ? Number(clock[1]) + Number(clock[2]) / 60 : parseDecimal(input)
-  return time != null && time > 0 ? { time, unit: suffixUnit ?? "min" } : undefined
+  // clock form in whole seconds, so labels stay free of fractions ("1:20" = "80s", not "1.3333m")
+  if (clock) {
+    const seconds = Math.round((Number(clock[1]) + Number(clock[2]) / 60) * UNIT_SECONDS[unit])
+    return seconds > 0 ? { time: seconds, unit: "sec" } : undefined
+  }
+  const time = parseDecimal(input)
+  return time != null && time > 0 ? { time, unit } : undefined
 }
 
 export function createTimer(name: string, time: number, unit: Unit, now = Date.now()): Timer {
