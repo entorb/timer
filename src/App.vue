@@ -125,6 +125,7 @@ const installSteps = computed(() => [
             <li><b>Multi-Timer</b>: mehrere benannte Countdowns gleichzeitig, mit Alarm.</li>
             <li><b>Stoppuhr</b>: Rundenzeiten für mehrere Läufer, gemeinsamer oder einzelner Start.</li>
             <li><b>Pomodoro</b>: 25 min Fokus, 5 min Pause, 15 min lange Pause nach 4 Runden.</li>
+            <li><b>Meeting-Meter</b>: Taximeter für Meetings: Kosten und Personenstunden.</li>
           </ul>
           <ul
             v-else
@@ -138,6 +139,7 @@ const installSteps = computed(() => [
             <li><b>Multi-Timer</b>: several named countdowns at once, with alarm.</li>
             <li><b>Stopwatch</b>: lap times for multiple athletes, common or individual start.</li>
             <li><b>Pomodoro</b>: 25 min focus, 5 min break, 15 min long break after 4 rounds.</li>
+            <li><b>Meeting Meter</b>: taximeter for meetings: cost and people hours.</li>
           </ul>
           <div class="text-subtitle1">
             {{ t("Install as app", "Als App installieren") }}
