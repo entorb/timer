@@ -22,8 +22,9 @@ describe("parseTimeInput", () => {
     ["10s", 10, "sec"],
     ["1.2h", 1.2, "hour"],
     ["1,2d", 1.2, "day"],
-    ["1:12m", 1.2, "min"],
-    ["1:30", 1.5, "min"],
+    ["1:12m", 72, "sec"],
+    ["1:30", 90, "sec"],
+    ["1:20", 80, "sec"],
     [" 5 m ", 5, "min"],
   ])("%s", (input, time, unit) => {
     expect(parseTimeInput(input)).toStrictEqual({ time, unit })
