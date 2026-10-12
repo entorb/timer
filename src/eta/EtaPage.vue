@@ -64,8 +64,7 @@ function confirmDeleteAll() {
         v-if="hasData"
         id="btn-del-all"
         type="button"
-        flat
-        round
+        outline
         color="negative"
         :icon="iconReset"
         :aria-label="t('Reset all data', 'Alle Daten zurücksetzen')"

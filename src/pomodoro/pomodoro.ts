@@ -24,6 +24,10 @@ export const initialState = (s: PomoSettings): PomoState => ({
   remainingMs: phaseMs(s, "focus"),
 })
 
+// untouched since start or reset: nothing to reset
+export const isInitial = (st: PomoState, s: PomoSettings) =>
+  st.phase === "focus" && st.round === 1 && !isRunning(st) && st.remainingMs === phaseMs(s, "focus")
+
 export const isRunning = (st: PomoState) => st.endTs != null
 
 export const remaining = (st: PomoState, now: number) =>
