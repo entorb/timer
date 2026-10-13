@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { mdiClose, mdiRestart } from "@quasar/extras/mdi-v7"
+import { mdiClose, mdiPlus, mdiRestart } from "@quasar/extras/mdi-v7"
 import { ref, useTemplateRef } from "vue"
+import { confirmDialog } from "@/shared/confirm"
 import { lang, t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatDateTime, secondsToString } from "@/shared/time"
@@ -18,6 +19,12 @@ function submit() {
   inputTime.value = ""
 }
 
+function confirmDeleteAll() {
+  confirmDialog(t("Delete all?", "Alle löschen?"), () => {
+    timers.value = []
+  })
+}
+
 function resetAll() {
   for (const timer of timers.value) reset(timer)
 }
@@ -29,15 +36,16 @@ function resetAll() {
     class="column page-gap"
   >
     <form
-      class="row q-col-gutter-sm items-start"
+      class="row q-col-gutter-sm items-center no-wrap"
       @submit.prevent="submit"
     >
       <q-input
         v-model="inputName"
         for="input-name"
-        class="col-12 col-sm-5"
+        class="col"
         label="Name"
         outlined
+        dense
         autocomplete="off"
         @keydown.enter.prevent="timeField?.focus()"
       />
@@ -45,26 +53,27 @@ function resetAll() {
         ref="timeField"
         v-model="inputTime"
         for="input-time"
-        class="col-8 col-sm-5"
+        class="col-4"
         :label="t('Time', 'Zeit')"
         inputmode="decimal"
         outlined
+        dense
         autocomplete="off"
         @blur="submit"
       />
-      <div class="col-4 col-sm-2">
+      <div class="col-auto">
         <q-btn
           type="submit"
           color="primary"
-          :label="t('Add', 'Hinzufügen')"
-          class="full-width"
-          style="height: 56px"
+          unelevated
+          :icon="mdiPlus"
+          :aria-label="t('Add', 'Hinzufügen')"
         />
       </div>
     </form>
     <p
       v-if="lang === 'de'"
-      class="text-caption text-grey-7 q-my-none"
+      class="text-caption text-grey-7 q-my-none text-center"
     >
       Zeit in Minuten. Einheit <code>s</code>, <code>m</code>, <code>h</code> oder <code>d</code>
       anhängen: <code>90s</code>, <code>1.5h</code>, <code>2d</code>. Oder <code>1:30</code> für 1
@@ -72,20 +81,23 @@ function resetAll() {
     </p>
     <p
       v-else
-      class="text-caption text-grey-7 q-my-none"
+      class="text-caption text-grey-7 q-my-none text-center"
     >
       Time in minutes. Add a unit <code>s</code>, <code>m</code>, <code>h</code> or <code>d</code>:
       <code>90s</code>, <code>1.5h</code>, <code>2d</code>. Or <code>1:30</code> for 1 min 30 s.
     </p>
 
-    <div v-if="recent.length > 0">
+    <div
+      v-if="recent.length > 0"
+      class="row justify-center"
+    >
       <q-chip
         v-for="label in recent"
         :key="label"
         clickable
         removable
-        color="blue-1"
-        text-color="blue-10"
+        outline
+        color="primary"
         :remove-aria-label="t(`Remove ${label}`, `${label} entfernen`)"
         @click="addFromRecent(label)"
         @remove="recent = recent.filter((l) => l !== label)"
@@ -94,39 +106,37 @@ function resetAll() {
       </q-chip>
     </div>
 
+    <div
+      v-if="timers.length > 0"
+      class="row q-gutter-sm justify-center"
+    >
+      <q-btn
+        id="btn-resetAll"
+        type="button"
+        flat
+        round
+        :icon="mdiRestart"
+        :aria-label="t('Reset all timers', 'Alle Timer zurücksetzen')"
+        @click="resetAll"
+      />
+      <q-btn
+        id="btn-deleteAll"
+        type="button"
+        flat
+        round
+        color="negative"
+        :icon="mdiClose"
+        :aria-label="t('Delete all timers', 'Alle Timer löschen')"
+        @click="confirmDeleteAll"
+      />
+    </div>
+
     <q-list
       v-if="timers.length > 0"
       bordered
       separator
       class="rounded-borders"
     >
-      <q-item>
-        <q-item-section class="text-weight-bold">
-          Timers
-        </q-item-section>
-        <q-item-section side>
-          <div class="row no-wrap">
-            <q-btn
-              id="btn-resetAll"
-              type="button"
-              flat
-              round
-              :icon="mdiRestart"
-              :aria-label="t('Reset all timers', 'Alle Timer zurücksetzen')"
-              @click="resetAll"
-            />
-            <q-btn
-              id="btn-deleteAll"
-              type="button"
-              flat
-              round
-              :icon="mdiClose"
-              :aria-label="t('Delete all timers', 'Alle Timer löschen')"
-              @click="timers = []"
-            />
-          </div>
-        </q-item-section>
-      </q-item>
       <q-item
         v-for="({ timer, remaining, percent }, index) in sorted"
         :key="index"
@@ -138,6 +148,7 @@ function resetAll() {
           </q-item-label>
           <q-linear-progress
             :value="percent"
+            instant-feedback
             size="28px"
             :color="percent >= 1 ? 'positive' : 'amber'"
             class="q-mt-xs rounded-borders"

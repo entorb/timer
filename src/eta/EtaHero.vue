@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { t } from "@/shared/i18n"
+import ProgressRing from "@/shared/ProgressRing.vue"
 
 import { formatDateTime, secondsToString, type Unit } from "@/shared/time"
 
@@ -39,62 +40,46 @@ function etaToString(): string {
 <template>
   <div class="column items-center q-gutter-y-sm">
     <!-- estimated progress (amber) behind measured progress (green) -->
-    <div class="eta-ring">
-      <q-circular-progress
-        :value="est.percent"
-        :min="0"
-        :max="1"
-        size="240px"
-        :thickness="0.1"
-        color="amber"
-        track-color="grey-3"
-        :aria-label="t('Estimated progress', 'Geschätzter Fortschritt')"
-      />
-      <q-circular-progress
-        :value="measured"
-        :min="0"
-        :max="1"
-        size="240px"
-        :thickness="0.1"
-        color="positive"
-        track-color="transparent"
-        show-value
-        class="absolute-full"
-        :aria-label="t('Measured progress', 'Gemessener Fortschritt')"
-      >
-        <div class="column items-center">
-          <q-icon
-            v-if="est.reached"
-            :name="iconSave"
-            color="positive"
-            size="96px"
-            :aria-label="t('Target reached', 'Ziel erreicht')"
-          />
-          <template v-else-if="stats.etaMs > 0">
-            <span
-              class="text-subtitle1"
-            >
-              <q-icon
-                :name="iconEta"
-                aria-label="ETA"
-              />
-              {{ etaToString() }}
-            </span>
-            <span
-              id="eta-remaining"
-              class="eta-big"
-            >{{ secondsToString(est.secToEta) }}</span>
-          </template>
-          <span class="text-subtitle1">
-            <span class="text-positive">{{ pctMeasured }} %</span>
-            <span
-              v-if="pctEstimated > 0"
-              class="text-amber-8"
-            > + {{ pctEstimated }} %</span>
+    <ProgressRing
+      :value="measured"
+      color="positive"
+      :under="est.percent"
+      under-color="amber"
+      :label="t('Measured progress', 'Gemessener Fortschritt')"
+      :under-label="t('Estimated progress', 'Geschätzter Fortschritt')"
+    >
+      <div class="column items-center q-gutter-y-sm">
+        <q-icon
+          v-if="est.reached"
+          :name="iconSave"
+          color="positive"
+          size="96px"
+          :aria-label="t('Target reached', 'Ziel erreicht')"
+        />
+        <template v-else-if="stats.etaMs > 0">
+          <span
+            class="text-h6"
+          >
+            <q-icon
+              :name="iconEta"
+              aria-label="ETA"
+            />
+            {{ etaToString() }}
           </span>
-        </div>
-      </q-circular-progress>
-    </div>
+          <span
+            id="eta-remaining"
+            class="eta-big"
+          >{{ secondsToString(est.secToEta) }}</span>
+        </template>
+        <span class="text-h6">
+          <span class="text-positive">{{ pctMeasured }} %</span>
+          <span
+            v-if="pctEstimated > 0"
+            class="text-amber-8"
+          > + {{ pctEstimated }} %</span>
+        </span>
+      </div>
+    </ProgressRing>
 
     <div class="row justify-center items-center q-gutter-xs">
       <q-btn-dropdown
@@ -107,10 +92,12 @@ function etaToString(): string {
         :aria-label="t('Speed unit', 'Einheit Geschwindigkeit')"
       >
         <template #label>
-          <TooltipSpeed
-            :ips="stats.ips"
-            :unit="unitSpeed"
-          />/{{ unitLabel(unitSpeed) }}
+          <span class="q-ml-sm">
+            <TooltipSpeed
+              :ips="stats.ips"
+              :unit="unitSpeed"
+            />/{{ unitLabel(unitSpeed) }}
+          </span>
         </template>
         <q-list dense>
           <q-item
@@ -142,9 +129,6 @@ function etaToString(): string {
 </template>
 
 <style scoped>
-.eta-ring {
-  position: relative;
-}
 .eta-big {
   font-size: 2.5rem;
   font-weight: 700;
