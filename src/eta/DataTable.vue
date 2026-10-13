@@ -116,6 +116,7 @@ function save(): void {
           <q-btn
             :id="`btn-del-row-${index}`"
             type="button"
+            class="q-ml-md"
             flat
             round
             dense
