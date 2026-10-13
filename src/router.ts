@@ -54,7 +54,16 @@ export const tabs = [
   },
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [...tabs, { path: "/:pathMatch(.*)*", redirect: "/eta" }],
 })
+
+// stale page after deploy: old lazy chunk gone -> full load of target fetches new index
+/* c8 ignore next 4 */
+router.onError((err: Error, to) => {
+  if (/dynamically imported module|module script failed/i.test(err.message))
+    window.location.assign(router.resolve(to).href)
+})
+
+export default router
