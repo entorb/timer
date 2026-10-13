@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useQuasar } from "quasar"
 import { defineAsyncComponent, ref } from "vue"
+import { confirmDialog } from "@/shared/confirm"
 import { lang, t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
 
@@ -8,7 +8,7 @@ import DataTable from "./DataTable.vue"
 import EtaHero from "./EtaHero.vue"
 import InputItems from "./InputItems.vue"
 import InputTarget from "./InputTarget.vue"
-import { iconChart, iconHistory, iconInfo, iconReset, iconWeight } from "./icons"
+import { iconChart, iconClose, iconHistory, iconInfo, iconWeight } from "./icons"
 import { useEtaData } from "./useEtaData"
 import { useEtaStats } from "./useEtaStats"
 
@@ -32,12 +32,11 @@ const {
 
 const { stats, est } = useEtaStats(data, target, () => settings.value.weightedReg)
 
-const $q = useQuasar()
 // mount chart only when open, echarts needs a visible element
 const chartOpen = ref(true)
 
 function confirmDeleteAll() {
-  $q.dialog({ title: t("Reset all?", "Alles zurücksetzen?"), cancel: true }).onOk(deleteAll)
+  confirmDialog(t("Reset all?", "Alles zurücksetzen?"), deleteAll)
 }
 </script>
 
@@ -64,9 +63,10 @@ function confirmDeleteAll() {
         v-if="hasData"
         id="btn-del-all"
         type="button"
-        outline
+        flat
+        round
         color="negative"
-        :icon="iconReset"
+        :icon="iconClose"
         :aria-label="t('Reset all data', 'Alle Daten zurücksetzen')"
         @click="confirmDeleteAll"
       />

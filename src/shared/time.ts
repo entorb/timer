@@ -1,5 +1,3 @@
-import { lang } from "./i18n"
-
 export type Unit = "sec" | "min" | "hour" | "day"
 
 export const UNIT_SECONDS: Record<Unit, number> = { sec: 1, min: 60, hour: 3600, day: 86_400 }
@@ -13,12 +11,12 @@ export function parseDecimal(raw: string): number | undefined {
   return s === "" || !Number.isFinite(n) ? undefined : n
 }
 
-// "14:34:56" or with days "17.10., 14:34", 24h in both languages
+// "14:34:56" or with days "17.10., 14:34": German format, 24h, in both languages
 export function formatDateTime(date: Date, showDays = false): string {
   const options: Intl.DateTimeFormatOptions = showDays
     ? { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }
     : { hour: "2-digit", minute: "2-digit", second: "2-digit" }
-  return date.toLocaleString(lang.value === "de" ? "de-DE" : "en-GB", options)
+  return date.toLocaleString("de-DE", options)
 }
 
 export function secondsToString(totalSeconds: number): string {

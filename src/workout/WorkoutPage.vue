@@ -2,6 +2,7 @@
 import { mdiCog, mdiDelete, mdiPause, mdiPlay, mdiPlus, mdiRestart, mdiSkipNext, mdiSkipPrevious } from "@quasar/extras/mdi-v7"
 import { computed, ref, watch } from "vue"
 import { t } from "@/shared/i18n"
+import ProgressRing from "@/shared/ProgressRing.vue"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 
@@ -105,22 +106,16 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
     </div>
 
     <div class="relative-position">
-      <q-circular-progress
+      <ProgressRing
         :value="ringValue"
-        :min="0"
-        :max="1"
-        size="min(80vw, 320px)"
-        :thickness="0.2"
         :color="PHASES[pos.phase].color"
-        track-color="grey-3"
         :animation-speed="animationSpeed"
-        show-value
       >
         <span
           id="wo-time"
           class="wo-time"
         >{{ display }}</span>
-      </q-circular-progress>
+      </ProgressRing>
       <q-btn
         v-if="!running && !atStart"
         id="btn-wo-reset"
@@ -155,8 +150,8 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         type="button"
         round
         size="xl"
-        :flat="!atStart"
-        :color="PHASES[pos.phase].color"
+        :flat="!atStart && pos.phase !== 'done'"
+        :color="!atStart && pos.phase !== 'done' ? undefined : PHASES.prepare.color"
         :icon="running ? mdiPause : mdiPlay"
         :aria-label="running ? t('Pause', 'Pause') : t('Start', 'Start')"
         @click="toggle"

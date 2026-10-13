@@ -16,6 +16,7 @@ import {
 } from "@quasar/extras/mdi-v7"
 import { useQuasar } from "quasar"
 import { computed, ref } from "vue"
+import { confirmDialog } from "@/shared/confirm"
 import { t } from "@/shared/i18n"
 import { formatClock } from "@/shared/time"
 
@@ -66,11 +67,11 @@ function toggleLaps(a: Athlete) {
 }
 
 function confirmResetAll() {
-  $q.dialog({
-    title: t("Reset all?", "Alles zurücksetzen?"),
-    message: t("All times and laps get lost.", "Alle Zeiten und Runden gehen verloren."),
-    cancel: true,
-  }).onOk(sw.resetAll)
+  confirmDialog(
+    t("Reset all?", "Alles zurücksetzen?"),
+    sw.resetAll,
+    t("All times and laps get lost.", "Alle Zeiten und Runden gehen verloren."),
+  )
 }
 
 function editLap(a: Athlete, index: number, raw: string) {
