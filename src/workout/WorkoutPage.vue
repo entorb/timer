@@ -12,18 +12,25 @@ const { workouts, selectedId, workout, running, pos, total, elapsedMs, toggle, r
   useWorkout()
 
 const PHASES = computed<Record<Phase, { label: string; color: string }>>(() => ({
-  prepare: { label: t("Get ready", "Bereitmachen"), color: "amber" },
-  work: { label: t("Work", "Belastung"), color: "negative" },
+  prepare: { label: t("Get ready", "Vorbereiten"), color: "amber" },
+  work: { label: t("Work", "Arbeiten"), color: "negative" },
   rest: { label: t("Rest", "Pause"), color: "positive" },
   done: { label: t("Done", "Fertig"), color: "primary" },
 }))
 
-// animate forward progress (Quasar default speed), jump back instantly on reset / segment switch
+const atStart = computed(() => !running.value && elapsedMs.value === 0)
+
+// prepare + rest drain full -> empty, work fills up
+const drains = (phase: Phase) => phase === "prepare" || phase === "rest"
+const ringValue = computed(() => (drains(pos.value.phase) ? 1 - pos.value.progress : pos.value.progress))
+
+// animate along the phase direction (Quasar default speed), jump instantly on reset / skip / segment switch
 const animationSpeed = ref(600)
 watch(
-  () => pos.value.progress,
-  (value, old) => {
-    animationSpeed.value = value < old ? 0 : 600
+  () => [pos.value.phase, pos.value.rep, ringValue.value] as const,
+  ([phase, rep, value], [oldPhase, oldRep, old]) => {
+    const backwards = drains(phase) ? value > old : value < old
+    animationSpeed.value = phase !== oldPhase || rep !== oldRep || backwards ? 0 : 600
   },
 )
 
@@ -97,22 +104,36 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
       {{ PHASES[pos.phase].label }}
     </div>
 
-    <q-circular-progress
-      :value="pos.progress"
-      :min="0"
-      :max="1"
-      size="min(80vw, 320px)"
-      :thickness="0.1"
-      :color="PHASES[pos.phase].color"
-      track-color="grey-3"
-      :animation-speed="animationSpeed"
-      show-value
-    >
-      <span
-        id="wo-time"
-        class="wo-time"
-      >{{ display }}</span>
-    </q-circular-progress>
+    <div class="relative-position">
+      <q-circular-progress
+        :value="ringValue"
+        :min="0"
+        :max="1"
+        size="min(80vw, 320px)"
+        :thickness="0.2"
+        :color="PHASES[pos.phase].color"
+        track-color="grey-3"
+        :animation-speed="animationSpeed"
+        show-value
+      >
+        <span
+          id="wo-time"
+          class="wo-time"
+        >{{ display }}</span>
+      </q-circular-progress>
+      <q-btn
+        v-if="!running && !atStart"
+        id="btn-wo-reset"
+        type="button"
+        outline
+        round
+        color="negative"
+        :icon="mdiRestart"
+        :aria-label="t('Reset', 'Zurücksetzen')"
+        class="absolute-top-right"
+        @click="reset"
+      />
+    </div>
 
     <div class="text-h6">
       {{ t("Round", "Runde") }} {{ pos.rep }} / {{ workout.reps }}
@@ -120,15 +141,6 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
     </div>
 
     <div class="row q-gutter-lg items-center">
-      <q-btn
-        type="button"
-        flat
-        round
-        size="lg"
-        :icon="mdiRestart"
-        :aria-label="t('Reset', 'Zurücksetzen')"
-        @click="reset"
-      />
       <q-btn
         type="button"
         flat
@@ -143,6 +155,7 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         type="button"
         round
         size="xl"
+        :flat="!atStart"
         :color="PHASES[pos.phase].color"
         :icon="running ? mdiPause : mdiPlay"
         :aria-label="running ? t('Pause', 'Pause') : t('Start', 'Start')"
@@ -201,7 +214,7 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
 
 <style scoped>
 .wo-time {
-  font-size: clamp(4rem, 20vw, 7rem);
+  font-size: clamp(4rem, 18vw, 6.2rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
