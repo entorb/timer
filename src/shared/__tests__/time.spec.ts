@@ -86,18 +86,12 @@ describe("parseClock", () => {
 describe("formatDateTime", () => {
   const d = new Date(2025, 9, 17, 14, 34, 56) // local time
 
-  it("24h clock in both languages", () => {
-    lang.value = "en"
-    expect(formatDateTime(d)).toBe("14:34:56")
-    lang.value = "de"
-    expect(formatDateTime(d)).toBe("14:34:56")
-  })
-
-  it("showDays follows lang", () => {
-    lang.value = "en"
-    expect(formatDateTime(d, true)).toBe("17/10, 14:34")
-    lang.value = "de"
-    expect(formatDateTime(d, true)).toBe("17.10., 14:34")
+  it("German format in both languages", () => {
+    for (const l of ["en", "de"] as const) {
+      lang.value = l
+      expect(formatDateTime(d)).toBe("14:34:56")
+      expect(formatDateTime(d, true)).toBe("17.10., 14:34")
+    }
   })
 })
 

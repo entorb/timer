@@ -25,7 +25,7 @@ describe("formatDateTime", () => {
     const datetime = new Date("2023-10-17T12:34:56Z")
     expect(formatDateTime(datetime, true)).toBe("17.10., 14:34")
     lang.value = "en"
-    expect(formatDateTime(datetime, true)).toBe("17/10, 14:34")
+    expect(formatDateTime(datetime, true)).toBe("17.10., 14:34")
   })
 })
 

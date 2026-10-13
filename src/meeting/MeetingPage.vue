@@ -3,12 +3,11 @@ import {
   mdiAccountTie,
   mdiAccountWrench,
   mdiCheckCircleOutline,
+  mdiClockOutline,
   mdiCog,
   mdiCurrencyEur,
-  mdiMinus,
   mdiPause,
   mdiPlay,
-  mdiPlus,
   mdiRestart,
 } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
@@ -55,18 +54,22 @@ const groups = computed(
 const rates = computed(
   () =>
     [
-      { key: "group1HourlyRate", label: t("Hourly rate senior (€)", "Stundensatz Senior (€)") },
-      { key: "group2HourlyRate", label: t("Hourly rate junior (€)", "Stundensatz Junior (€)") },
+      {
+        key: "group1HourlyRate",
+        label: t("Hourly rate senior (€)", "Stundensatz Senior (€)"),
+        icon: mdiAccountTie,
+      },
+      {
+        key: "group2HourlyRate",
+        label: t("Hourly rate junior (€)", "Stundensatz Junior (€)"),
+        icon: mdiAccountWrench,
+      },
     ] as const,
 )
 
 function setCount(key: "group1" | "group2", value: string | number | null) {
   const n = parseDecimal(String(value ?? ""))
   state.value[key] = n == null ? 0 : clampCount(n)
-}
-
-function step(key: "group1" | "group2", delta: number) {
-  state.value[key] = clampCount(state.value[key] + delta)
 }
 
 function setRate(key: (typeof rates.value)[number]["key"], value: string | number | null) {
@@ -172,35 +175,12 @@ function setStart(value: string | number | null) {
           :for="`input-mtg-${g.key}`"
           :model-value="state[g.key]"
           :label="g.label"
-          class="mtg-count"
           type="number"
           min="0"
           max="1000"
           outlined
           @update:model-value="setCount(g.key, $event)"
         >
-          <template #before>
-            <q-btn
-              type="button"
-              round
-              flat
-              dense
-              :icon="mdiMinus"
-              :aria-label="t(`Fewer ${g.label}`, `Weniger ${g.label}`)"
-              @click="step(g.key, -1)"
-            />
-          </template>
-          <template #after>
-            <q-btn
-              type="button"
-              round
-              flat
-              dense
-              :icon="mdiPlus"
-              :aria-label="t(`More ${g.label}`, `Mehr ${g.label}`)"
-              @click="step(g.key, 1)"
-            />
-          </template>
           <template #prepend>
             <q-icon :name="g.icon" />
           </template>
@@ -215,14 +195,17 @@ function setStart(value: string | number | null) {
           bordered
           class="text-center q-pa-md full-height"
         >
+          <div class="text-caption">
+            {{ t("People hours", "Personenstunden") }}
+          </div>
           <div
             id="mtg-people"
             class="text-h5 text-weight-bold"
           >
-            {{ calcs.peopleHours.toFixed(1) }} / {{ calcs.peopleDays.toFixed(1) }}
+            {{ calcs.peopleHours.toFixed(1) }} h
           </div>
-          <div class="text-caption">
-            {{ t("People hours / days", "Personenstunden / -tage") }}
+          <div id="mtg-people-days">
+            {{ calcs.peopleDays.toFixed(1) }} {{ t("days", "Tage") }}
           </div>
         </q-card>
       </div>
@@ -232,23 +215,24 @@ function setStart(value: string | number | null) {
           class="text-center text-white q-pa-md full-height"
           :class="`bg-${color}`"
         >
-          <div
-            id="mtg-cost"
-            class="text-h5 text-weight-bold"
-          >
-            <template v-if="calcs.hourlyCost > 0">
-              {{ eur(calcs.hourlyCost) }}/h = {{ eur(calcs.totalCost) }}
-            </template>
-            <template v-else>
-              {{ calcs.people }}
-            </template>
-          </div>
           <div class="text-caption">
             {{
               calcs.hourlyCost > 0
                 ? t(`${calcs.people} participants`, `${calcs.people} Teilnehmer`)
                 : t("Participants (set rates below)", "Teilnehmer (Sätze unten setzen)")
             }}
+          </div>
+          <div
+            id="mtg-cost"
+            class="text-h5 text-weight-bold"
+          >
+            {{ calcs.hourlyCost > 0 ? eur(calcs.totalCost) : calcs.people }}
+          </div>
+          <div
+            v-if="calcs.hourlyCost > 0"
+            id="mtg-rate"
+          >
+            {{ eur(calcs.hourlyCost) }}/h
           </div>
         </q-card>
       </div>
@@ -317,7 +301,11 @@ function setStart(value: string | number | null) {
           dense
           outlined
           @update:model-value="setRate(r.key, $event)"
-        />
+        >
+          <template #prepend>
+            <q-icon :name="r.icon" />
+          </template>
+        </q-input>
         <q-input
           :model-value="config.workingHoursPerDay"
           :label="t('Working hours per day (4-12)', 'Arbeitsstunden pro Tag (4-12)')"
@@ -327,7 +315,11 @@ function setStart(value: string | number | null) {
           dense
           outlined
           @update:model-value="setWorkingHours"
-        />
+        >
+          <template #prepend>
+            <q-icon :name="mdiClockOutline" />
+          </template>
+        </q-input>
       </div>
     </q-expansion-item>
 
@@ -348,10 +340,5 @@ function setStart(value: string | number | null) {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
-}
-/* number input between the -/+ buttons: centered value, no browser spinner */
-.mtg-count :deep(input) {
-  text-align: center;
-  appearance: textfield;
 }
 </style>

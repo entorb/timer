@@ -8,7 +8,8 @@ test("Meeting Meter: cost, pause, persists", async ({ page }) => {
   await page.getByLabel("Hourly rate senior").fill("60")
   await page.locator("#btn-mtg-toggle").click()
   await page.clock.fastForward(3_600_000)
-  await expect(page.locator("#mtg-cost")).toHaveText("120 €/h = 120 €")
+  await expect(page.locator("#mtg-cost")).toHaveText("120 €")
+  await expect(page.locator("#mtg-rate")).toHaveText("120 €/h")
   await page.locator("#btn-mtg-toggle").click()
   await expect(page.locator("#btn-mtg-reset")).toBeVisible()
   const stored = () =>
