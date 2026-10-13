@@ -13,6 +13,8 @@ import { unlockAudio } from "./shared/feedback"
 // audio needs a user gesture first, resume also after iOS suspended it
 document.addEventListener("pointerdown", unlockAudio)
 document.addEventListener("keydown", unlockAudio)
+// iOS Safari ignores user-scalable=no and touch-action for pinch zoom
+document.addEventListener("gesturestart", (e) => e.preventDefault())
 
 createApp(App)
   .use(router)
