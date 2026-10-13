@@ -1,6 +1,6 @@
-/* no double-tap zoom on fast repeated taps, pinch zoom stays */
+/* no zoom on mobile: no double-tap, no pinch (viewport meta for Android, gesturestart for iOS) */
 html {
-  touch-action: manipulation;
+  touch-action: pan-x pan-y;
 }
 .page-gap {
   gap: 16px;
