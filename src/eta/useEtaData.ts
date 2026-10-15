@@ -6,9 +6,9 @@ import type { Unit } from "@/shared/time"
 import { helperCalcSpeedFromPreviousRow } from "./helper"
 import type { DataRowRedType, DataRowType } from "./types"
 
-const KEY_DATA = "eta_vue_data"
-const KEY_TARGET = "eta_vue_target"
-const KEY_SETTINGS = "eta_vue_settings"
+const KEY_DATA = "tmr-eta-data"
+const KEY_TARGET = "tmr-eta-target"
+const KEY_SETTINGS = "tmr-eta-settings"
 const DAY_IN_MS = 86_400 * 1000
 const DEFAULT_SETTINGS = { unitSpeed: "min" as Unit, weightedReg: false }
 
@@ -45,7 +45,7 @@ export function useEtaData() {
 
   function addRow(row: DataRowRedType) {
     data.value.push(row)
-    if (data.value.length === 3) statsWrite("eta")
+    if (data.value.length === 3) statsWrite("tmr-eta")
   }
 
   function updateRow(index: number, row: DataRowRedType) {

@@ -208,8 +208,7 @@ function confirmDeleteAll() {
     </q-list>
 
     <StatsLine
-      origin="eta"
-      what="ETAs"
+      origin="tmr-eta"
     />
   </q-page>
 </template>

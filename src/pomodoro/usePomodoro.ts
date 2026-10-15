@@ -7,8 +7,8 @@ import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as pomo from "./pomodoro"
 
-const KEY_SETTINGS = "timer_pomo_settings"
-const KEY_STATE = "timer_pomo_state"
+const KEY_SETTINGS = "tmr-pomo-settings"
+const KEY_STATE = "tmr-pomo-state"
 
 export function usePomodoro() {
   const settings = ref({ ...pomo.DEFAULT_SETTINGS, ...readJson(KEY_SETTINGS, {}) })
@@ -54,7 +54,7 @@ export function usePomodoro() {
       state.value = pomo.pause(state.value, now.value)
     } else {
       state.value = pomo.start(state.value, now.value)
-      statsWrite("timer-pomo")
+      statsWrite("tmr-pomo")
     }
   }
 

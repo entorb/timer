@@ -8,8 +8,8 @@ export interface Timer {
 }
 
 // storage keys are kept from the Vue version, so existing user data stays readable
-const KEY_DATA = "eta_vue_mt_data"
-const KEY_RECENT = "eta_vue_mt_recent"
+const KEY_DATA = "tmr-mt-data"
+const KEY_RECENT = "tmr-mt-recent"
 
 const SUFFIX_UNIT: Record<string, Unit> = { s: "sec", m: "min", h: "hour", d: "day" }
 

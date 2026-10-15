@@ -6,21 +6,20 @@ import { useRoute } from "vue-router"
 
 import { tabs } from "./router"
 import { lang, t, toggleLang } from "./shared/i18n"
-import { readJson, writeJson } from "./shared/storage"
+import { readSettings, updateSettings } from "./shared/storage"
 
 const $q = useQuasar()
 const route = useRoute()
 const showInfo = ref(false)
 const currentTab = computed(() => tabs.find((tab) => tab.path === route.path))
 
-const KEY_DARK = "timer_dark"
-// null: keep "auto"
-const storedDark = readJson<boolean | null>(KEY_DARK, null)
+// undefined: keep "auto"
+const storedDark = readSettings().dark
 if (storedDark != null) $q.dark.set(storedDark)
 
 function toggleDark() {
   $q.dark.toggle()
-  writeJson(KEY_DARK, $q.dark.isActive)
+  updateSettings({ dark: $q.dark.isActive })
 }
 
 const installSteps = computed(() => [

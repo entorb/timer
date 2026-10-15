@@ -26,7 +26,10 @@ const enter = async (page: Page, selector: string, value: string) => {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript((lang) => localStorage.setItem("timer_lang", lang), LANG)
+  await page.addInitScript(
+    (lang) => localStorage.setItem("tmr-settings", JSON.stringify({ lang })),
+    LANG,
+  )
   await page.clock.install({ time: new Date("2026-01-05T09:00:00") })
 })
 
