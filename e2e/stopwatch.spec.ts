@@ -8,7 +8,7 @@ test("Stopwatch: start, lap, persists", async ({ page }) => {
   await page.getByRole("button", { name: "Lap Athlete 1" }).click()
   await page.getByRole("button", { name: "Lap Athlete 1" }).click()
   const laps = () =>
-    page.evaluate(() => JSON.parse(localStorage.getItem("timer_sw_data") ?? "[]")[0]?.laps.length)
+    page.evaluate(() => JSON.parse(localStorage.getItem("tmr-sw-data") ?? "[]")[0]?.laps.length)
   await expect.poll(laps).toBe(2)
   await page.getByRole("button", { name: "Delete lap 1 of Athlete 1" }).click()
   await expect.poll(laps).toBe(1)

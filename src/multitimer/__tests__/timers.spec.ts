@@ -114,7 +114,7 @@ describe("storage", () => {
     saveTimers(timers)
     expect(loadTimers()).toStrictEqual(timers)
     saveTimers([])
-    expect(localStorage.getItem("eta_vue_mt_data")).toBeNull()
+    expect(localStorage.getItem("tmr-mt-data")).toBeNull()
   })
 
   it("recent roundtrip", () => {
@@ -123,7 +123,7 @@ describe("storage", () => {
   })
 
   it("corrupt storage falls back to empty", () => {
-    localStorage.setItem("eta_vue_mt_data", "{oops")
+    localStorage.setItem("tmr-mt-data", "{oops")
     expect(loadTimers()).toStrictEqual([])
   })
 })

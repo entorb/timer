@@ -18,6 +18,7 @@ import { useQuasar } from "quasar"
 import { computed, ref } from "vue"
 import { confirmDialog } from "@/shared/confirm"
 import { t } from "@/shared/i18n"
+import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 
 import {
@@ -377,6 +378,8 @@ async function copyCsv() {
         </q-card>
       </div>
     </div>
+
+    <StatsLine origin="tmr-sw" />
   </q-page>
 </template>
 

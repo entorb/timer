@@ -2,18 +2,13 @@ import { Lang } from "quasar"
 import langDe from "quasar/lang/de-DE"
 import langEn from "quasar/lang/en-US"
 import { ref, watchEffect } from "vue"
+import { readSettings, updateSettings } from "./storage"
 
 export type LangType = "en" | "de"
 
-const KEY_LANG = "timer_lang"
-
 function initialLang(): LangType {
-  try {
-    const stored = localStorage.getItem(KEY_LANG)
-    if (stored === "en" || stored === "de") return stored
-  } catch {
-    // fall through to browser language
-  }
+  const stored = readSettings().lang
+  if (stored === "en" || stored === "de") return stored
   return navigator.language.toLowerCase().startsWith("de") ? "de" : "en"
 }
 
@@ -27,11 +22,7 @@ watchEffect(() => {
 
 export function toggleLang() {
   lang.value = lang.value === "de" ? "en" : "de"
-  try {
-    localStorage.setItem(KEY_LANG, lang.value)
-  } catch {
-    // not persisted
-  }
+  updateSettings({ lang: lang.value })
 }
 
 // inline translation: reactive when called in templates / computed

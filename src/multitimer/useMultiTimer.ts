@@ -52,7 +52,7 @@ export function useMultiTimer() {
   function add(name: string, time: number, unit: Unit) {
     timers.value.push(createTimer(name, time, unit))
     now.value = Date.now()
-    statsWrite("eta-mt")
+    statsWrite("tmr-mt")
   }
 
   // returns false if time input is invalid

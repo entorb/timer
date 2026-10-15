@@ -9,8 +9,8 @@ import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as sw from "./stopwatch"
 
-const KEY_DATA = "timer_sw_data"
-const KEY_TENTHS = "timer_sw_tenths"
+const KEY_DATA = "tmr-sw-data"
+const KEY_TENTHS = "tmr-sw-tenths"
 
 const newAthlete = (id: number): sw.Athlete => ({
   id,
@@ -48,7 +48,7 @@ export function useStopwatch() {
 
   function startAll() {
     act(sw.start)
-    statsWrite("timer-sw")
+    statsWrite("tmr-sw")
   }
 
   function add() {

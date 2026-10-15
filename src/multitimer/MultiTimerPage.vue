@@ -183,8 +183,7 @@ function resetAll() {
     </q-list>
 
     <StatsLine
-      origin="eta-mt"
-      :what="t('timers', 'Timer')"
+      origin="tmr-mt"
     />
   </q-page>
 </template>
