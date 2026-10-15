@@ -67,27 +67,29 @@ const rates = computed(
     ] as const,
 )
 
-function setCount(key: "group1" | "group2", value: string | number | null) {
+type InputValue = string | number | null
+
+function setCount(key: "group1" | "group2", value: InputValue) {
   const n = parseDecimal(String(value ?? ""))
   state.value[key] = n == null ? 0 : clampCount(n)
 }
 
-function setRate(key: (typeof rates.value)[number]["key"], value: string | number | null) {
+function setRate(key: (typeof rates.value)[number]["key"], value: InputValue) {
   const n = parseDecimal(String(value ?? ""))
   config.value[key] = n == null || n < 0 ? 0 : n
 }
 
-function setWorkingHours(value: string | number | null) {
+function setWorkingHours(value: InputValue) {
   const n = parseDecimal(String(value ?? ""))
   if (n != null && n >= 4 && n <= 12) config.value.workingHoursPerDay = n
 }
 
-function setPaused(value: string | number | null) {
+function setPaused(value: InputValue) {
   const n = parseDecimal(String(value ?? ""))
   if (n != null) m.setPausedMinutes(n)
 }
 
-function setStart(value: string | number | null) {
+function setStart(value: InputValue) {
   m.setStartClock(String(value ?? ""))
 }
 </script>
@@ -324,8 +326,7 @@ function setStart(value: string | number | null) {
     </q-expansion-item>
 
     <StatsLine
-      origin="meeting-meter"
-      :what="t('meetings metered', 'Meetings gemessen')"
+      origin="tmr-mm"
     />
   </q-page>
 </template>

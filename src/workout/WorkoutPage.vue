@@ -201,8 +201,7 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
     </q-expansion-item>
 
     <StatsLine
-      origin="timer-workout"
-      :what="t('workouts', 'Workouts')"
+      origin="tmr-wo"
     />
   </q-page>
 </template>

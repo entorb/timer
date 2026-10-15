@@ -9,6 +9,7 @@ import {
 } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
 import { t } from "@/shared/i18n"
+import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 
 import { cycleRound, DEFAULT_SETTINGS, type Phase } from "./pomodoro"
@@ -152,6 +153,8 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         />
       </div>
     </q-expansion-item>
+
+    <StatsLine origin="tmr-pomo" />
   </q-page>
 </template>
 

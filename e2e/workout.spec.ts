@@ -10,6 +10,6 @@ test("Workout: prepare, work, add persists", async ({ page }) => {
   await page.getByRole("button", { name: "Pause" }).click()
   await page.getByRole("button", { name: "Add workout" }).click()
   const count = () =>
-    page.evaluate(() => JSON.parse(localStorage.getItem("timer_wo_workouts") ?? "[]").length)
+    page.evaluate(() => JSON.parse(localStorage.getItem("tmr-wo-workouts") ?? "[]").length)
   await expect.poll(count).toBe(2)
 })

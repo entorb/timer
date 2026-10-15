@@ -6,16 +6,14 @@ import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as mtg from "./meeting"
 
-const KEY_STATE = "timer_mtg_state"
-const KEY_CONFIG = "timer_mtg_config"
-// key of the former standalone meeting-meter app (same origin on entorb.net)
-const KEY_CONFIG_LEGACY = "mma-config"
+const KEY_STATE = "tmr-mm-state"
+const KEY_CONFIG = "tmr-mm-config"
 
 export function useMeeting() {
   const state = ref<mtg.MeetingState>({ ...mtg.initialState(), ...readJson(KEY_STATE, {}) })
   const config = ref<mtg.MeetingConfig>({
     ...mtg.DEFAULT_CONFIG,
-    ...readJson(KEY_CONFIG, readJson(KEY_CONFIG_LEGACY, {})),
+    ...readJson(KEY_CONFIG, {}),
   })
   const now = ref(Date.now())
 
@@ -44,7 +42,7 @@ export function useMeeting() {
     if (running.value) {
       mtg.pause(state.value, now.value)
     } else {
-      if (!mtg.isStarted(state.value)) statsWrite("meeting-meter")
+      if (!mtg.isStarted(state.value)) statsWrite("tmr-mm")
       mtg.start(state.value, now.value)
     }
   }
