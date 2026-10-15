@@ -8,9 +8,9 @@ import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as wo from "./workout"
 
-const KEY_WORKOUTS = "timer_wo_workouts"
-const KEY_SELECTED = "timer_wo_selected"
-const KEY_STATE = "timer_wo_state"
+const KEY_WORKOUTS = "tmr-wo-workouts"
+const KEY_SELECTED = "tmr-wo-selected"
+const KEY_STATE = "tmr-wo-state"
 
 const CUE_SOUNDS: Record<wo.Cue, () => void> = {
   beep: SOUNDS.beep,
@@ -72,7 +72,7 @@ export function useWorkout() {
     // -1: cues at 0 (go without prepare) are due too
     last = state.value.elapsedMs === 0 ? -1 : state.value.elapsedMs
     state.value = wo.start(state.value, now.value)
-    statsWrite("timer-workout")
+    statsWrite("tmr-wo")
   }
 
   function reset() {

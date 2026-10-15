@@ -11,6 +11,7 @@ interface Props {
 }
 
 defineProps<Props>()
+defineSlots<{ default?: () => unknown }>()
 </script>
 
 <template>

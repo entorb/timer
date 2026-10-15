@@ -11,7 +11,7 @@ describe("useMultiTimer persistence", () => {
     mt?.addFromInput("Tea", "5")
     await nextTick()
     scope.stop()
-    expect(localStorage.getItem("eta_vue_mt_recent")).toBe('["Tea:5m"]')
+    expect(localStorage.getItem("tmr-mt-recent")).toBe('["Tea:5m"]')
     const again = effectScope().run(() => useMultiTimer())
     expect(again?.recent.value).toEqual(["Tea:5m"])
     expect(again?.timers.value).toHaveLength(1)

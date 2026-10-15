@@ -5,7 +5,7 @@ import type { StatsDataType } from "./stats"
 import { statsRead } from "./stats"
 
 
-const props = defineProps<{ origin: string; what: string }>()
+const props = defineProps<{ origin: string }>()
 
 const stats = ref<StatsDataType>()
 
@@ -19,8 +19,8 @@ onMounted(async () => {
     <template v-if="stats">
       {{
         t(
-          `${stats.accesscounts7} ${what} in the last 7 days, ${stats.accesscounts} in total since ${stats.firstaccess}.`,
-          `${stats.accesscounts7} ${what} in den letzten 7 Tagen, ${stats.accesscounts} insgesamt seit ${stats.firstaccess}.`,
+          `${stats.accesscounts7} in last 7 days, ${stats.accesscounts} in total`,
+          `${stats.accesscounts7} in letzten 7 Tagen, ${stats.accesscounts} insgesamt`,
         )
       }}
     </template>

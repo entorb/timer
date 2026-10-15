@@ -13,6 +13,6 @@ test("Meeting Meter: cost, pause, persists", async ({ page }) => {
   await page.locator("#btn-mtg-toggle").click()
   await expect(page.locator("#btn-mtg-reset")).toBeVisible()
   const stored = () =>
-    page.evaluate(() => JSON.parse(localStorage.getItem("timer_mtg_state") ?? "{}").group1)
+    page.evaluate(() => JSON.parse(localStorage.getItem("tmr-mm-state") ?? "{}").group1)
   await expect.poll(stored).toBe(2)
 })

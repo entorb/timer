@@ -17,3 +17,15 @@ export function writeJson(key: string, value: unknown) {
     // not persisted
   }
 }
+
+const KEY_SETTINGS = "tmr-settings"
+
+export interface Settings {
+  dark?: boolean
+  lang?: "en" | "de"
+}
+
+// dark + lang share one key
+export const readSettings = () => readJson<Settings>(KEY_SETTINGS, {})
+export const updateSettings = (patch: Settings) =>
+  writeJson(KEY_SETTINGS, { ...readSettings(), ...patch })
