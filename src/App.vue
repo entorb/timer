@@ -157,7 +157,12 @@ const installSteps = computed(() => [
               Nutzungsstatistiken erfasst.
             </p>
             <p>
-              Diese App ist kostenlos, werbefrei und OpenSource. Wenn sie dir gefällt, teile sie
+              Diese App ist kostenlos, werbefrei und
+              <a
+                href="https://github.com/entorb/timer"
+                target="_blank"
+                rel="noopener noreferrer"
+              >OpenSource</a>. Wenn sie dir gefällt, teile sie
               gerne.
               <a
                 href="https://entorb.net/contact.php?origin=timer"
@@ -173,7 +178,12 @@ const installSteps = computed(() => [
               on the server.
             </p>
             <p>
-              This app is free (as of free-beer), ad-free and OpenSource. If you like it, please
+              This app is free (as of free-beer), ad-free and
+              <a
+                href="https://github.com/entorb/timer"
+                target="_blank"
+                rel="noopener noreferrer"
+              >OpenSource</a>. If you like it, please
               share it.
               <a
                 href="https://entorb.net/contact.php?origin=timer"
