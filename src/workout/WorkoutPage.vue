@@ -117,7 +117,7 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         >{{ display }}</span>
       </ProgressRing>
       <q-btn
-        v-if="!running && !atStart"
+        v-if="!running && !atStart && pos.phase !== 'done'"
         id="btn-wo-reset"
         type="button"
         outline
