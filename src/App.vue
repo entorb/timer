@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiHome, mdiInformationOutline, mdiThemeLightDark } from "@quasar/extras/mdi-v7"
-import { useQuasar } from "quasar"
+import { mdiHome, mdiInformationOutline, mdiShareVariant, mdiThemeLightDark } from "@quasar/extras/mdi-v7"
+import { copyToClipboard, useQuasar } from "quasar"
 import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
 
@@ -20,6 +20,17 @@ if (storedDark != null) $q.dark.set(storedDark)
 function toggleDark() {
   $q.dark.toggle()
   updateSettings({ dark: $q.dark.isActive })
+}
+
+/* c8 ignore next 10 */
+async function shareApp() {
+  const url = location.origin + import.meta.env.BASE_URL
+  if (navigator.share != null) {
+    await navigator.share({ title: "TIMER", url }).catch(() => undefined)
+    return
+  }
+  await copyToClipboard(url)
+  $q.notify({ message: t("Link copied", "Link kopiert"), timeout: 1500 })
 }
 
 const installSteps = computed(() => [
@@ -121,7 +132,7 @@ const installSteps = computed(() => [
     >
       <q-card style="max-width: 600px">
         <q-card-section class="text-h6">
-          <span class="text-primary">T</span>I<span class="text-primary">M</span>ER
+          <span class="text-primary">Timer Apps - Info</span>
         </q-card-section>
         <q-card-section class="q-pt-none">
           <div class="text-subtitle1">
@@ -138,7 +149,14 @@ const installSteps = computed(() => [
           <template v-if="lang === 'de'">
             <p>
               Deine Daten werden nur auf deinem Gerät gespeichert. Auf dem Server werden nur anonyme
-              Nutzungsstatistiken erfasst.
+              Nutzungsstatistiken erfasst. Für das (optionale) Wetter wird der freigegebene Standort gerundet
+              (~10 km) an
+              <a
+                href="https://open-meteo.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >Open-Meteo.com</a>
+              gesendet, von dort stammen die Wetterdaten.
             </p>
             <p>
               Diese App ist kostenlos, werbefrei und
@@ -159,7 +177,12 @@ const installSteps = computed(() => [
           <template v-else>
             <p>
               Your data is stored only on your device. Only anonymous usage statistics are gathered
-              on the server.
+              on the server. For the (optional) weather, the shared location is sent rounded (~10 km) to
+              <a
+                href="https://open-meteo.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >Open-Meteo.com</a>, which provides the weather data.
             </p>
             <p>
               This app is free (as of free-beer), ad-free and
@@ -179,6 +202,13 @@ const installSteps = computed(() => [
           </template>
         </q-card-section>
         <q-card-actions align="right">
+          <q-btn
+            type="button"
+            flat
+            :icon="mdiShareVariant"
+            :label="t('Share app', 'App teilen')"
+            @click="shareApp"
+          />
           <q-btn
             v-close-popup
             type="button"

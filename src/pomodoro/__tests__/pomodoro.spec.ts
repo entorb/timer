@@ -7,6 +7,7 @@ import {
   initialState,
   isInitial,
   next,
+  nextEnds,
   type Phase,
   pause,
   remaining,
@@ -68,5 +69,11 @@ describe("pomodoro", () => {
     expect(isInitial(st, s)).toBe(true)
     expect(isInitial(start(st, 0), s)).toBe(false)
     expect(isInitial(next(st, s), s)).toBe(false)
+  })
+
+  it("nextEnds: running phase and the following ones, none when paused", () => {
+    const st = start(initialState(s), 0)
+    expect(nextEnds(st, s, 3)).toEqual([25 * MIN, 30 * MIN, 55 * MIN])
+    expect(nextEnds(initialState(s), s, 3)).toEqual([])
   })
 })
