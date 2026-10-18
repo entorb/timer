@@ -1,6 +1,12 @@
 import { computed, onScopeDispose, ref, watch } from "vue"
 
-import { playSound, SOUNDS } from "@/shared/feedback"
+import {
+  dueInBackground,
+  playSound,
+  SOUNDS,
+  type Sound,
+  useBackgroundSounds,
+} from "@/shared/feedback"
 import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
 import { readJson, writeJson } from "@/shared/storage"
@@ -12,12 +18,12 @@ const KEY_WORKOUTS = "tmr-wo-workouts"
 const KEY_SELECTED = "tmr-wo-selected"
 const KEY_STATE = "tmr-wo-state"
 
-const CUE_SOUNDS: Record<wo.Cue, () => void> = {
+const CUE_SOUNDS: Record<wo.Cue, Sound> = {
   beep: SOUNDS.beep,
   go: SOUNDS.ding,
   tick: SOUNDS.tick,
   gong: SOUNDS.bell,
-  cheers: () => playSound(SOUNDS.finish),
+  cheers: SOUNDS.finish,
 }
 
 export function useWorkout() {
@@ -46,15 +52,25 @@ export function useWorkout() {
   })
   watch(state, (value) => writeJson(KEY_STATE, value), { deep: true })
   useWakeLock(running)
+  useBackgroundSounds(() => {
+    const { startTs } = state.value
+    if (startTs == null) return []
+    return wo
+      .cuesBetween(workout.value, elapsedMs.value, total.value)
+      .map(({ at, cue }) => ({ ts: startTs + at, sound: CUE_SOUNDS[cue] }))
+  })
 
   // elapsed at the previous tick, cues in between get played
   let last = elapsedMs.value
   function tick() {
     if (!running.value) return
     now.value = Date.now()
+    const startTs = state.value.startTs ?? now.value
     const cues = wo.cuesBetween(workout.value, last, elapsedMs.value)
     // back from background: only the latest cue, no burst
-    for (const cue of elapsedMs.value - last > 2000 ? cues.slice(-1) : cues) CUE_SOUNDS[cue]()
+    for (const { at, cue } of elapsedMs.value - last > 2000 ? cues.slice(-1) : cues) {
+      if (!dueInBackground(startTs + at)) playSound(CUE_SOUNDS[cue], cue === "cheers")
+    }
     last = elapsedMs.value
     if (elapsedMs.value >= total.value) state.value = { elapsedMs: total.value }
   }

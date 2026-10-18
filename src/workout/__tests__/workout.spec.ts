@@ -14,6 +14,7 @@ import {
 
 const w = DEFAULT_WORKOUT
 const S = 1000
+const cues = (...args: Parameters<typeof cuesBetween>) => cuesBetween(...args).map((c) => c.cue)
 
 describe("workout", () => {
   it("segments: prepare, work/rest, no trailing rest", () => {
@@ -42,15 +43,15 @@ describe("workout", () => {
     expect(elapsed(st, 201 * S)).toBe(11 * S)
   })
 
-  it("cues: countdown, go, tick, gong, cheers", () => {
-    expect(cuesBetween(w, -1, 5 * S)).toEqual(["beep", "beep", "beep", "go"])
-    expect(cuesBetween(w, 5 * S, 15 * S)).toEqual(["tick"])
-    expect(cuesBetween(w, 15 * S, 25 * S)).toEqual(["beep", "beep", "beep", "gong"])
-    expect(cuesBetween(w, 230 * S, 235 * S)).toEqual(["beep", "beep", "beep", "cheers"])
+  it("cues: silent prepare, go, tick, countdown, gong, cheers", () => {
+    expect(cues(w, -1, 5 * S)).toEqual(["go"])
+    expect(cues(w, 5 * S, 15 * S)).toEqual(["tick"])
+    expect(cues(w, 15 * S, 25 * S)).toEqual(["beep", "beep", "beep", "gong"])
+    expect(cues(w, 230 * S, 235 * S)).toEqual(["beep", "beep", "beep", "cheers"])
   })
 
   it("no prepare: go right at start", () => {
-    expect(cuesBetween({ ...w, prepare: 0 }, -1, 0)).toEqual(["go"])
+    expect(cues({ ...w, prepare: 0 }, -1, 0)).toEqual(["go"])
   })
 
   it("skip: next segment start, back to current or previous start", () => {
