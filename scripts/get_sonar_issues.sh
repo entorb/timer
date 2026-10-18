@@ -9,7 +9,7 @@ component=$(sed -n 's/^sonar\.projectKey=//p' .sonarcloud.properties 2>/dev/null
 if [ -z "$component" ]; then
   component=$(sed -n 's/^sonar\.projectKey=//p' sonar-project.properties 2>/dev/null || true)
 fi
-component=${component:-entorb_timer}
+component=${component:-entorb_todo}
 
 mkdir -p tmp
 out=tmp/sonar.json
@@ -30,3 +30,6 @@ jq '{
 }' "$out" >"$out.tmp" && mv "$out.tmp" "$out"
 
 echo "Wrote $out ($(jq '.issues | length' "$out") issues, SonarQube total $(jq -r '.total' "$out"))."
+
+echo "Prompt:"
+echo "fix tmp/sonar.json findings, update AGENTS.md to prevent in future, where it makes sense"

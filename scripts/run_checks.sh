@@ -19,7 +19,7 @@ done
 
 echo ""
 if [ "$failures" -eq 0 ]; then
-  echo "All checks passed."
+  echo "All checks passed"
 else
   echo "$failures checks failed:$failed_list"
   exit 1
