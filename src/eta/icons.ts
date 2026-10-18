@@ -10,6 +10,7 @@ export {
   mdiHistory as iconHistory,
   mdiInformationOutline as iconInfo,
   mdiPencil as iconEdit,
+  mdiPlus as iconAdd,
   mdiTimerMarkerOutline as iconTimeLastInput,
   mdiTimerOutline as iconTimeRunning,
   mdiTrashCan as iconTrash,

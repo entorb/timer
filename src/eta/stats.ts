@@ -58,3 +58,7 @@ export function estimate(s: EtaStats, now: number): EtaEstimate {
     reached: s.itemsDone >= s.itemsTotal || (s.etaMs > 0 && now >= s.etaMs),
   }
 }
+
+// ETA passed within (from, to], false if already reached by items
+export const etaPassed = (s: EtaStats, from: number, to: number): boolean =>
+  s.itemsDone < s.itemsTotal && s.etaMs > from && s.etaMs <= to

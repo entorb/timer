@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { calcStats, estimate } from "../stats"
+import { calcStats, estimate, etaPassed } from "../stats"
 
 const t0 = new Date("2023-01-01T00:00:00Z").getTime()
 const row = (sec: number, items: number) => ({ date: new Date(t0 + sec * 1000), items })
@@ -43,5 +43,16 @@ describe("estimate", () => {
     expect(e.secToEta).toBe(0)
     expect(e.secSinceFirst).toBe(20)
     expect(e.reached).toBe(true)
+  })
+})
+
+describe("etaPassed", () => {
+  const s = calcStats([row(0, 0), row(10, 10)], 20, false)
+  if (s == null) throw new Error("no stats")
+
+  it("only within (from, to]", () => {
+    expect(etaPassed(s, t0 + 19_000, t0 + 20_000)).toBe(true)
+    expect(etaPassed(s, t0 + 20_000, t0 + 21_000)).toBe(false)
+    expect(etaPassed(s, t0 + 10_000, t0 + 19_000)).toBe(false)
   })
 })

@@ -2,21 +2,24 @@
 import { defineAsyncComponent, ref } from "vue"
 import { confirmDialog } from "@/shared/confirm"
 import { lang, t } from "@/shared/i18n"
+import ListSelect from "@/shared/ListSelect.vue"
 import StatsLine from "@/shared/StatsLine.vue"
 
 import DataTable from "./DataTable.vue"
 import EtaHero from "./EtaHero.vue"
 import InputItems from "./InputItems.vue"
 import InputTarget from "./InputTarget.vue"
-import { iconChart, iconClose, iconHistory, iconInfo, iconWeight } from "./icons"
+import { iconAdd, iconChart, iconClose, iconHistory, iconInfo, iconWeight } from "./icons"
 import { useEtaData } from "./useEtaData"
 import { useEtaStats } from "./useEtaStats"
 
 const EtaChart = defineAsyncComponent(() => import("./EtaChart.vue"))
 
 const {
+  sets,
+  selectedId,
+  set,
   target,
-  data,
   rows,
   settings,
   current,
@@ -28,9 +31,11 @@ const {
   deleteRow,
   deleteAll,
   incrementByOne,
+  add,
+  remove,
 } = useEtaData()
 
-const { stats, est } = useEtaStats(data, target, () => settings.value.weightedReg)
+const { stats, est } = useEtaStats(sets, set)
 
 // mount chart only when open, echarts needs a visible element
 const chartOpen = ref(true)
@@ -52,6 +57,18 @@ function confirmDeleteAll() {
     >
       {{ t("ETA - Estimated Time of Arrival", "ETA - Estimated Time of Arrival (Restzeitschätzung)") }}
     </h1>
+    <!-- rarely used: full select only with 2+ sets, else small add button below -->
+    <ListSelect
+      v-if="sets.length > 1"
+      v-model="selectedId"
+      :items="sets"
+      :label="t('Data set', 'Datensatz')"
+      dense
+      class="eta-col"
+      @add="add"
+      @remove="remove"
+      @rename="set.name = $event"
+    />
     <div class="eta-col row items-center no-wrap">
       <InputTarget
         :target="target"
@@ -59,6 +76,19 @@ function confirmDeleteAll() {
         :class="hasData ? 'col-auto q-mr-auto' : 'col'"
         @set-target="target = $event"
       />
+      <q-btn
+        v-if="hasData && sets.length <= 1"
+        type="button"
+        flat
+        round
+        dense
+        color="grey-6"
+        :icon="iconAdd"
+        :aria-label="t('Add data set', 'Datensatz hinzufügen')"
+        @click="add"
+      >
+        <q-tooltip>{{ t("Add data set, to track several ETAs in parallel", "Datensatz hinzufügen, für mehrere ETAs parallel") }}</q-tooltip>
+      </q-btn>
       <q-btn
         v-if="hasData"
         id="btn-del-all"

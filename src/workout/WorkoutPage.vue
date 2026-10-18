@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { mdiCog, mdiDelete, mdiPause, mdiPlay, mdiPlus, mdiRestart, mdiSkipNext, mdiSkipPrevious } from "@quasar/extras/mdi-v7"
+import { mdiCog, mdiPause, mdiPlay, mdiRestart, mdiSkipNext, mdiSkipPrevious } from "@quasar/extras/mdi-v7"
 import { computed, ref, watch } from "vue"
 import { t } from "@/shared/i18n"
+import ListSelect from "@/shared/ListSelect.vue"
 import ProgressRing from "@/shared/ProgressRing.vue"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
@@ -35,8 +36,6 @@ watch(
   },
 )
 
-const options = computed(() => workouts.value.map((w) => ({ label: w.name, value: w.id })))
-
 // round up, so it shows 0:20 at start and 0:00 only at the very end
 const display = computed(() => formatClock(Math.ceil(pos.value.remainingMs / 1000) * 1000))
 const totalLeft = computed(() => formatClock(Math.ceil((total.value - elapsedMs.value) / 1000) * 1000))
@@ -45,7 +44,7 @@ const fields = computed(
   () =>
     [
       { key: "prepare", label: t("Prepare (s)", "Vorbereitung (s)") },
-      { key: "work", label: t("Work (s)", "Belastung (s)") },
+      { key: "work", label: t("Work (s)", "Arbeit (s)") },
       { key: "rest", label: t("Rest (s)", "Pause (s)") },
       { key: "reps", label: t("Repetitions", "Wiederholungen") },
     ] as const,
@@ -62,43 +61,16 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
     padding
     class="column items-center page-gap"
   >
-    <div
-      class="row no-wrap items-center full-width"
+    <ListSelect
+      v-model="selectedId"
+      :items="workouts"
+      :label="t('Workout', 'Workout')"
+      :disable="running"
       style="max-width: 400px"
-    >
-      <q-select
-        v-model="selectedId"
-        :options="options"
-        emit-value
-        map-options
-        outlined
-        :disable="running"
-        :label="t('Workout', 'Workout')"
-        class="col"
-      >
-        <template #selected-item="{ opt }">
-          <span class="text-h6 text-weight-bold">{{ opt.label }}</span>
-        </template>
-      </q-select>
-      <q-btn
-        type="button"
-        flat
-        round
-        :icon="mdiPlus"
-        :disable="running"
-        :aria-label="t('Add workout', 'Workout hinzufügen')"
-        @click="add"
-      />
-      <q-btn
-        type="button"
-        flat
-        round
-        :icon="mdiDelete"
-        :disable="running || workouts.length <= 1"
-        :aria-label="t('Delete workout', 'Workout löschen')"
-        @click="remove"
-      />
-    </div>
+      @add="add"
+      @remove="remove"
+      @rename="workout.name = $event"
+    />
 
     <div
       id="wo-phase"
@@ -180,12 +152,6 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
       style="max-width: 400px"
     >
       <div class="q-pa-sm q-gutter-y-sm">
-        <q-input
-          v-model="workout.name"
-          label="Name"
-          dense
-          outlined
-        />
         <div class="row q-col-gutter-sm">
           <q-input
             v-for="f in fields"
