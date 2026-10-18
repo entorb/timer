@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiInformationOutline, mdiThemeLightDark } from "@quasar/extras/mdi-v7"
+import { mdiHome, mdiInformationOutline, mdiThemeLightDark } from "@quasar/extras/mdi-v7"
 import { useQuasar } from "quasar"
 import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
@@ -51,6 +51,18 @@ const installSteps = computed(() => [
           :aria-label="t('Select feature', 'Funktion wählen')"
         >
           <q-list>
+            <q-item
+              v-close-popup
+              clickable
+              to="/"
+              exact
+              active-class="text-primary"
+            >
+              <q-item-section avatar>
+                <q-icon :name="mdiHome" />
+              </q-item-section>
+              <q-item-section>{{ t("Home", "Start") }}</q-item-section>
+            </q-item>
             <q-item
               v-for="tab in tabs"
               :key="tab.path"
@@ -112,34 +124,6 @@ const installSteps = computed(() => [
           <span class="text-primary">T</span>I<span class="text-primary">M</span>ER
         </q-card-section>
         <q-card-section class="q-pt-none">
-          <ul
-            v-if="lang === 'de'"
-            class="q-pl-md"
-          >
-            <li>
-              <b>ETA</b>: von Zeit zu Zeit den aktuellen Wert (erledigt / verbleibend) eingeben, die
-              Restzeit wird per (gewichteter) linearer Regression berechnet. Ziel = 0: Countdown,
-              Ziel > 0: hochzählen.
-            </li>
-            <li><b>Multi-Timer</b>: mehrere benannte Countdowns gleichzeitig, mit Alarm.</li>
-            <li><b>Stoppuhr</b>: Rundenzeiten für mehrere Läufer, gemeinsamer oder einzelner Start.</li>
-            <li><b>Pomodoro</b>: 25 min Fokus, 5 min Pause, 15 min lange Pause nach 4 Runden.</li>
-            <li><b>Meeting-Meter</b>: Taximeter für Meetings: Kosten und Personenstunden.</li>
-          </ul>
-          <ul
-            v-else
-            class="q-pl-md"
-          >
-            <li>
-              <b>ETA</b>: enter the current value (items / to go) from time to time, the remaining
-              time is derived via (weighted) linear regression. Target = 0: count-down, target > 0:
-              count-up.
-            </li>
-            <li><b>Multi-Timer</b>: several named countdowns at once, with alarm.</li>
-            <li><b>Stopwatch</b>: lap times for multiple athletes, common or individual start.</li>
-            <li><b>Pomodoro</b>: 25 min focus, 5 min break, 15 min long break after 4 rounds.</li>
-            <li><b>Meeting Meter</b>: taximeter for meetings: cost and people hours.</li>
-          </ul>
           <div class="text-subtitle1">
             {{ t("Install as app", "Als App installieren") }}
           </div>
