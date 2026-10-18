@@ -72,11 +72,14 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         emit-value
         map-options
         outlined
-        dense
         :disable="running"
         :label="t('Workout', 'Workout')"
         class="col"
-      />
+      >
+        <template #selected-item="{ opt }">
+          <span class="text-h6 text-weight-bold">{{ opt.label }}</span>
+        </template>
+      </q-select>
       <q-btn
         type="button"
         flat
@@ -170,6 +173,7 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
 
     <q-expansion-item
       v-if="!running"
+      :default-opened="atStart"
       :icon="mdiCog"
       :label="t('Settings', 'Einstellungen')"
       class="full-width"
