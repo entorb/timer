@@ -7,9 +7,10 @@ rm -f .DS_Store
 rm -f -- ./*/.DS_Store
 
 echo "## Checks"
+echo "### Spelling"
+./scripts/run_spelling.sh
 echo "### Code checks"
 ./scripts/run_checks.sh
-./scripts/run_spelling.sh
 
 echo "### E2E tests"
 ./scripts/run_e2e.sh
