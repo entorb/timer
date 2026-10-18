@@ -1,8 +1,9 @@
 import { computed, onScopeDispose, ref, toRaw, watch } from "vue"
 
-import { playSound } from "@/shared/feedback"
+import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
 import { statsWrite } from "@/shared/stats"
 import type { Unit } from "@/shared/time"
+import { useWakeLock } from "@/shared/useWakeLock"
 
 import {
   clearName,
@@ -35,6 +36,10 @@ export function useMultiTimer() {
 
   watch(timers, (value) => saveTimers(value), { deep: true })
   watch(recent, (value) => saveRecent(value), { deep: true })
+  useWakeLock(computed(() => sorted.value.some((s) => s.remaining > 0)))
+  useBackgroundSounds(() =>
+    timers.value.map((timer) => ({ ts: timer.dateEnd.getTime(), sound: SOUNDS.bell })),
+  )
 
   function tick() {
     if (timers.value.length === 0) return
@@ -42,7 +47,7 @@ export function useMultiTimer() {
     for (const timer of toRaw(timers.value)) {
       if (timer.dateEnd.getTime() <= now.value && !finished.has(timer)) {
         finished.add(timer)
-        playSound()
+        if (!dueInBackground(timer.dateEnd.getTime())) playSound()
       }
     }
   }

@@ -60,6 +60,17 @@ export function next(st: PomoState, s: PomoSettings, startTs?: number): PomoStat
   }
 }
 
+// end timestamps of the running phase and the following ones (they auto-start)
+export function nextEnds(st: PomoState, s: PomoSettings, count: number): number[] {
+  const ends: number[] = []
+  let state = st
+  while (state.endTs != null && ends.length < count) {
+    ends.push(state.endTs)
+    state = next(state, s, state.endTs)
+  }
+  return ends
+}
+
 // advance over all phases that ended until now (e.g. app was in background)
 // returns the new state and whether at least one phase ended
 export function catchUp(st: PomoState, s: PomoSettings, now: number) {
