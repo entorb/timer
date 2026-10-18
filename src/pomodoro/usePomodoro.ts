@@ -1,6 +1,6 @@
 import { computed, onScopeDispose, ref, watch } from "vue"
 
-import { playSound } from "@/shared/feedback"
+import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
 import { statsWrite } from "@/shared/stats"
 import { readJson, writeJson } from "@/shared/storage"
 import { useWakeLock } from "@/shared/useWakeLock"
@@ -33,6 +33,9 @@ export function usePomodoro() {
     { deep: true },
   )
   useWakeLock(running)
+  useBackgroundSounds(() =>
+    pomo.nextEnds(state.value, settings.value, 20).map((ts) => ({ ts, sound: SOUNDS.bell })),
+  )
 
   // paused: remaining does not depend on now, skip the re-render
   function tick() {
@@ -41,7 +44,9 @@ export function usePomodoro() {
     const { state: newState, ended } = pomo.catchUp(state.value, settings.value, now.value)
     if (ended) {
       state.value = newState
-      playSound()
+      // end of the latest ended phase = start of the current one
+      const due = (newState.endTs ?? now.value) - pomo.phaseMs(settings.value, newState.phase)
+      if (!dueInBackground(due)) playSound()
     }
   }
   tick()

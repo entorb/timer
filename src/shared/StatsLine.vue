@@ -19,8 +19,8 @@ onMounted(async () => {
     <template v-if="stats">
       {{
         t(
-          `${stats.accesscounts7} in last 7 days, ${stats.accesscounts} in total`,
-          `${stats.accesscounts7} in letzten 7 Tagen, ${stats.accesscounts} insgesamt`,
+          `${stats.accesscounts7} last week, ${stats.accesscounts} in total`,
+          `${stats.accesscounts7} letzte Woche, ${stats.accesscounts} insgesamt`,
         )
       }}
     </template>

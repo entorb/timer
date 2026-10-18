@@ -74,6 +74,8 @@ function cueTimes(w: Workout): Array<{ at: number; cue: Cue }> {
   const list: Array<{ at: number; cue: Cue }> = []
   for (const s of segments(w)) {
     const end = s.start + s.duration
+    // prepare: silent, user just pressed start
+    if (s.phase === "prepare") continue
     for (const before of [3000, 2000, 1000]) {
       if (end - before > s.start) list.push({ at: end - before, cue: "beep" })
     }
@@ -89,10 +91,8 @@ function cueTimes(w: Workout): Array<{ at: number; cue: Cue }> {
 }
 
 // cues due in (fromMs, toMs]
-export const cuesBetween = (w: Workout, fromMs: number, toMs: number): Cue[] =>
-  cueTimes(w)
-    .filter((c) => c.at > fromMs && c.at <= toMs)
-    .map((c) => c.cue)
+export const cuesBetween = (w: Workout, fromMs: number, toMs: number) =>
+  cueTimes(w).filter((c) => c.at > fromMs && c.at <= toMs)
 
 // elapsed ms to jump to: dir 1 = next segment start (or end), dir -1 = current segment start,
 // previous one if within the first second (like a media player)
