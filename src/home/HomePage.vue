@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { tabs } from "@/router"
 import { t } from "@/shared/i18n"
+import DayClock from "./DayClock.vue"
 </script>
 
 <template>
@@ -9,8 +10,9 @@ import { t } from "@/shared/i18n"
     class="column items-center page-gap"
   >
     <h1 class="text-h5 text-center q-my-none">
-      {{ t("Timer toolbox", "Timer-Werkzeugkasten") }}
+      {{ t("Timer Apps", "Timer Apps") }}
     </h1>
+    <DayClock />
     <q-list
       bordered
       separator
