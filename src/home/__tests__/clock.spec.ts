@@ -22,6 +22,8 @@ describe("clock", () => {
   it("dayMarks: noon between sunrise and sunset", () => {
     expect(dayMarks()).toEqual({ midnight: 0, sunrise: 6, noon: 12, sunset: 18 })
     expect(dayMarks(7, 19)).toMatchObject({ midnight: 1, noon: 13 })
+    // day crosses device midnight: noon at 1, not 13
+    expect(dayMarks(19, 7)).toMatchObject({ midnight: 13, noon: 25, sunset: 31 })
   })
 
   it("ringGradient: night at midnight, yellow at noon, symmetric", () => {
