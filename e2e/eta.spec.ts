@@ -102,3 +102,29 @@ test("Decimal input", async ({ page }) => {
   await enter(page, "#input-items", "0,2")
   await expectFirstLast(page, 0.1, 0.2)
 })
+
+test("Multiple sets", async ({ page }) => {
+  await enter(page, "#input-target", "10")
+  await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("10")
+  await enter(page, "#input-items", "1")
+  await enter(page, "#input-items", "2")
+  await expectFirstLast(page, 1, 2)
+
+  await page.getByRole("button", { name: "Add data set" }).click()
+  await expect(page.locator("#btn-plus-1")).toBeHidden()
+  await enter(page, "#input-target", "0")
+  await enter(page, "#input-items", "50")
+  await enter(page, "#input-items", "40")
+  await expectFirstLast(page, 50, 40)
+
+  await page.getByRole("combobox", { name: "Data set" }).click()
+  await page.getByRole("option", { name: "ETA 1" }).click()
+  await expectFirstLast(page, 1, 2)
+  await expect(page.locator("#btn-edit-target")).toContainText("10")
+
+  await page.getByRole("button", { name: "Delete: Data set" }).click()
+  await page.getByRole("button", { name: "OK" }).click()
+  await expectFirstLast(page, 50, 40)
+  // back to a single set: select hidden
+  await expect(page.getByRole("combobox", { name: "Data set" })).toBeHidden()
+})

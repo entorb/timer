@@ -3,32 +3,36 @@ import { computed, type MaybeRefOrGetter, onScopeDispose, ref, toValue } from "v
 import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
 import { useWakeLock } from "@/shared/useWakeLock"
 
-import { calcStats, estimate } from "./stats"
-import type { DataRowRedType } from "./types"
+import type { EtaSet } from "./sets"
+import { calcStats, estimate, etaPassed } from "./stats"
 
-export function useEtaStats(
-  data: MaybeRefOrGetter<DataRowRedType[]>,
-  target: MaybeRefOrGetter<number>,
-  weighted: MaybeRefOrGetter<boolean>,
-) {
+const setStats = (s: EtaSet) => calcStats(s.data, s.target, s.settings.weightedReg)
+
+// stats of the selected set, wake lock + bell for all sets
+export function useEtaStats(sets: MaybeRefOrGetter<EtaSet[]>, selected: MaybeRefOrGetter<EtaSet>) {
   const now = ref(Date.now())
 
-  const stats = computed(() => calcStats(toValue(data), toValue(target), toValue(weighted)))
+  const all = computed(() => toValue(sets).map(setStats))
+  const stats = computed(() => setStats(toValue(selected)))
   const est = computed(() => (stats.value == null ? null : estimate(stats.value, now.value)))
 
-  useWakeLock(computed(() => est.value?.reached === false))
+  useWakeLock(computed(() => all.value.some((s) => s != null && !estimate(s, now.value).reached)))
   useBackgroundSounds(() =>
-    est.value?.reached === false && stats.value != null && stats.value.etaMs > 0
-      ? [{ ts: stats.value.etaMs, sound: SOUNDS.bell }]
-      : [],
+    all.value.flatMap((s) =>
+      s != null && s.itemsDone < s.itemsTotal && s.etaMs > now.value
+        ? [{ ts: s.etaMs, sound: SOUNDS.bell }]
+        : [],
+    ),
   )
 
-  // ring only when the ETA passes while watching, not when opening an old, finished one
+  // ring only when an ETA passes while watching, not when opening an old, finished one
   function tick() {
-    if (stats.value == null) return
-    const wasReached = est.value?.reached ?? true
+    const prev = now.value
     now.value = Date.now()
-    if (!wasReached && est.value?.reached && !dueInBackground(stats.value.etaMs)) playSound()
+    const passed = all.value.some(
+      (s) => s != null && etaPassed(s, prev, now.value) && !dueInBackground(s.etaMs),
+    )
+    if (passed) playSound()
   }
   const interval = globalThis.setInterval(tick, 1000)
   onScopeDispose(() => globalThis.clearInterval(interval))

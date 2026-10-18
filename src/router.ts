@@ -12,13 +12,23 @@ import { createRouter, createWebHistory } from "vue-router"
 // order = dropdown + start page, desc = use cases on start page
 export const tabs = [
   {
+    path: "/workout",
+    name: "Workout",
+    nameDe: "Workout",
+    icon: mdiDumbbell,
+    desc: "Interval timer: prepare, work, rest, repeat. E.g. Tabata, HIIT, circuit training, stretching.",
+    descDe:
+      "Intervall-Timer: Vorbereiten, Arbeiten, Pause, Wiederholen. Z.B. Tabata, HIIT, Zirkeltraining, Dehnen.",
+    component: () => import("./workout/WorkoutPage.vue"),
+  },
+  {
     path: "/eta",
     name: "ETA",
     nameDe: "ETA",
     icon: mdiChartTimelineVariant,
-    desc: "Estimate when something finishes: enter progress from time to time. E.g. waiting in a queue, homework, reading a book, long download or build.",
+    desc: "Estimate when something finishes. E.g. waiting in a queue, homework, reading a book, long download or build.",
     descDe:
-      "Schätzt, wann etwas fertig ist: ab und zu den Fortschritt eingeben. Z.B. Warteschlange, Hausaufgaben, Buch lesen, langer Download oder Prozess.",
+      "Schätzt, wann etwas fertig ist. Z.B. Warteschlange, Hausaufgaben, Buch lesen, langer Download oder Prozess.",
     component: () => import("./eta/EtaPage.vue"),
   },
   {
@@ -50,16 +60,6 @@ export const tabs = [
     descDe:
       "Konzentriert in Etappen arbeiten, mit regelmäßigen Pausen: 25 min Fokus, 5 min Pause, 15 min Pause nach 4 Runden (einstellbar). Z.B. Lernen, Hausaufgaben, Schreiben, Programmieren, gegen Aufschieben.",
     component: () => import("./pomodoro/PomodoroPage.vue"),
-  },
-  {
-    path: "/workout",
-    name: "Workout",
-    nameDe: "Workout",
-    icon: mdiDumbbell,
-    desc: "Interval timer: prepare, work, rest, repeat. E.g. Tabata, HIIT, circuit training, stretching.",
-    descDe:
-      "Intervall-Timer: Vorbereiten, Arbeiten, Pause, Wiederholen. Z.B. Tabata, HIIT, Zirkeltraining, Dehnen.",
-    component: () => import("./workout/WorkoutPage.vue"),
   },
   {
     path: "/meeting",
