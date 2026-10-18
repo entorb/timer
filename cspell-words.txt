@@ -11,6 +11,7 @@ anhängen
 anonyme
 antippen
 anzeigen
+arbeit
 arbeiten
 arbeitsstunden
 aufschieben
@@ -29,6 +30,7 @@ buch
 colour
 composables
 daten
+datensatz
 datetime
 dehnen
 deine
@@ -53,6 +55,7 @@ englisch
 entfernen
 entorb
 erfasst
+erlangen
 erledigt
 erneut
 erreicht
@@ -225,6 +228,7 @@ telefonate
 timeformat
 torben
 typeless
+umbenennen
 umschalten
 undefinded
 unfonts
