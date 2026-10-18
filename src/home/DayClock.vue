@@ -340,5 +340,16 @@ text {
 }
 .pointer {
   fill: var(--q-primary);
+  animation: pointer-pulse 3s ease-in-out infinite;
+}
+@keyframes pointer-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pointer {
+    animation: none;
+  }
 }
 </style>
