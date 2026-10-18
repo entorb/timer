@@ -1,31 +1,42 @@
 import { computed, ref, watch } from "vue"
+import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
 import { readJson, writeJson } from "@/shared/storage"
-import type { Unit } from "@/shared/time"
 
 import { helperCalcSpeedFromPreviousRow } from "./helper"
+import { DEFAULT_SETTINGS, type EtaSet, newSet, reviveSets, type StoredSet } from "./sets"
 import type { DataRowRedType, DataRowType } from "./types"
 
-const KEY_DATA = "tmr-eta-data"
-const KEY_TARGET = "tmr-eta-target"
-const KEY_SETTINGS = "tmr-eta-settings"
+const KEY_SETS = "tmr-eta-sets"
+const KEY_SELECTED = "tmr-eta-selected"
 const DAY_IN_MS = 86_400 * 1000
-const DEFAULT_SETTINGS = { unitSpeed: "min" as Unit, weightedReg: false }
 
-const loadData = (): DataRowRedType[] =>
-  readJson<Array<{ date: string; items: number }>>(KEY_DATA, []).map(({ date, items }) => ({
-    date: new Date(date),
-    items,
-  }))
+const setName = (n: number) => `${t("ETA", "ETA")} ${n}`
+
+const loadSets = (): EtaSet[] => {
+  const stored = reviveSets(readJson<StoredSet[]>(KEY_SETS, []))
+  return stored.length > 0 ? stored : [newSet(setName(1))]
+}
 
 export function useEtaData() {
-  const target = ref<number>(readJson(KEY_TARGET, 0))
-  const data = ref(loadData())
-  const settings = ref({ ...DEFAULT_SETTINGS, ...readJson(KEY_SETTINGS, {}) })
+  const sets = ref(loadSets())
+  const selectedId = ref(readJson(KEY_SELECTED, ""))
 
-  watch(target, (value) => writeJson(KEY_TARGET, value), { immediate: true })
-  watch(data, (value) => writeJson(KEY_DATA, value), { deep: true })
-  watch(settings, (value) => writeJson(KEY_SETTINGS, value), { deep: true })
+  watch(sets, (value) => writeJson(KEY_SETS, value), { deep: true, immediate: true })
+  watch(selectedId, (value) => writeJson(KEY_SELECTED, value))
+
+  // fallback: selected one was deleted
+  const set = computed(
+    () => sets.value.find((s) => s.id === selectedId.value) ?? sets.value[0] ?? newSet(setName(1)),
+  )
+  const data = computed(() => set.value.data)
+  const settings = computed(() => set.value.settings)
+  const target = computed({
+    get: () => set.value.target,
+    set: (value) => {
+      set.value.target = value
+    },
+  })
 
   // speed is derived from the previous row
   const rows = computed<DataRowType[]>(() =>
@@ -59,10 +70,11 @@ export function useEtaData() {
     if (index >= 0) data.value.splice(index, 1)
   }
 
+  // resets the current set, keeps its name
   function deleteAll() {
-    data.value = []
-    target.value = 0
-    settings.value = { ...DEFAULT_SETTINGS }
+    set.value.data = []
+    set.value.target = 0
+    set.value.settings = { ...DEFAULT_SETTINGS }
   }
 
   function incrementByOne() {
@@ -73,7 +85,22 @@ export function useEtaData() {
     addRow({ date: new Date(), items })
   }
 
+  function add() {
+    const s = newSet(setName(sets.value.length + 1))
+    sets.value.push(s)
+    selectedId.value = s.id
+  }
+
+  function remove() {
+    if (sets.value.length <= 1) return
+    sets.value = sets.value.filter((s) => s.id !== set.value.id)
+    selectedId.value = sets.value[0]?.id ?? ""
+  }
+
   return {
+    sets,
+    selectedId,
+    set,
     target,
     data,
     rows,
@@ -87,5 +114,7 @@ export function useEtaData() {
     deleteRow,
     deleteAll,
     incrementByOne,
+    add,
+    remove,
   }
 }
