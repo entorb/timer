@@ -3,7 +3,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 echo "## Node and PNPM Versions"
-# use the versions provided by the system, never install them here (brew upgrade is done in korrekturleser only)
+# use the versions provided by the system, never install them here (brew upgrade is done in todo only)
 NODE_VER=$(node --version | sed 's/v//')
 NODE_MAJOR=${NODE_VER%%.*}
 # query outside of the repo, inside pnpm reports the version pinned in package.json
