@@ -33,6 +33,12 @@ test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date("2026-01-05T09:00:00") })
 })
 
+test("home", async ({ page }) => {
+  await page.goto("./")
+  await expect(page.locator("#home-meeting")).toBeVisible()
+  await shot(page, "home-01")
+})
+
 test("eta", async ({ page }) => {
   await page.goto("./eta")
   await expect(page.locator("#input-target")).toBeVisible()
