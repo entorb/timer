@@ -10,8 +10,8 @@ Vue 3 + Quasar + TypeScript SPA (Vite, pnpm). No backend; state persists in `loc
 src/
   router.ts          # tabs (path, name, nameDe, desc, descDe, icon, lazy page) = app navigation
   App.vue            # shell: tabs, lang/dark toggle, info dialog
-  home/HomePage.vue  # start page `/`: DayClock (24h ring, clock.ts + useClock.ts; sunrise/sunset: sun.ts + useGeo.ts, coords in `tmr-geo`, geo button toggles locate/delete (deleting also drops weather); moon phase: moon.ts; weather: inner temp ring (color, temps at even hours from 1h ago, icons at odd), weather.ts + useWeather.ts, Open-Meteo, cache `tmr-weather` 1h) + `tabs` with desc (use cases)
-  shared/            # i18n (t, lang), feedback (sound/vibrate), confirm (confirmDialog), ProgressRing, stats, storage, time, useWakeLock
+  home/HomePage.vue  # start page `/`: DayClock (24h ring, clock.ts + useClock.ts; sunrise/sunset: sun.ts + useGeo.ts, coords in `tmr-geo`, sun/moon use Erlangen until user shares position (`place` in useGeo; weather only for own `coords`), geo button toggles locate/delete (deleting also drops weather); moon phase: moon.ts; weather: outer temp ring (color relative to day range, temps at even hours from 3h ago, icons at odd; sun ring moves inside it, takes outer place without weather), weather.ts + useWeather.ts, Open-Meteo, cache `tmr-weather` 1h) + `tabs` with desc (use cases)
+  shared/            # i18n (t, lang), feedback (sound/vibrate), confirm (confirmDialog), ListSelect (switch/rename/add/delete named items), ProgressRing, stats, storage, time, useWakeLock
   <feature>/         # eta, multitimer, pomodoro, stopwatch, workout, meeting
     <Feature>Page.vue  # view, dumb
     use<Feature>.ts    # composable: refs, persistence, timers
@@ -41,6 +41,8 @@ Scripts print `OK` on success, else first 100 lines of errors. Fix and rerun onl
 Only network calls: `shared/stats.ts`, `home/useWeather.ts`.
 
 `meeting` builds on `stopwatch/stopwatch.ts` (start/stop/elapsed, resume shifts `start`). localStorage keys prefixed `tmr-`, dark+lang in one `tmr-settings` key; stats origin per sub-app: `tmr-eta|mt|sw|pomo|wo|mm`, same footer via `StatsLine` (prop `origin` only).
+
+`eta`: multiple data sets in `tmr-eta-sets` (+ `tmr-eta-selected`), pure set model in `eta/sets.ts`; bell + wake lock cover all sets, display only the selected one. Sets rarely used: `ListSelect` shown only with 2+ sets.
 
 ## i18n
 
