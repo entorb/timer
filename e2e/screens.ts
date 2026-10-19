@@ -39,6 +39,24 @@ test("home", async ({ page }) => {
   await shot(page, "home-01")
 })
 
+test("home with weather", async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem("tmr-geo", JSON.stringify({ lat: 52.5, lon: 13.4 })),
+  )
+  await page.route("https://api.open-meteo.com/**", (route) => {
+    const day = new Date("2026-01-05T00:00:00").getTime() / 1000
+    const time = Array.from({ length: 24 }, (_, i) => day + i * 3600)
+    const code = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 51, 61, 63, 65, 80, 81, 61, 3, 3, 2, 1, 0, 0, 0]
+    const temp = time.map((_, i) => 1 + 4 * Math.sin(((i - 9) * Math.PI) / 12))
+    return route.fulfill({
+      json: { hourly: { time, weather_code: code, temperature_2m: temp } },
+    })
+  })
+  await page.goto("./")
+  await expect(page.locator(".weather")).toBeVisible()
+  await shot(page, "home-02-weather")
+})
+
 test("eta", async ({ page }) => {
   await page.goto("./eta")
   await expect(page.locator("#input-target")).toBeVisible()
