@@ -7,8 +7,11 @@ import {
   mdiWeatherNight,
   mdiWeatherNightPartlyCloudy,
   mdiWeatherPartlyCloudy,
+  mdiWeatherPartlyRainy,
+  mdiWeatherPouring,
   mdiWeatherRainy,
   mdiWeatherSnowy,
+  mdiWeatherSnowyRainy,
   mdiWeatherSunny,
 } from "@quasar/extras/mdi-v7"
 import { UNIT_SECONDS } from "@/shared/time"
@@ -79,16 +82,24 @@ export function todayHours(w: Weather, now: number): Hour[] {
   })
 }
 
-// pastel hue: -10° blue (240), 0° cyan, 10° green, 20° yellow, 30° red (0)
-export const tempColor = (t: number) =>
-  `hsl(${Math.min(240, Math.max(0, 240 - (t + 10) * 6))} 85% 78%)`
+const MIN_SPAN = 8
+const HUE_BLUE = 240
+
+// hue over today's range: coldest blue .. warmest red; ranges under MIN_SPAN °C stay centered
+export function tempColor(t: number, lo: number, hi: number) {
+  const span = Math.max(hi - lo, MIN_SPAN)
+  const p = Math.min(1, Math.max(0, (t - (lo + hi - span) / 2) / span))
+  return `hsl(${Math.round(HUE_BLUE * (1 - p))} 90% 68%)`
+}
 
 // conic gradient, hour stops; closes with first color: no seam at midnight, 1 hour still valid
 export function tempGradient(hours: Hour[]): string | undefined {
   const first = hours[0]
   if (first == null) return undefined
-  const stops = hours.map((h) => `${tempColor(h.temp)} ${h.hour * 15}deg`)
-  return `conic-gradient(${stops.join(", ")}, ${tempColor(first.temp)} 360deg)`
+  const temps = hours.map((h) => h.temp)
+  const [lo, hi] = [Math.min(...temps), Math.max(...temps)]
+  const stops = hours.map((h) => `${tempColor(h.temp, lo, hi)} ${h.hour * 15}deg`)
+  return `conic-gradient(${stops.join(", ")}, ${tempColor(first.temp, lo, hi)} 360deg)`
 }
 
 // even hours like the ring numbers; past hours hidden unless < 1h old
@@ -101,9 +112,13 @@ const ICONS: Array<[number, string, string?]> = [
   [2, mdiWeatherPartlyCloudy, mdiWeatherNightPartlyCloudy],
   [3, mdiWeatherCloudy],
   [48, mdiWeatherFog],
-  [67, mdiWeatherRainy],
+  [57, mdiWeatherPartlyRainy],
+  [63, mdiWeatherRainy],
+  [65, mdiWeatherPouring],
+  [67, mdiWeatherSnowyRainy],
   [77, mdiWeatherSnowy],
-  [82, mdiWeatherRainy],
+  [80, mdiWeatherRainy],
+  [82, mdiWeatherPouring],
   [86, mdiWeatherSnowy],
 ]
 

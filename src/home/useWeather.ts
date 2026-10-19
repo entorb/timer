@@ -17,7 +17,7 @@ async function load(c: Coords): Promise<Weather | undefined> {
 }
 /* c8 ignore stop */
 
-// forecast only for known location, dropped with it; cached, refetched on location change or after 1h
+// forecast only for the user's own location, dropped with it; cached, refetched on location change or after 1h
 export function useWeather(coords: Ref<Coords | null>) {
   const weather = ref(readJson<Weather | null>(KEY_WEATHER, null))
   watch(weather, (v) => writeJson(KEY_WEATHER, v))

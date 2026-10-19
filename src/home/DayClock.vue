@@ -11,21 +11,22 @@ import { useGeo } from "./useGeo"
 import { useWeather } from "./useWeather"
 import { currentWeather, tempGradient, tempLabels, todayHours, weatherIcon } from "./weather"
 
-// viewBox -125..125: temp band r 54..68 (weather odd hours, temps even), color band r 70..92,
-// pointer 94..104, numbers 114
-const TEMP_R = 61
-const ICON_R = 81
+// viewBox -125..125: temp band r 76..98 (weather odd hours, temps even), color band r 54..74
+// (sun/moon icons) inside it, or on the temp band's place without weather,
+// pointer line 44..108, numbers 114
+const TEMP_R = 87
+const BAND_WIDTH = 22
+const BAND_OUTER = 98
 const NUMBER_R = 114
 // half-sun colors set per <use>: sunset reddish
 const SUNRISE_COLORS = { fill: "#fde047", stroke: "#c2410c" }
 const SUNSET_COLORS = { fill: "#fb923c", stroke: "#b91c1c" }
-// mdi path 24x24 -> 12 units centered
-const WEATHER_FIT = "scale(0.5) translate(-12 -12)"
+// mdi path 24x24 -> ~17 units centered
+const WEATHER_FIT = "scale(0.72) translate(-12 -12)"
 const HOUR_MS = UNIT_SECONDS.hour * 1000
-const CRESCENT = "M 3 -6.32 A 7 7 0 1 0 3 6.32 A 6.5 6.5 0 0 1 3 -6.32 Z"
 
 const now = useClock()
-const { coords, failed, locate, clear } = useGeo()
+const { coords, place, failed, locate, clear } = useGeo()
 const weather = useWeather(coords)
 // number: equal value each tick -> dependents recompute only on date change
 const today = computed(() => {
@@ -33,17 +34,15 @@ const today = computed(() => {
   return new Date(n.getFullYear(), n.getMonth(), n.getDate(), 12).getTime()
 })
 const marks = computed(() => {
-  const c = coords.value
-  const sun = c == null ? undefined : sunTimes(new Date(today.value), c.lat, c.lon)
+  const c = place.value
+  const sun = sunTimes(new Date(today.value), c.lat, c.lon)
   return sun == null ? dayMarks() : dayMarks(hourOf(sun.sunrise), hourOf(sun.sunset))
 })
-// location known: current phase (southern hemisphere mirrored), else generic crescent
-const moon = computed(() => {
-  const c = coords.value
-  if (c == null) return { d: CRESCENT, transform: "rotate(-20)", disc: false }
-  const d = moonPath(moonPhase(new Date(today.value)), 7)
-  return { d, transform: c.lat < 0 ? "scale(-1 1)" : undefined, disc: true }
-})
+// current phase, southern hemisphere mirrored
+const moon = computed(() => ({
+  d: moonPath(moonPhase(new Date(today.value)), 7),
+  transform: place.value.lat < 0 ? "scale(-1 1)" : undefined,
+}))
 // number: changes once per hour -> forecast recomputes hourly
 const hourTs = computed(() => Math.floor(now.value.getTime() / HOUR_MS) * HOUR_MS)
 const isDay = (hour: number) => hour >= marks.value.sunrise && hour <= marks.value.sunset
@@ -104,8 +103,15 @@ const icons = computed((): Array<{ id: string; hour: number; fill?: string; stro
 // rays as hour positions on a small circle: 8 around, 5 above horizon
 const sunRays = [0, 3, 6, 9, 12, 15, 18, 21].map((h) => ({ a: polar(h, 7), b: polar(h, 10) }))
 const halfSunRays = [18, 21, 0, 3, 6].map((h) => ({ a: polar(h, 7), b: polar(h, 10) }))
+// color band: inside the temp band; without weather it takes the outer place
+const bandOuter = computed(() => (hours.value.length > 0 ? BAND_OUTER - BAND_WIDTH - 2 : BAND_OUTER))
+const iconR = computed(() => bandOuter.value - BAND_WIDTH / 2)
+// closest-side = 125 units
+const percent = (r: number) => `${r / 1.25}%`
 const ringStyle = computed(() => ({
   background: ringGradient(marks.value.sunrise, marks.value.sunset),
+  "--ring-in": percent(bandOuter.value - BAND_WIDTH),
+  "--ring-out": percent(bandOuter.value),
 }))
 </script>
 
@@ -133,7 +139,6 @@ const ringStyle = computed(() => ({
           fill="#f1f5f9"
         >
           <circle
-            v-if="moon.disc"
             r="7"
             opacity="0.2"
           />
@@ -187,7 +192,7 @@ const ringStyle = computed(() => ({
         v-for="(icon, i) in icons"
         :key="i"
         :href="`#${icon.id}`"
-        :transform="at(icon.hour, ICON_R)"
+        :transform="at(icon.hour, iconR)"
         :fill="icon.fill"
         :stroke="icon.stroke"
       />
@@ -238,8 +243,9 @@ const ringStyle = computed(() => ({
         {{ n.hour }}
       </text>
 
-      <path
-        d="M 0 -94 L -5.5 -104 L 5.5 -104 Z"
+      <line
+        y1="-44"
+        y2="-108"
         :transform="pointer"
         class="pointer"
       />
@@ -276,14 +282,14 @@ const ringStyle = computed(() => ({
   width: min(80vw, 320px);
   aspect-ratio: 1;
 }
-/* closest-side = 125 units: band 70..92 -> 56%..73.6% */
+/* band edges from --ring-in/--ring-out (percent of closest-side) */
 .ring {
   mask: radial-gradient(
     circle closest-side,
-    transparent 55.8%,
-    #000 56%,
-    #000 73.6%,
-    transparent 73.8%
+    transparent calc(var(--ring-in) - 0.2%),
+    #000 var(--ring-in),
+    #000 var(--ring-out),
+    transparent calc(var(--ring-out) + 0.2%)
   );
 }
 text {
@@ -304,14 +310,14 @@ text {
   font-size: 13px;
   opacity: 0.7;
 }
-/* temp band 54..68 -> 43.2%..54.4% */
+/* temp band 76..98 -> 60.8%..78.4% */
 .temp-ring {
   mask: radial-gradient(
     circle closest-side,
-    transparent 43%,
-    #000 43.2%,
-    #000 54.4%,
-    transparent 54.6%
+    transparent 60.6%,
+    #000 60.8%,
+    #000 78.4%,
+    transparent 78.6%
   );
 }
 /* pastel band in both themes: dark marks */
@@ -320,7 +326,7 @@ text {
   fill: #1e293b;
 }
 .temp-label {
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 600;
 }
 /* no opacity/transform/position here: WebKit draws layered foreignObject content at page origin */
@@ -339,17 +345,8 @@ text {
   fill: currentColor;
 }
 .pointer {
-  fill: var(--q-primary);
-  animation: pointer-pulse 3s ease-in-out infinite;
-}
-@keyframes pointer-pulse {
-  50% {
-    opacity: 0.25;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .pointer {
-    animation: none;
-  }
+  stroke: var(--q-primary);
+  stroke-width: 2.5;
+  stroke-linecap: round;
 }
 </style>

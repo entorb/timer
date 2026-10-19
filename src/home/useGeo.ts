@@ -1,4 +1,4 @@
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { readJson, writeJson } from "@/shared/storage"
 
 const KEY_GEO = "tmr-geo"
@@ -8,11 +8,17 @@ export interface Coords {
   lon: number
 }
 
+// sun and moon use Erlangen until the user shares a position (no forecast for it)
+const DEFAULT_COORDS: Coords = { lat: 49.6, lon: 11.0 }
+
 // position on demand (permission prompt), persisted so next visit needs no prompt
 export function useGeo() {
   const coords = ref(readJson<Coords | null>(KEY_GEO, null))
   const failed = ref(false)
   watch(coords, (v) => writeJson(KEY_GEO, v))
+
+  // coords in use: own position, else default
+  const place = computed(() => coords.value ?? DEFAULT_COORDS)
 
   /* c8 ignore start */
   function locate() {
@@ -41,5 +47,5 @@ export function useGeo() {
     failed.value = false
   }
 
-  return { coords, failed, locate, clear }
+  return { coords, place, failed, locate, clear }
 }

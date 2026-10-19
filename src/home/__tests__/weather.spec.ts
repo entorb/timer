@@ -70,18 +70,22 @@ describe("weather", () => {
     expect(todayHours({ ...W, temp: W.temp.map(() => null) }, start)).toEqual([])
   })
 
-  it("tempColor: -10 blue .. 30 red, clamped", () => {
-    expect(tempColor(-10)).toBe("hsl(240 85% 78%)")
-    expect(tempColor(10)).toBe("hsl(120 85% 78%)")
-    expect(tempColor(30)).toBe("hsl(0 85% 78%)")
-    expect(tempColor(-30)).toBe(tempColor(-10))
-    expect(tempColor(45)).toBe(tempColor(30))
+  it("tempColor: coldest blue .. warmest red, clamped", () => {
+    expect(tempColor(0, 0, 20)).toBe("hsl(240 90% 68%)")
+    expect(tempColor(10, 0, 20)).toBe("hsl(120 90% 68%)")
+    expect(tempColor(20, 0, 20)).toBe("hsl(0 90% 68%)")
+    expect(tempColor(-5, 0, 20)).toBe(tempColor(0, 0, 20))
   })
 
-  it("tempGradient: hour stops, first color closes at 360deg", () => {
+  it("tempColor: flat day stays centered, small range still spreads", () => {
+    expect(tempColor(10, 10, 10)).toBe("hsl(120 90% 68%)")
+    expect(tempColor(12, 10, 14)).not.toBe(tempColor(10, 10, 14))
+  })
+
+  it("tempGradient: hour stops relative to day range, first color closes at 360deg", () => {
     const g = tempGradient(todayHours(W, start))
-    expect(g).toMatch(/^conic-gradient\(hsl\(180 85% 78%\) 0deg, /)
-    expect(g).toMatch(/hsl\(111 85% 78%\) 345deg, hsl\(180 85% 78%\) 360deg\)$/)
+    expect(g).toMatch(/^conic-gradient\(hsl\(240 90% 68%\) 0deg, /)
+    expect(g).toMatch(/hsl\(0 90% 68%\) 345deg, hsl\(240 90% 68%\) 360deg\)$/)
     expect(tempGradient([])).toBeUndefined()
   })
 
@@ -95,7 +99,9 @@ describe("weather", () => {
   it("weatherIcon: day/night for clear, 95+ thunderstorm", () => {
     expect(weatherIcon(0, true)).toBe(mdiWeatherSunny)
     expect(weatherIcon(0, false)).toBe(mdiWeatherNight)
-    expect(weatherIcon(61, false)).toBe(weatherIcon(81, true))
+    expect(weatherIcon(61, false)).toBe(weatherIcon(80, true))
+    expect(weatherIcon(61, true)).not.toBe(weatherIcon(3, true))
+    expect(weatherIcon(65, true)).not.toBe(weatherIcon(61, true))
     expect(weatherIcon(95, true)).toBe(mdiWeatherLightning)
   })
 })
