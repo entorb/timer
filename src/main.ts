@@ -3,10 +3,10 @@ import "quasar/src/css/index.sass"
 import "./app.css"
 
 import { registerSW } from "virtual:pwa-register"
+import * as Sentry from "@sentry/vue"
 import { Dark, Dialog, Notify, Quasar } from "quasar"
 import iconSet from "quasar/icon-set/svg-mdi-v7"
 import { createApp } from "vue"
-
 import App from "./App.vue"
 import router from "./router"
 import { onVisibilityChange, unlockAudio } from "./shared/feedback"
@@ -32,7 +32,14 @@ registerSW({
   },
 })
 
-createApp(App)
+const app = createApp(App)
+
+Sentry.init({
+  app,
+  dsn: "https://94e85103ca60ae8be4e92e873b325a31@o4507139041525760.ingest.de.sentry.io/4512292162109520",
+})
+
+app
   .use(router)
   .use(Quasar, { plugins: { Dark, Dialog, Notify }, iconSet, config: { dark: "auto" } })
   .mount("#app")
