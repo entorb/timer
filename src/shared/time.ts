@@ -19,14 +19,23 @@ export function formatDateTime(date: Date, showDays = false): string {
   return date.toLocaleString("de-DE", options)
 }
 
+// ponytail: average month/year lengths (30.44d / 365.25d), not calendar exact
+const YEAR = 365.25 * 86_400
+const MONTH = YEAR / 12
+
+// largest 2 units ("2M 20d", "3d 4h"), years with 3 ("1y 2M 20d")
 export function secondsToString(totalSeconds: number): string {
   const rounded = Math.round(totalSeconds)
-  const days = Math.floor(rounded / 86_400)
+  const years = Math.floor(rounded / YEAR)
+  const months = Math.floor((rounded % YEAR) / MONTH)
+  const days = Math.floor(((rounded % YEAR) % MONTH) / 86_400)
   const hours = Math.floor((rounded % 86_400) / 3600)
   const minutes = Math.floor((rounded % 3600) / 60)
   const seconds = rounded % 60
 
-  if (days > 0) return `${days}d ${hours}h ${minutes}m`
+  if (years > 0) return `${years}y ${months}M ${days}d`
+  if (months > 0) return `${months}M ${days}d`
+  if (rounded >= 86_400) return `${Math.floor(rounded / 86_400)}d ${hours}h`
   if (hours > 0) return `${hours}h ${minutes}m`
   if (minutes >= 15) return `${minutes}m`
   if (minutes > 0) return `${minutes}m ${seconds}s`
