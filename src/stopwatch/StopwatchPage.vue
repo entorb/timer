@@ -14,6 +14,7 @@ import {
   mdiPlay,
   mdiRestart,
 } from "@quasar/extras/mdi-v7"
+import * as Sentry from "@sentry/vue"
 import { useQuasar } from "quasar"
 import { computed, ref } from "vue"
 import { confirmDialog } from "@/shared/confirm"
@@ -85,7 +86,8 @@ async function copyCsv() {
   try {
     await navigator.clipboard.writeText(toCsv(athletes.value, (ms) => formatClock(ms, true)))
     $q.notify({ message: t("Laps copied as CSV", "Runden als CSV kopiert"), type: "positive" })
-  } catch {
+  } catch (e) {
+    Sentry.captureException(e)
     $q.notify({ message: t("Copy failed", "Kopieren fehlgeschlagen"), type: "negative" })
   }
 }

@@ -16,7 +16,15 @@ const now = useClock()
 const running = useRunning(now)
 
 // countdowns round up (like their pages): 0:00 only at the very end
-const duration = (r: Running) => formatClock(r.endTs == null ? r.ms : Math.ceil(r.ms / 1000) * 1000)
+const ceilClock = (ms: number) => formatClock(Math.ceil(ms / 1000) * 1000)
+const duration = (r: Running) => (r.endTs == null ? formatClock(r.ms) : ceilClock(r.ms))
+const timeLabel = (r: Running) => {
+  if (r.stageMs != null) return ceilClock(r.stageMs)
+  return r.days == null ? duration(r) : topLabel(r.ms / 1000, r.days, r.endTs == null)
+}
+// workout: stage left on top, workout left below
+const endLabel = (r: Running) =>
+  r.stageMs != null ? duration(r) : r.endTs == null || r.days != null ? "" : formatDateTime(new Date(r.endTs), r.ms >= DAY_MS)
 
 const PHASES: Record<string, typeof POMO_PHASES | typeof WO_PHASES> = {
   "/pomodoro": POMO_PHASES,
@@ -33,9 +41,8 @@ const items = computed(() =>
       title: r.label ?? (tab == null ? "" : t(tab.name, tab.nameDe)),
       phase: phaseLabel(r.path, r.phase),
       lap: r.lapMs == null ? "" : formatClock(r.lapMs),
-      time:
-        r.days == null ? duration(r) : topLabel(r.ms / 1000, r.days, r.endTs == null),
-      end: r.endTs == null || r.days != null ? "" : formatDateTime(new Date(r.endTs), r.ms >= DAY_MS),
+      time: timeLabel(r),
+      end: endLabel(r),
     }
   }),
 )
