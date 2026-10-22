@@ -44,7 +44,7 @@ describe("helperDateToIsoString", () => {
 
 describe("helperSecondsToString", () => {
   it.each([
-    [">1day", 100_000, "1d 3h 46m"],
+    [">1day", 100_000, "1d 3h"],
     [">1h", 4000, "1h 6m"],
     [">15min", 1000, "16m"],
     [">1min", 100, "1m 40s"],

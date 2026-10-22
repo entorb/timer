@@ -35,8 +35,10 @@ describe("secondsToString", () => {
     [15 * 60 + 30, "15m"], // >= 15 min drops seconds
     [3600, "1h 0m"],
     [3600 + 90, "1h 1m"],
-    [86_400, "1d 0h 0m"],
-    [86_400 + 3600 + 120, "1d 1h 2m"],
+    [86_400, "1d 0h"],
+    [86_400 + 3600 + 120, "1d 1h"],
+    [81 * 86_400 + 14 * 3600 + 60, "2M 20d"],
+    [446 * 86_400 + 14 * 3600 + 120, "1y 2M 20d"],
     [1.6, "2s"],
   ])("%s -> %s", (input, expected) => {
     expect(secondsToString(input)).toBe(expected)

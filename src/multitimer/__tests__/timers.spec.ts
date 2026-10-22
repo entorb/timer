@@ -100,7 +100,7 @@ describe("secondsToString", () => {
     [125, "2m 5s"],
     [15 * 60, "15m"],
     [3 * 3600 + 5 * 60, "3h 5m"],
-    [2 * 86_400 + 3600 + 60, "2d 1h 1m"],
+    [2 * 86_400 + 3600 + 60, "2d 1h"],
   ])("%s", (seconds, expected) => {
     expect(secondsToString(seconds)).toBe(expected)
   })
