@@ -102,29 +102,42 @@ export function tempGradient(hours: Hour[]): string | undefined {
   return `conic-gradient(${stops.join(", ")}, ${tempColor(first.temp, lo, hi)} 360deg)`
 }
 
-// even hours like the ring numbers; past hours hidden unless < 1h old
+// even hours like the ring numbers; past hours hidden unless < 3h old
 export const tempLabels = (hours: Hour[], nowHour: number): Hour[] =>
-  hours.filter((h) => h.hour % 2 === 0 && h.hour > nowHour - 1)
+  hours.filter((h) => h.hour % 2 === 0 && h.hour > nowHour - 3)
 
-// [max code, day icon, night icon]
-const ICONS: Array<[number, string, string?]> = [
-  [0, mdiWeatherSunny, mdiWeatherNight],
-  [2, mdiWeatherPartlyCloudy, mdiWeatherNightPartlyCloudy],
-  [3, mdiWeatherCloudy],
-  [48, mdiWeatherFog],
-  [57, mdiWeatherPartlyRainy],
-  [63, mdiWeatherRainy],
-  [65, mdiWeatherPouring],
-  [67, mdiWeatherSnowyRainy],
-  [77, mdiWeatherSnowy],
-  [80, mdiWeatherRainy],
-  [82, mdiWeatherPouring],
-  [86, mdiWeatherSnowy],
+const SUN = "#facc15"
+const SUN_PALE = "#fde68a"
+const DRIZZLE = "#93c5fd"
+const RAIN = "#3b82f6"
+const HEAVY_RAIN = "#1d4ed8"
+const FREEZING = "#818cf8"
+const SNOW = "#bae6fd"
+
+// [max code, day icon, night icon, color (sun colors day only)]
+const ICONS: Array<[number, string, string | undefined, string?]> = [
+  [0, mdiWeatherSunny, mdiWeatherNight, SUN],
+  [2, mdiWeatherPartlyCloudy, mdiWeatherNightPartlyCloudy, SUN_PALE],
+  [3, mdiWeatherCloudy, undefined],
+  [48, mdiWeatherFog, undefined],
+  [57, mdiWeatherPartlyRainy, undefined, DRIZZLE],
+  [63, mdiWeatherRainy, undefined, RAIN],
+  [65, mdiWeatherPouring, undefined, HEAVY_RAIN],
+  [67, mdiWeatherSnowyRainy, undefined, FREEZING],
+  [77, mdiWeatherSnowy, undefined, SNOW],
+  [80, mdiWeatherRainy, undefined, DRIZZLE],
+  [81, mdiWeatherRainy, undefined, RAIN],
+  [82, mdiWeatherPouring, undefined, HEAVY_RAIN],
+  [86, mdiWeatherSnowy, undefined, SNOW],
+  [95, mdiWeatherLightning, undefined, "#f97316"],
+  [99, mdiWeatherLightning, undefined, "#dc2626"],
 ]
 
-// mdi path (24x24) for WMO code; 95+ thunderstorm
-export function weatherIcon(code: number, day: boolean): string {
-  const row = ICONS.find(([max]) => code <= max)
-  if (row == null) return mdiWeatherLightning
-  return day ? row[1] : (row[2] ?? row[1])
+// mdi path (24x24) + fill (undefined = currentColor) for WMO code
+export function weatherIcon(code: number, day: boolean): { d: string; fill?: string } {
+  const [max, dayIcon, night, fill] =
+    ICONS.find(([m]) => code <= m) ?? ICONS[ICONS.length - 1] ?? []
+  if (dayIcon == null) return { d: mdiWeatherLightning }
+  if (day || night == null) return { d: dayIcon, fill }
+  return { d: night, fill: max != null && max <= 2 ? undefined : fill }
 }

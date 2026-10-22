@@ -89,19 +89,28 @@ describe("weather", () => {
     expect(tempGradient([])).toBeUndefined()
   })
 
-  it("tempLabels: even hours, past only if < 1h old", () => {
+  it("tempLabels: even hours, past only if < 3h old", () => {
     const hours = todayHours(W, start)
-    expect(tempLabels(hours, 14.4).map((h) => h.hour)).toEqual([14, 16, 18, 20, 22])
-    expect(tempLabels(hours, 15).map((h) => h.hour)).toEqual([16, 18, 20, 22])
+    expect(tempLabels(hours, 14.4).map((h) => h.hour)).toEqual([12, 14, 16, 18, 20, 22])
+    expect(tempLabels(hours, 15).map((h) => h.hour)).toEqual([14, 16, 18, 20, 22])
     expect(tempLabels(hours, 0.5)).toHaveLength(12)
   })
 
   it("weatherIcon: day/night for clear, 95+ thunderstorm", () => {
-    expect(weatherIcon(0, true)).toBe(mdiWeatherSunny)
-    expect(weatherIcon(0, false)).toBe(mdiWeatherNight)
-    expect(weatherIcon(61, false)).toBe(weatherIcon(80, true))
-    expect(weatherIcon(61, true)).not.toBe(weatherIcon(3, true))
-    expect(weatherIcon(65, true)).not.toBe(weatherIcon(61, true))
-    expect(weatherIcon(95, true)).toBe(mdiWeatherLightning)
+    expect(weatherIcon(0, true).d).toBe(mdiWeatherSunny)
+    expect(weatherIcon(0, false).d).toBe(mdiWeatherNight)
+    expect(weatherIcon(61, false).d).toBe(weatherIcon(80, true).d)
+    expect(weatherIcon(61, true).d).not.toBe(weatherIcon(3, true).d)
+    expect(weatherIcon(65, true).d).not.toBe(weatherIcon(61, true).d)
+    expect(weatherIcon(95, true).d).toBe(mdiWeatherLightning)
+  })
+
+  it("weatherIcon colors: sun by day only, shades by intensity", () => {
+    expect(weatherIcon(0, true).fill).toBe("#facc15")
+    expect(weatherIcon(0, false).fill).toBeUndefined()
+    expect(weatherIcon(3, true).fill).toBeUndefined()
+    expect(weatherIcon(61, false).fill).not.toBe(weatherIcon(65, false).fill)
+    expect(weatherIcon(73, true).fill).toBe("#bae6fd")
+    expect(weatherIcon(95, true).fill).not.toBe(weatherIcon(99, true).fill)
   })
 })
