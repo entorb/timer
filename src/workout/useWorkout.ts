@@ -26,6 +26,13 @@ const CUE_SOUNDS: Record<wo.Cue, Sound> = {
   cheers: SOUNDS.finish,
 }
 
+export const PHASES = computed<Record<wo.Phase, { label: string; color: string }>>(() => ({
+  prepare: { label: t("Get ready", "Vorbereiten"), color: "amber" },
+  work: { label: t("Work", "Arbeiten"), color: "negative" },
+  rest: { label: t("Rest", "Pause"), color: "positive" },
+  done: { label: t("Done", "Fertig"), color: "primary" },
+}))
+
 export function useWorkout() {
   const workouts = ref(readJson<wo.Workout[]>(KEY_WORKOUTS, []))
   if (workouts.value.length === 0) workouts.value = [{ ...wo.DEFAULT_WORKOUT }]

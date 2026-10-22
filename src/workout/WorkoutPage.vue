@@ -7,18 +7,11 @@ import ProgressRing from "@/shared/ProgressRing.vue"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 
-import { useWorkout } from "./useWorkout"
+import { PHASES, useWorkout } from "./useWorkout"
 import type { Phase } from "./workout"
 
 const { workouts, selectedId, workout, running, pos, total, elapsedMs, toggle, reset, skip, add, remove } =
   useWorkout()
-
-const PHASES = computed<Record<Phase, { label: string; color: string }>>(() => ({
-  prepare: { label: t("Get ready", "Vorbereiten"), color: "amber" },
-  work: { label: t("Work", "Arbeiten"), color: "negative" },
-  rest: { label: t("Rest", "Pause"), color: "positive" },
-  done: { label: t("Done", "Fertig"), color: "primary" },
-}))
 
 const atStart = computed(() => !running.value && elapsedMs.value === 0)
 
