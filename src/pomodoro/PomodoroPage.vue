@@ -12,17 +12,11 @@ import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 
-import { cycleRound, DEFAULT_SETTINGS, type Phase } from "./pomodoro"
-import { usePomodoro } from "./usePomodoro"
+import { cycleRound, DEFAULT_SETTINGS } from "./pomodoro"
+import { PHASES, usePomodoro } from "./usePomodoro"
 
 const { settings, state, running, canReset, remainingMs, progress, toggle, skip, reset } =
   usePomodoro()
-
-const PHASES = computed<Record<Phase, { label: string; color: string }>>(() => ({
-  focus: { label: t("Focus", "Fokus"), color: "negative" },
-  short: { label: t("Short break", "Kurze Pause"), color: "positive" },
-  long: { label: t("Long break", "Lange Pause"), color: "primary" },
-}))
 
 // round up, so it shows 25:00 at start and 0:00 only at the very end
 const display = computed(() => formatClock(Math.ceil(remainingMs.value / 1000) * 1000))

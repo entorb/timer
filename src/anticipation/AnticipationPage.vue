@@ -6,8 +6,8 @@ import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatDateTime, secondsToString } from "@/shared/time"
 
-import { finalCountdown, isoDay } from "./anticipation"
-import { useAnticipation } from "./useAnticipation"
+import { isoDay } from "./anticipation"
+import { topLabel, useAnticipation } from "./useAnticipation"
 
 const { events, sorted, add, remove } = useAnticipation()
 
@@ -21,17 +21,6 @@ function submit() {
     inputDate.value = isoDay(new Date())
     inputTime.value = ""
   }
-}
-
-function topLabel(seconds: number, days: number, past: boolean): string {
-  const clock = past ? undefined : finalCountdown(seconds)
-  if (clock != null) return clock
-  if (days === 0) return t("today", "heute")
-  const one = days === 1
-  const en = one ? "day" : "days"
-  return past
-    ? t(`${days} ${en} ago`, `vor ${days} ${one ? "Tag" : "Tagen"}`)
-    : t(`${days} ${en}`, `${days} ${one ? "Tag" : "Tage"}`)
 }
 
 function confirmDeleteAll() {

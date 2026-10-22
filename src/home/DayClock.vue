@@ -6,11 +6,12 @@ import { formatDateTime, UNIT_SECONDS } from "@/shared/time"
 import { dayMarks, formatDay, hourOf, polar, ringGradient } from "./clock"
 import { moonPath, moonPhase } from "./moon"
 import { sunTimes } from "./sun"
-import { useClock } from "./useClock"
 import { useGeo } from "./useGeo"
 import { useWeather } from "./useWeather"
 import { currentWeather, tempGradient, tempLabels, todayHours, weatherIcon } from "./weather"
 
+// shared with the running list on the home page: same tick
+const props = defineProps<{ now: Date }>()
 // viewBox -125..125: temp band r 76..98 (weather odd hours, temps even), color band r 54..74
 // (sun/moon icons) inside it, or on the temp band's place without weather,
 // pointer line 44..108, numbers 114
@@ -25,7 +26,7 @@ const SUNSET_COLORS = { fill: "#fb923c", stroke: "#b91c1c" }
 const WEATHER_FIT = "scale(0.72) translate(-12 -12)"
 const HOUR_MS = UNIT_SECONDS.hour * 1000
 
-const now = useClock()
+const now = computed(() => props.now)
 const { coords, place, failed, locate, clear } = useGeo()
 const weather = useWeather(coords)
 // number: equal value each tick -> dependents recompute only on date change
