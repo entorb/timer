@@ -4,12 +4,12 @@ import { confirmDialog } from "@/shared/confirm"
 import { lang, t } from "@/shared/i18n"
 import ListSelect from "@/shared/ListSelect.vue"
 import StatsLine from "@/shared/StatsLine.vue"
-
 import DataTable from "./DataTable.vue"
 import EtaHero from "./EtaHero.vue"
 import InputItems from "./InputItems.vue"
 import InputTarget from "./InputTarget.vue"
 import { iconAdd, iconChart, iconClose, iconHistory, iconInfo, iconWeight } from "./icons"
+import { ORIGIN } from "./sets"
 import { useEtaData } from "./useEtaData"
 import { useEtaStats } from "./useEtaStats"
 
@@ -238,7 +238,7 @@ function confirmDeleteAll() {
     </q-list>
 
     <StatsLine
-      origin="tmr-eta"
+      :origin="ORIGIN"
     />
   </q-page>
 </template>

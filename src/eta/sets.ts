@@ -1,3 +1,4 @@
+import { readJson } from "@/shared/storage"
 import type { Unit } from "@/shared/time"
 
 import type { DataRowRedType } from "./types"
@@ -42,3 +43,8 @@ export const reviveSets = (raw: StoredSet[]): EtaSet[] =>
     data: (s.data ?? []).map(({ date, items }) => ({ date: new Date(date), items })),
     settings: { ...DEFAULT_SETTINGS, ...s.settings },
   }))
+
+export const ORIGIN = "tmr-eta"
+export const KEY_SETS = "tmr-eta-sets"
+
+export const loadSets = (): EtaSet[] => reviveSets(readJson<StoredSet[]>(KEY_SETS, []))

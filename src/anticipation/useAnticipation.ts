@@ -1,13 +1,16 @@
-import { computed, onScopeDispose, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 
 import { clearName } from "@/multitimer/timers"
 import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
+import { nowSec } from "@/shared/time"
+import { useClock } from "@/shared/useClock"
 
 import {
   type Countdown,
   finalCountdown,
   loadEvents,
+  ORIGIN,
   parseTime,
   remaining,
   saveEvents,
@@ -29,7 +32,7 @@ export function topLabel(seconds: number, days: number, past: boolean): string {
 
 export function useAnticipation() {
   const events = ref<Countdown[]>(loadEvents())
-  const now = ref(Date.now())
+  const now = useClock()
 
   const sorted = computed(() =>
     [...events.value]
@@ -39,11 +42,6 @@ export function useAnticipation() {
 
   watch(events, (value) => saveEvents(value), { deep: true })
 
-  const interval = globalThis.setInterval(() => {
-    now.value = Date.now()
-  }, 1000)
-  onScopeDispose(() => globalThis.clearInterval(interval))
-
   // rawDate "2026-12-24", rawTime see parseTime; returns false if invalid
   function add(rawName: string, rawDate: string, rawTime: string): boolean {
     const time = parseTime(rawTime)
@@ -51,8 +49,8 @@ export function useAnticipation() {
     if (time == null || Number.isNaN(date.getTime())) return false
     date.setHours(time.hour, time.minute)
     events.value.push({ name: clearName(rawName) || "Event", date })
-    now.value = Date.now()
-    statsWrite("tmr-ant")
+    now.value = nowSec()
+    statsWrite(ORIGIN)
     return true
   }
 

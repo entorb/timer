@@ -36,7 +36,7 @@ describe("clock", () => {
     expect(ringGradient(7, 19)).toMatch(/^conic-gradient\(from 15deg, /)
   })
 
-  it("formatDay: dd.mm.yy", () => {
-    expect(formatDay(new Date(2026, 0, 5))).toBe("05.01.26")
+  it("formatDay: dd.mm.", () => {
+    expect(formatDay(new Date(2026, 0, 5))).toBe("05.01.")
   })
 })

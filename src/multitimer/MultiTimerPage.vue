@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { mdiClose, mdiPlus, mdiRestart } from "@quasar/extras/mdi-v7"
 import { ref, useTemplateRef } from "vue"
-import { confirmDialog } from "@/shared/confirm"
+import DeleteAllButton from "@/shared/DeleteAllButton.vue"
 import { lang, t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatDateTime, secondsToString } from "@/shared/time"
+import { ORIGIN } from "./timers"
 
 import { useMultiTimer } from "./useMultiTimer"
 
@@ -19,11 +20,6 @@ function submit() {
   inputTime.value = ""
 }
 
-function confirmDeleteAll() {
-  confirmDialog(t("Delete all?", "Alle löschen?"), () => {
-    timers.value = []
-  })
-}
 
 function resetAll() {
   for (const timer of timers.value) reset(timer)
@@ -119,15 +115,9 @@ function resetAll() {
         :aria-label="t('Reset all timers', 'Alle Timer zurücksetzen')"
         @click="resetAll"
       />
-      <q-btn
-        id="btn-deleteAll"
-        type="button"
-        flat
-        round
-        color="negative"
-        :icon="mdiClose"
-        :aria-label="t('Delete all timers', 'Alle Timer löschen')"
-        @click="confirmDeleteAll"
+      <DeleteAllButton
+        :label="t('Delete all timers', 'Alle Timer löschen')"
+        @confirmed="timers = []"
       />
     </div>
 
@@ -183,7 +173,7 @@ function resetAll() {
     </q-list>
 
     <StatsLine
-      origin="tmr-mt"
+      :origin="ORIGIN"
     />
   </q-page>
 </template>

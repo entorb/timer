@@ -1,4 +1,5 @@
-import { pad } from "@/shared/time"
+import { readJson } from "@/shared/storage"
+import { HOUR_MS, pad } from "@/shared/time"
 // pause / resume / elapsed are the stopwatch ones: resume shifts `start` by the pause
 import * as sw from "@/stopwatch/stopwatch"
 
@@ -22,7 +23,6 @@ export const DEFAULT_CONFIG: MeetingConfig = {
 }
 
 const MAX_PARTICIPANTS = 1000
-const HOUR_MS = 3_600_000
 const MINUTE_MS = 60_000
 const SESSION_EXPIRY_MS = 24 * HOUR_MS
 
@@ -32,6 +32,13 @@ export const initialState = (): MeetingState => ({
   group1: 0,
   group2: 0,
 })
+
+export const ORIGIN = "tmr-mm"
+export const KEY_STATE = "tmr-mm-state"
+export const KEY_CONFIG = "tmr-mm-config"
+
+export const loadState = (): MeetingState => ({ ...initialState(), ...readJson(KEY_STATE, {}) })
+export const loadConfig = (): MeetingConfig => ({ ...DEFAULT_CONFIG, ...readJson(KEY_CONFIG, {}) })
 
 export const clampCount = (n: number) => Math.min(MAX_PARTICIPANTS, Math.max(0, Math.round(n)))
 

@@ -15,7 +15,7 @@ import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock, parseDecimal } from "@/shared/time"
 
-import { activities, clampCount, efficiency, eur, isStarted, purchases } from "./meeting"
+import { activities, clampCount, efficiency, eur, isStarted, ORIGIN, purchases } from "./meeting"
 import { useMeeting } from "./useMeeting"
 
 const m = useMeeting()
@@ -326,7 +326,7 @@ function setStart(value: InputValue) {
     </q-expansion-item>
 
     <StatsLine
-      origin="tmr-mm"
+      :origin="ORIGIN"
     />
   </q-page>
 </template>

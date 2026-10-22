@@ -1,15 +1,14 @@
-import { computed, onScopeDispose, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 
 import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
 import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
-import { readJson, writeJson } from "@/shared/storage"
+import { writeJson } from "@/shared/storage"
+import { nowSec } from "@/shared/time"
+import { useClock } from "@/shared/useClock"
 import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as pomo from "./pomodoro"
-
-const KEY_SETTINGS = "tmr-pomo-settings"
-const KEY_STATE = "tmr-pomo-state"
 
 export const PHASES = computed<Record<pomo.Phase, { label: string; color: string }>>(() => ({
   focus: { label: t("Focus", "Fokus"), color: "negative" },
@@ -18,9 +17,9 @@ export const PHASES = computed<Record<pomo.Phase, { label: string; color: string
 }))
 
 export function usePomodoro() {
-  const settings = ref({ ...pomo.DEFAULT_SETTINGS, ...readJson(KEY_SETTINGS, {}) })
-  const state = ref({ ...pomo.initialState(settings.value), ...readJson(KEY_STATE, {}) })
-  const now = ref(Date.now())
+  const settings = ref(pomo.loadSettings())
+  const state = ref(pomo.loadState(settings.value))
+  const now = useClock({ active: () => running.value, onTick: catchUp })
 
   const running = computed(() => pomo.isRunning(state.value))
   const canReset = computed(() => !running.value && !pomo.isInitial(state.value, settings.value))
@@ -29,11 +28,11 @@ export function usePomodoro() {
     () => 1 - remainingMs.value / pomo.phaseMs(settings.value, state.value.phase),
   )
 
-  watch(state, (value) => writeJson(KEY_STATE, value), { deep: true })
+  watch(state, (value) => writeJson(pomo.KEY_STATE, value), { deep: true })
   watch(
     settings,
     (value) => {
-      writeJson(KEY_SETTINGS, value)
+      writeJson(pomo.KEY_SETTINGS, value)
       // new durations apply to the current phase too, as long as it is not running
       if (!running.value) state.value.remainingMs = pomo.phaseMs(value, state.value.phase)
     },
@@ -44,10 +43,9 @@ export function usePomodoro() {
     pomo.nextEnds(state.value, settings.value, 20).map((ts) => ({ ts, sound: SOUNDS.bell })),
   )
 
-  // paused: remaining does not depend on now, skip the re-render
-  function tick() {
+  // paused (clock inactive): remaining does not depend on now, skip the re-render
+  function catchUp() {
     if (!running.value) return
-    now.value = Date.now()
     const { state: newState, ended } = pomo.catchUp(state.value, settings.value, now.value)
     if (ended) {
       state.value = newState
@@ -56,22 +54,20 @@ export function usePomodoro() {
       if (!dueInBackground(due)) playSound()
     }
   }
-  tick()
-  const interval = globalThis.setInterval(tick, 250)
-  onScopeDispose(() => globalThis.clearInterval(interval))
+  catchUp()
 
   function toggle() {
-    now.value = Date.now()
+    now.value = nowSec()
     if (running.value) {
       state.value = pomo.pause(state.value, now.value)
     } else {
       state.value = pomo.start(state.value, now.value)
-      statsWrite("tmr-pomo")
+      statsWrite(pomo.ORIGIN)
     }
   }
 
   function skip() {
-    now.value = Date.now()
+    now.value = nowSec()
     state.value = pomo.next(state.value, settings.value, running.value ? now.value : undefined)
   }
 

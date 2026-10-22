@@ -4,13 +4,13 @@ test("Home is default, lists all apps, select navigates", async ({ page }) => {
   await page.goto("./")
   await expect(page).toHaveURL(/\/timer\/$/)
   await expect(page.locator("[id^=home-] .q-item__label:first-child")).toHaveText([
+    "Anticipation",
     "Workout",
     "ETA",
     "Multi-Timer",
-    "Anticipation",
     "Stopwatch",
-    "Pomodoro",
     "Meeting Meter",
+    "Pomodoro",
   ])
   await page.locator("#home-eta").click()
   await expect(page).toHaveURL(/\/timer\/eta$/)

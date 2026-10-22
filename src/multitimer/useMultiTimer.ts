@@ -1,8 +1,10 @@
-import { computed, onScopeDispose, ref, toRaw, watch } from "vue"
+import { computed, ref, toRaw, watch } from "vue"
 
 import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
 import { statsWrite } from "@/shared/stats"
 import type { Unit } from "@/shared/time"
+import { nowSec } from "@/shared/time"
+import { useClock } from "@/shared/useClock"
 import { useWakeLock } from "@/shared/useWakeLock"
 
 import {
@@ -10,6 +12,7 @@ import {
   createTimer,
   loadRecent,
   loadTimers,
+  ORIGIN,
   parseTimeInput,
   parseTimerLabel,
   progress,
@@ -23,7 +26,7 @@ import {
 export function useMultiTimer() {
   const timers = ref<Timer[]>(loadTimers())
   const recent = ref<string[]>(loadRecent())
-  const now = ref(Date.now())
+  const now = useClock({ active: () => timers.value.length > 0, onTick: ring })
   // timers that already rang (or were already over when the page was opened)
   const finished = new WeakSet<Timer>(timers.value.filter((t) => t.dateEnd.getTime() <= now.value))
 
@@ -41,9 +44,7 @@ export function useMultiTimer() {
     timers.value.map((timer) => ({ ts: timer.dateEnd.getTime(), sound: SOUNDS.bell })),
   )
 
-  function tick() {
-    if (timers.value.length === 0) return
-    now.value = Date.now()
+  function ring() {
     for (const timer of toRaw(timers.value)) {
       if (timer.dateEnd.getTime() <= now.value && !finished.has(timer)) {
         finished.add(timer)
@@ -51,13 +52,11 @@ export function useMultiTimer() {
       }
     }
   }
-  const interval = globalThis.setInterval(tick, 1000)
-  onScopeDispose(() => globalThis.clearInterval(interval))
 
   function add(name: string, time: number, unit: Unit) {
     timers.value.push(createTimer(name, time, unit))
-    now.value = Date.now()
-    statsWrite("tmr-mt")
+    now.value = nowSec()
+    statsWrite(ORIGIN)
   }
 
   // returns false if time input is invalid
@@ -79,9 +78,9 @@ export function useMultiTimer() {
   }
 
   function reset(timer: Timer) {
-    resetTimer(timer, Date.now())
+    resetTimer(timer, nowSec())
     finished.delete(toRaw(timer))
-    now.value = Date.now()
+    now.value = nowSec()
   }
 
   function remove(timer: Timer) {

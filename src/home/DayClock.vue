@@ -11,7 +11,7 @@ import { useWeather } from "./useWeather"
 import { currentWeather, tempGradient, tempLabels, todayHours, weatherIcon } from "./weather"
 
 // shared with the running list on the home page: same tick
-const props = defineProps<{ now: Date }>()
+const props = defineProps<{ now: number }>()
 // viewBox -125..125: temp band r 76..98 (weather odd hours, temps even), color band r 54..74
 // (sun/moon icons) inside it, or on the temp band's place without weather,
 // pointer line 44..108, numbers 114
@@ -26,7 +26,7 @@ const SUNSET_COLORS = { fill: "#fb923c", stroke: "#b91c1c" }
 const WEATHER_FIT = "scale(0.72) translate(-12 -12)"
 const HOUR_MS = UNIT_SECONDS.hour * 1000
 
-const now = computed(() => props.now)
+const now = computed(() => new Date(props.now))
 const { coords, place, failed, locate, clear } = useGeo()
 const weather = useWeather(coords)
 // number: equal value each tick -> dependents recompute only on date change
@@ -259,7 +259,7 @@ const ringStyle = computed(() => ({
         y="2"
         class="time"
       >
-        {{ time }}
+        {{ time.slice(0, 5) }}<tspan class="sec">{{ time.slice(5) }}</tspan>
       </text>
       <text
         y="-22"
@@ -310,6 +310,9 @@ text {
 .time {
   font-size: 24px;
   font-weight: 500;
+}
+.sec {
+  font-size: 15px;
 }
 .day {
   font-size: 13px;
