@@ -1,3 +1,5 @@
+import { readJson } from "@/shared/storage"
+
 export type Phase = "prepare" | "work" | "rest" | "done"
 export type Cue = "beep" | "go" | "tick" | "gong" | "cheers"
 
@@ -30,6 +32,15 @@ export const DEFAULT_WORKOUT: Workout = {
   rest: 10,
   reps: 8,
 }
+
+export const ORIGIN = "tmr-wo"
+export const KEY_WORKOUTS = "tmr-wo-workouts"
+export const KEY_SELECTED = "tmr-wo-selected"
+export const KEY_STATE = "tmr-wo-state"
+
+export const loadWorkouts = () => readJson<Workout[]>(KEY_WORKOUTS, [])
+export const loadSelectedId = () => readJson(KEY_SELECTED, DEFAULT_WORKOUT.id)
+export const loadState = () => readJson<WorkoutState>(KEY_STATE, { elapsedMs: 0 })
 
 // prepare, then work/rest per rep, no rest after the last rep
 export function segments(w: Workout): Segment[] {

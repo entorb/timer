@@ -1,21 +1,17 @@
-import { computed, onScopeDispose, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 
 import { statsWrite } from "@/shared/stats"
-import { readJson, writeJson } from "@/shared/storage"
+import { writeJson } from "@/shared/storage"
+import { nowSec } from "@/shared/time"
+import { useClock } from "@/shared/useClock"
 import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as mtg from "./meeting"
 
-const KEY_STATE = "tmr-mm-state"
-const KEY_CONFIG = "tmr-mm-config"
-
 export function useMeeting() {
-  const state = ref<mtg.MeetingState>({ ...mtg.initialState(), ...readJson(KEY_STATE, {}) })
-  const config = ref<mtg.MeetingConfig>({
-    ...mtg.DEFAULT_CONFIG,
-    ...readJson(KEY_CONFIG, {}),
-  })
-  const now = ref(Date.now())
+  const state = ref(mtg.loadState())
+  const config = ref(mtg.loadConfig())
+  const now = useClock({ active: () => running.value })
 
   // a forgotten session from days ago is not a meeting
   if (mtg.isExpired(state.value, now.value)) mtg.reset(state.value)
@@ -27,22 +23,16 @@ export function useMeeting() {
     return ts == null ? "" : mtg.clockOf(ts)
   })
 
-  watch(state, (value) => writeJson(KEY_STATE, value), { deep: true })
-  watch(config, (value) => writeJson(KEY_CONFIG, value), { deep: true })
+  watch(state, (value) => writeJson(mtg.KEY_STATE, value), { deep: true })
+  watch(config, (value) => writeJson(mtg.KEY_CONFIG, value), { deep: true })
   useWakeLock(running)
 
-  // display refresh only, times are always derived from timestamps
-  const interval = globalThis.setInterval(() => {
-    if (running.value) now.value = Date.now()
-  }, 1000)
-  onScopeDispose(() => globalThis.clearInterval(interval))
-
   function toggle() {
-    now.value = Date.now()
+    now.value = nowSec()
     if (running.value) {
       mtg.pause(state.value, now.value)
     } else {
-      if (!mtg.isStarted(state.value)) statsWrite("tmr-mm")
+      if (!mtg.isStarted(state.value)) statsWrite(mtg.ORIGIN)
       mtg.start(state.value, now.value)
     }
   }
@@ -56,7 +46,7 @@ export function useMeeting() {
     startClock,
     toggle,
     reset: () => mtg.reset(state.value),
-    setStartClock: (hhmm: string) => mtg.setStartClock(state.value, hhmm, Date.now()),
-    setPausedMinutes: (min: number) => mtg.setPausedMinutes(state.value, min, Date.now()),
+    setStartClock: (hhmm: string) => mtg.setStartClock(state.value, hhmm, nowSec()),
+    setPausedMinutes: (min: number) => mtg.setPausedMinutes(state.value, min, nowSec()),
   }
 }

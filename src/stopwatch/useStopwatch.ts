@@ -1,15 +1,15 @@
-import { computed, onScopeDispose, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 
 import { vibrateShort } from "@/shared/feedback"
 import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
 import { readJson, writeJson } from "@/shared/storage"
 import { parseClock } from "@/shared/time"
+import { useClock } from "@/shared/useClock"
 import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as sw from "./stopwatch"
 
-const KEY_DATA = "tmr-sw-data"
 const KEY_TENTHS = "tmr-sw-tenths"
 
 const newAthlete = (id: number): sw.Athlete => ({
@@ -19,20 +19,17 @@ const newAthlete = (id: number): sw.Athlete => ({
 })
 
 export function useStopwatch() {
-  const athletes = ref(readJson(KEY_DATA, [1, 2].map(newAthlete)))
-  const now = ref(Date.now())
+  const athletes = ref(sw.loadAthletes([1, 2].map(newAthlete)))
   const showTenths = ref(readJson(KEY_TENTHS, false))
+  const now = useClock({
+    ms: () => (showTenths.value ? 100 : 1000),
+    active: () => anyRunning.value,
+  })
   const anyRunning = computed(() => athletes.value.some(sw.isRunning))
 
   watch(showTenths, (value) => writeJson(KEY_TENTHS, value))
-  watch(athletes, (value) => writeJson(KEY_DATA, value), { deep: true })
+  watch(athletes, (value) => writeJson(sw.KEY_DATA, value), { deep: true })
   useWakeLock(anyRunning)
-
-  // display refresh only, times are always derived from timestamps
-  const interval = globalThis.setInterval(() => {
-    if (anyRunning.value) now.value = Date.now()
-  }, 100)
-  onScopeDispose(() => globalThis.clearInterval(interval))
 
   function act(fn: (a: sw.Athlete, t: number) => void, list = athletes.value) {
     now.value = Date.now()
@@ -48,7 +45,7 @@ export function useStopwatch() {
 
   function startAll() {
     act(sw.start)
-    statsWrite("tmr-sw")
+    statsWrite(sw.ORIGIN)
   }
 
   function add() {

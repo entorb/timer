@@ -12,7 +12,7 @@ import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 
-import { cycleRound, DEFAULT_SETTINGS } from "./pomodoro"
+import { cycleRound, DEFAULT_SETTINGS, ORIGIN } from "./pomodoro"
 import { PHASES, usePomodoro } from "./usePomodoro"
 
 const { settings, state, running, canReset, remainingMs, progress, toggle, skip, reset } =
@@ -148,7 +148,7 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
       </div>
     </q-expansion-item>
 
-    <StatsLine origin="tmr-pomo" />
+    <StatsLine :origin="ORIGIN" />
   </q-page>
 </template>
 

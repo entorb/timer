@@ -28,6 +28,7 @@ import {
   lapStats,
   lapTimes,
   nextLapForecast,
+  ORIGIN,
   toCsv,
 } from "./stopwatch"
 import { useStopwatch } from "./useStopwatch"
@@ -379,7 +380,7 @@ async function copyCsv() {
       </div>
     </div>
 
-    <StatsLine origin="tmr-sw" />
+    <StatsLine :origin="ORIGIN" />
   </q-page>
 </template>
 

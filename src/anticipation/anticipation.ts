@@ -1,16 +1,13 @@
 import { readJson, writeJson } from "@/shared/storage"
-import { pad } from "@/shared/time"
+import { DAY_MS, pad } from "@/shared/time"
 
 export interface Countdown {
   name: string
   date: Date
 }
 
+export const ORIGIN = "tmr-ant"
 const KEY_DATA = "tmr-ant-data"
-
-// local "2026-12-24" for date input
-export const isoDay = (date: Date) =>
-  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 
 // "2" -> 2:00, "14" -> 14:00, "2000" / "20:00" / "20.00" -> 20:00, "930" -> 9:30, "" -> 0:00
 // undefined if invalid
@@ -22,8 +19,6 @@ export function parseTime(raw: string): { hour: number; minute: number } | undef
   const minute = Number(match?.[2] ?? match?.[3] ?? 0)
   return match != null && hour < 24 && minute < 60 ? { hour, minute } : undefined
 }
-
-const DAY_MS = 86_400_000
 
 // calendar days between local dates, ignoring time of day (round: DST days have 23/25h)
 export const calendarDays = (from: Date, to: Date): number =>

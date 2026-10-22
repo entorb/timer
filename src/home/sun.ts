@@ -1,8 +1,9 @@
+import { DAY_MS } from "@/shared/time"
+
 // sunrise/sunset: NOAA sunrise equation (suncalc style), accuracy ~1 min
 // https://en.wikipedia.org/wiki/Sunrise_equation
 
 const RAD = Math.PI / 180
-const DAY_MS = 86_400_000
 const J1970 = 2440588
 const J2000 = 2451545
 const J0 = 0.0009

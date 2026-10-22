@@ -1,6 +1,7 @@
-import { computed, type MaybeRefOrGetter, onScopeDispose, ref, toValue } from "vue"
+import { computed, type MaybeRefOrGetter, toValue } from "vue"
 
 import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
+import { useClock } from "@/shared/useClock"
 import { useWakeLock } from "@/shared/useWakeLock"
 
 import type { EtaSet } from "./sets"
@@ -10,7 +11,7 @@ const setStats = (s: EtaSet) => calcStats(s.data, s.target, s.settings.weightedR
 
 // stats of the selected set, wake lock + bell for all sets
 export function useEtaStats(sets: MaybeRefOrGetter<EtaSet[]>, selected: MaybeRefOrGetter<EtaSet>) {
-  const now = ref(Date.now())
+  const now = useClock({ onTick: ring })
 
   const all = computed(() => toValue(sets).map(setStats))
   const stats = computed(() => setStats(toValue(selected)))
@@ -26,16 +27,12 @@ export function useEtaStats(sets: MaybeRefOrGetter<EtaSet[]>, selected: MaybeRef
   )
 
   // ring only when an ETA passes while watching, not when opening an old, finished one
-  function tick() {
-    const prev = now.value
-    now.value = Date.now()
+  function ring(prev: number) {
     const passed = all.value.some(
       (s) => s != null && etaPassed(s, prev, now.value) && !dueInBackground(s.etaMs),
     )
     if (passed) playSound()
   }
-  const interval = globalThis.setInterval(tick, 1000)
-  onScopeDispose(() => globalThis.clearInterval(interval))
 
   return { stats, est }
 }

@@ -4,6 +4,7 @@ import { lang } from "../i18n"
 import {
   formatClock,
   formatDateTime,
+  isoDay,
   pad,
   parseClock,
   parseDecimal,
@@ -103,4 +104,8 @@ describe("constants", () => {
     expect(pad(12)).toBe("12")
     expect(UNIT_SECONDS.day).toBe(24 * UNIT_SECONDS.hour)
   })
+})
+
+it("isoDay is local date", () => {
+  expect(isoDay(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05")
 })
