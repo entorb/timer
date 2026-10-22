@@ -10,9 +10,9 @@ Vue 3 + Quasar + TypeScript SPA (Vite, pnpm). No backend; state persists in `loc
 src/
   router.ts          # tabs (path, name, nameDe, desc, descDe, icon, lazy page) = app navigation
   App.vue            # shell: tabs, lang/dark toggle, info dialog
-  home/HomePage.vue  # start page `/`: DayClock (24h ring, clock.ts + useClock.ts; sunrise/sunset: sun.ts + useGeo.ts, coords in `tmr-geo`, sun/moon use Erlangen until user shares position (`place` in useGeo; weather only for own `coords`), geo button toggles locate/delete (deleting also drops weather); moon phase: moon.ts; weather: outer temp ring (color relative to day range, temps at even hours from 3h ago, icons at odd; sun ring moves inside it, takes outer place without weather), weather.ts + useWeather.ts, Open-Meteo, cache `tmr-weather` 1h) + `tabs` with desc (use cases)
-  shared/            # i18n (t, lang), feedback (sound/vibrate), confirm (confirmDialog), ListSelect (switch/rename/add/delete named items), ProgressRing, stats, storage, time, useWakeLock
-  <feature>/         # eta, multitimer, pomodoro, stopwatch, workout, meeting
+  home/HomePage.vue  # start page `/`: running list (running.ts + useRunning.ts: reads via the sub-apps' pure `load*` functions, no feature composables → no sounds; pages are `keep-alive`, so it re-reads in `onActivated`, finished countdowns stay at 0:00 until next visit; anticipation events, ETAs, timers, stopwatches...) above `tabs`; DayClock (24h ring, clock.ts, tick from `shared/useClock` passed as prop; sunrise/sunset: sun.ts + useGeo.ts, coords in `tmr-geo`, sun/moon use Erlangen until user shares position (`place` in useGeo; weather only for own `coords`), geo button toggles locate/delete (deleting also drops weather); moon phase: moon.ts; weather: outer temp ring (color relative to day range, temps at even hours from 3h ago, icons at odd; sun ring moves inside it, takes outer place without weather), weather.ts + useWeather.ts, Open-Meteo, cache `tmr-weather` 1h) + `tabs` with desc (use cases)
+  shared/            # i18n (t, lang), feedback (sound/vibrate), confirm (confirmDialog), DeleteAllButton, useClock (`now` timestamp tick: `ms`, `active`, `onTick`; aligned to full seconds), ListSelect (switch/rename/add/delete named items), ProgressRing, stats, storage, time, useWakeLock
+  <feature>/         # eta, multitimer, anticipation, pomodoro, stopwatch, workout, meeting
     <Feature>Page.vue  # view, dumb
     use<Feature>.ts    # composable: refs, persistence, timers
     <feature>.ts       # pure logic (no Vue), unit tested
@@ -38,9 +38,19 @@ Scripts print `OK` on success, else first 100 lines of errors. Fix and rerun onl
 
 ## Reuse across features
 
+Before writing a helper/constant/component, grep `src/shared` and the other features; share instead of copy. Second copy → move to `shared/` (or export from the owning feature).
+
+- Persistence lives in the pure `<feature>.ts`: exported `KEY_*`, `ORIGIN` (stats), `load*()` (with defaults). Composables and `home/useRunning.ts` call these, never `readJson("tmr-...")` with literal keys.
+- `statsWrite(ORIGIN)` and `<StatsLine :origin="ORIGIN" />`, no literal origins.
+- Time constants: `HOUR_MS`, `DAY_MS`, `UNIT_SECONDS` from `@/shared/time`, no `86_400_000` literals. Date helpers (`isoDay`, `pad`, `formatClock`, ...) there too.
+- Every tick via `useClock({ ms, active, onTick })` (gate with `active` so paused pages don't re-render; sounds in `onTick`), never a raw `setInterval`. Default 1s; sub-second only stopwatch with tenths. Timestamps from user actions via `nowSec()` (whole seconds), raw `Date.now()` only in stopwatch. ETA `addRow` rounds too, same second replaces the last row (zero time delta = no speed).
+- Phase labels/colors (`PHASES`) exported from `use<Feature>.ts`, reused by home.
+
 Only network calls: `shared/stats.ts`, `home/useWeather.ts`.
 
-`meeting` builds on `stopwatch/stopwatch.ts` (start/stop/elapsed, resume shifts `start`). localStorage keys prefixed `tmr-`, dark+lang in one `tmr-settings` key; stats origin per sub-app: `tmr-eta|mt|sw|pomo|wo|mm`, same footer via `StatsLine` (prop `origin` only).
+`meeting` builds on `stopwatch/stopwatch.ts` (start/stop/elapsed, resume shifts `start`). localStorage keys prefixed `tmr-`, dark+lang in one `tmr-settings` key; stats origin per sub-app: `tmr-eta|mt|ant|sw|pomo|wo|mm`, same footer via `StatsLine` (prop `origin` only). New origin must be whitelisted on stats server (`entorb.net/web-stats-json.php`), else not counted.
+
+`anticipation` (Vorfreude): display-only countdowns to dates (past dates count up), no sound/wake lock, reuses `clearName` from `multitimer/timers.ts`.
 
 `eta`: multiple data sets in `tmr-eta-sets` (+ `tmr-eta-selected`), pure set model in `eta/sets.ts`; bell + wake lock cover all sets, display only the selected one. Sets rarely used: `ListSelect` shown only with 2+ sets.
 
@@ -58,7 +68,7 @@ Every user-visible string (labels, `aria-label`, errors) needs both languages. R
 ## Logic split
 
 - Pure functions in `<feature>.ts`: take state + `now` timestamp, return new state. No `Date.now()`, no Vue, no DOM → easy unit tests.
-- Composable `use<Feature>.ts` wires refs, `watch` → `localStorage`, intervals (`onScopeDispose` cleanup), `useWakeLock`, `playSound`.
+- Composable `use<Feature>.ts` wires refs, `watch` → `localStorage`, tick via `useClock`, `useWakeLock`, `playSound`.
 - Timers store end timestamps (`endTs`), not decrementing counters; derive remaining from `now`.
 - Sounds: all synthesized (Web Audio) in `src/shared/feedback.ts` (`SOUNDS`, `playSound`), no audio files. Review in dev: `/timer/review-audio.html` (root html, not a build input).
 - Background (hidden page): intervals get frozen, so each sound-making composable registers `useBackgroundSounds(() => [{ ts, sound }])` (scheduled on audio clock at hide) and its tick skips events due while hidden via `dueInBackground(dueTs)` (no late sounds on return). Every sound-making composable also has `useWakeLock`.
@@ -87,7 +97,7 @@ SVG `foreignObject` (DayClock center weather): no `opacity`/`transform`/`positio
 
 ## Error Handling
 
-- Catch only where you handle. No `console.error/warn`.
+- Catch only where you handle. No `console.error/warn`. Swallowed errors → `Sentry.captureException(e)` / `captureMessage(..., "warning")`, uncaught ones Sentry catches itself. Not reported: user choices (geolocation denied, also iOS PWA without Safari permission; share cancel), offline fetch, wake lock, stats.
 - `localStorage` access: via `readJson` / `writeJson` from `@/shared/storage` (catch private mode, quota, corrupt JSON). Persist with `watch(ref, (v) => writeJson(KEY_*, v))`.
 - Derived values (e.g. speed per row) as `computed`, not stored in state.
 - User-facing errors via `t(en, de)`.
