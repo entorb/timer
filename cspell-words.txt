@@ -54,6 +54,9 @@ einzelner
 englisch
 entfernen
 entorb
+ereignis
+ereignisse
+ereignissen
 erfasst
 erlangen
 erledigt
@@ -63,6 +66,7 @@ erscheint
 esbuild
 etappen
 etwas
+feddich
 fehlgeschlagen
 fertig
 filme
@@ -74,6 +78,7 @@ fortsetzen
 freesound
 freigegebene
 funktion
+geburtstag
 gefällt
 gegen
 gehen
@@ -81,6 +86,7 @@ gejoggt
 gemeinsamer
 gemessen
 gemessener
+geolocation
 gerne
 gerundet
 gerät
@@ -99,6 +105,7 @@ gewichteter
 gleichzeitig
 hausaufgaben
 herunterzählen
+heute
 hiit
 hinzufügen
 hochzählen
@@ -113,7 +120,9 @@ kaffee
 knip
 kochen
 konferenztickets
+konzentrieres
 konzentriert
+konzert
 kopieren
 kopiert
 kosten
@@ -123,6 +132,7 @@ können
 lange
 langen
 lauf
+laufen
 lernen
 lerp
 lesen
@@ -160,6 +170,7 @@ nächste
 nächsten
 ofen
 optionale
+parallele
 parkuhr
 pausen
 personenstunden
@@ -171,9 +182,11 @@ pomofocus
 prek
 programmieren
 prozess
+ranklotzen
 recalc
 refetched
 regelmäßigen
+rennen
 reparsing
 restzeit
 restzeitschätzung
@@ -186,6 +199,7 @@ rundenzeit
 rundenzeiten
 schließen
 schreiben
+schwimmen
 schwimmtraining
 schätzt
 segs
@@ -228,6 +242,7 @@ telefonate
 timeformat
 torben
 typeless
+uhrzeit
 umbenennen
 umschalten
 undefinded
@@ -235,9 +250,11 @@ unfonts
 ungültige
 unixtime
 unplugin
+unshifted
 unten
 untergang
 unweighted
+urlaub
 verbleibend
 verfügbar
 vergangen
@@ -248,10 +265,12 @@ vite
 vitest
 vorbereiten
 vorbereitung
+vorfreude
 vuetify
 wann
 warteschlange
 weighted
+weihnachten
 weiter
 weniger
 wenn
