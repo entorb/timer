@@ -1,6 +1,7 @@
 import { computed, onScopeDispose, ref, watch } from "vue"
 
 import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
+import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
 import { readJson, writeJson } from "@/shared/storage"
 import { useWakeLock } from "@/shared/useWakeLock"
@@ -9,6 +10,12 @@ import * as pomo from "./pomodoro"
 
 const KEY_SETTINGS = "tmr-pomo-settings"
 const KEY_STATE = "tmr-pomo-state"
+
+export const PHASES = computed<Record<pomo.Phase, { label: string; color: string }>>(() => ({
+  focus: { label: t("Focus", "Fokus"), color: "negative" },
+  short: { label: t("Short break", "Kurze Pause"), color: "positive" },
+  long: { label: t("Long break", "Lange Pause"), color: "primary" },
+}))
 
 export function usePomodoro() {
   const settings = ref({ ...pomo.DEFAULT_SETTINGS, ...readJson(KEY_SETTINGS, {}) })

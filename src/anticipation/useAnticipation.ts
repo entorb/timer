@@ -1,9 +1,31 @@
 import { computed, onScopeDispose, ref, watch } from "vue"
 
 import { clearName } from "@/multitimer/timers"
+import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
 
-import { type Countdown, loadEvents, parseTime, remaining, saveEvents } from "./anticipation"
+import {
+  type Countdown,
+  finalCountdown,
+  loadEvents,
+  parseTime,
+  remaining,
+  saveEvents,
+} from "./anticipation"
+
+// "12 days", "today", "3 days ago", last 24h as clock
+export function topLabel(seconds: number, days: number, past: boolean): string {
+  const clock = past ? undefined : finalCountdown(seconds)
+  if (clock != null) return clock
+  if (days === 0) return t("today", "heute")
+  const one = days === 1
+  const en = one ? "day" : "days"
+  const pastDe = one ? "Tag" : "Tagen"
+  const de = one ? "Tag" : "Tage"
+  return past
+    ? t(`${days} ${en} ago`, `vor ${days} ${pastDe}`)
+    : t(`${days} ${en}`, `${days} ${de}`)
+}
 
 export function useAnticipation() {
   const events = ref<Countdown[]>(loadEvents())
