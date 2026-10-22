@@ -54,7 +54,7 @@ const forecast = computed(() =>
     .filter((h) => h.hour % 2 === 1)
     .map((h) => ({
       transform: `${at(h.hour, TEMP_R)} ${WEATHER_FIT}`,
-      d: weatherIcon(h.code, isDay(h.hour)),
+      ...weatherIcon(h.code, isDay(h.hour)),
     })),
 )
 // number, minute steps: labels recompute once per minute
@@ -70,7 +70,7 @@ const current = computed(() => {
   const c = weather.value == null ? undefined : currentWeather(weather.value, hourTs.value)
   if (c == null) return undefined
   const day = isDay(hourOf(new Date(hourTs.value)))
-  return { d: weatherIcon(c.code, day), temp: `${Math.round(c.temp)}°` }
+  return { ...weatherIcon(c.code, day), temp: `${Math.round(c.temp)}°` }
 })
 const geoIcon = computed(() => {
   if (failed.value) return mdiMapMarkerAlertOutline
@@ -202,6 +202,7 @@ const ringStyle = computed(() => ({
           v-for="(f, i) in forecast"
           :key="i"
           :d="f.d"
+          :fill="f.fill"
           :transform="f.transform"
         />
         <text
@@ -227,7 +228,10 @@ const ringStyle = computed(() => ({
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <path :d="current.d" />
+            <path
+              :d="current.d"
+              :fill="current.fill"
+            />
           </svg>
           {{ current.temp }}
         </div>
