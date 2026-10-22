@@ -37,7 +37,7 @@ describe("persistence", () => {
 
 describe("parseTime", () => {
   it.each([
-    ["", 0, 0],
+    ["", 8, 0],
     ["14", 14, 0],
     ["14:30", 14, 30],
     ["9.5", 9, 5],

@@ -42,13 +42,16 @@ export function useAnticipation() {
 
   watch(events, (value) => saveEvents(value), { deep: true })
 
-  // rawDate "2026-12-24", rawTime see parseTime; returns false if invalid
-  function add(rawName: string, rawDate: string, rawTime: string): boolean {
+  // rawDate "2026-12-24", rawTime see parseTime; replaces `edited` if given; returns false if invalid
+  function add(rawName: string, rawDate: string, rawTime: string, edited?: Countdown): boolean {
     const time = parseTime(rawTime)
     const date = new Date(`${rawDate}T00:00`)
     if (time == null || Number.isNaN(date.getTime())) return false
     date.setHours(time.hour, time.minute)
-    events.value.push({ name: clearName(rawName) || "Event", date })
+    const event = { name: clearName(rawName) || "Event", date }
+    const i = edited == null ? -1 : events.value.indexOf(edited)
+    if (i < 0) events.value.push(event)
+    else events.value[i] = event
     now.value = nowSec()
     statsWrite(ORIGIN)
     return true

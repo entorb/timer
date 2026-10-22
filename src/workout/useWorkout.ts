@@ -26,9 +26,9 @@ const CUE_SOUNDS: Record<wo.Cue, Sound> = {
 
 export const PHASES = computed<Record<wo.Phase, { label: string; color: string }>>(() => ({
   prepare: { label: t("Get ready", "Vorbereiten"), color: "amber" },
-  work: { label: t("Work", "Arbeiten"), color: "negative" },
+  work: { label: t("Work", "Ranklotzen"), color: "negative" },
   rest: { label: t("Rest", "Pause"), color: "positive" },
-  done: { label: t("Done", "Fertig"), color: "primary" },
+  done: { label: t("Done", "Feddich!"), color: "primary" },
 }))
 
 export function useWorkout() {

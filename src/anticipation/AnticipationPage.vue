@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { mdiClose, mdiPlus } from "@quasar/extras/mdi-v7"
+import { mdiCheck, mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@quasar/extras/mdi-v7"
 import { ref } from "vue"
 import { confirmDialog } from "@/shared/confirm"
 import DeleteAllButton from "@/shared/DeleteAllButton.vue"
 import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatDateTime, isoDay, secondsToString } from "@/shared/time"
+import { formatDateTime, isoDay, pad, secondsToString } from "@/shared/time"
 
-import { ORIGIN } from "./anticipation"
+import { type Countdown, ORIGIN } from "./anticipation"
 import { topLabel, useAnticipation } from "./useAnticipation"
 
 const { events, sorted, add, remove } = useAnticipation()
@@ -15,9 +15,18 @@ const { events, sorted, add, remove } = useAnticipation()
 const inputName = ref("")
 const inputDate = ref(isoDay(new Date()))
 const inputTime = ref("")
+const editing = ref<Countdown>()
+
+function edit(event: Countdown) {
+  editing.value = event
+  inputName.value = event.name
+  inputDate.value = isoDay(event.date)
+  inputTime.value = `${event.date.getHours()}:${pad(event.date.getMinutes())}`
+}
 
 function submit() {
-  if (add(inputName.value, inputDate.value, inputTime.value)) {
+  if (add(inputName.value, inputDate.value, inputTime.value, editing.value)) {
+    editing.value = undefined
     inputName.value = ""
     inputDate.value = isoDay(new Date())
     inputTime.value = ""
@@ -70,8 +79,8 @@ function submit() {
           type="submit"
           color="primary"
           unelevated
-          :icon="mdiPlus"
-          :aria-label="t('Add', 'Hinzufügen')"
+          :icon="editing == null ? mdiPlus : mdiCheck"
+          :aria-label="editing == null ? t('Add', 'Hinzufügen') : t('Save', 'Speichern')"
         />
       </div>
     </form>
@@ -108,14 +117,38 @@ function submit() {
         </q-item-section>
         <q-item-section side>
           <q-btn
-            :id="`btn-del-row-${index}`"
+            :id="`btn-menu-row-${index}`"
             type="button"
             flat
             round
-            :icon="mdiClose"
-            :aria-label="t('Delete event', 'Ereignis löschen')"
-            @click="confirmDialog(t(`Delete ${event.name}?`, `${event.name} löschen?`), () => remove(event))"
-          />
+            dense
+            :icon="mdiDotsVertical"
+            :aria-label="t(`Menu ${event.name}`, `Menü ${event.name}`)"
+          >
+            <q-menu auto-close>
+              <q-list dense>
+                <q-item
+                  clickable
+                  @click="edit(event)"
+                >
+                  <q-item-section avatar>
+                    <q-icon :name="mdiPencil" />
+                  </q-item-section>
+                  <q-item-section>{{ t("Edit", "Bearbeiten") }}</q-item-section>
+                </q-item>
+                <q-item
+                  :id="`btn-del-row-${index}`"
+                  clickable
+                  @click="confirmDialog(t(`Delete ${event.name}?`, `${event.name} löschen?`), () => remove(event))"
+                >
+                  <q-item-section avatar>
+                    <q-icon :name="mdiDelete" />
+                  </q-item-section>
+                  <q-item-section>{{ t("Delete", "Löschen") }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
         </q-item-section>
       </q-item>
     </q-list>

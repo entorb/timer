@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { mdiCog, mdiPause, mdiPlay, mdiRestart, mdiSkipNext, mdiSkipPrevious } from "@quasar/extras/mdi-v7"
-import { computed, ref, watch } from "vue"
+import { computed, ref, watch, watchEffect } from "vue"
 import { t } from "@/shared/i18n"
 import ListSelect from "@/shared/ListSelect.vue"
 import ProgressRing from "@/shared/ProgressRing.vue"
@@ -17,17 +17,43 @@ const atStart = computed(() => !running.value && elapsedMs.value === 0)
 
 // prepare + rest drain full -> empty, work fills up
 const drains = (phase: Phase) => phase === "prepare" || phase === "rest"
-const ringValue = computed(() => (drains(pos.value.phase) ? 1 - pos.value.progress : pos.value.progress))
+// while running the ring targets the end of the next second, so the 1s linear animation lands exactly on the next tick
+const progress = computed(() => {
+  const { remainingMs, progress: p } = pos.value
+  if (!running.value || remainingMs === 0) return p
+  // segment duration = remainingMs / (1 - p)
+  return Math.min(1, p + (1000 * (1 - p)) / remainingMs)
+})
+const toRing = (p: number) => (drains(pos.value.phase) ? 1 - p : p)
+const target = computed(() => toRing(progress.value))
 
-// animate along the phase direction (Quasar default speed), jump instantly on reset / skip / segment switch
-const animationSpeed = ref(600)
+// animate along the phase direction (one tick, linear = smooth); on reset / skip / segment switch
+// jump to the actual (unshifted) value, e.g. full, then animate towards the lookahead target after paint
+const ringValue = ref(0)
+const animationSpeed = ref(1000)
 watch(
-  () => [pos.value.phase, pos.value.rep, ringValue.value] as const,
+  () => [pos.value.phase, pos.value.rep, target.value] as const,
   ([phase, rep, value], [oldPhase, oldRep, old]) => {
     const backwards = drains(phase) ? value > old : value < old
-    animationSpeed.value = phase !== oldPhase || rep !== oldRep || backwards ? 0 : 600
+    if (phase === oldPhase && rep === oldRep && !backwards) {
+      animationSpeed.value = 1000
+      ringValue.value = value
+      return
+    }
+    animationSpeed.value = 0
+    ringValue.value = toRing(pos.value.progress)
+    /* c8 ignore next 6 */
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        animationSpeed.value = 1000
+        ringValue.value = target.value
+      }),
+    )
   },
 )
+watchEffect(() => {
+  if (!running.value) ringValue.value = target.value
+})
 
 // round up, so it shows 0:20 at start and 0:00 only at the very end
 const display = computed(() => formatClock(Math.ceil(pos.value.remainingMs / 1000) * 1000))
@@ -54,11 +80,18 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
     padding
     class="column items-center page-gap"
   >
+    <div
+      v-if="running"
+      id="wo-title"
+      class="text-h6 text-weight-bold"
+    >
+      {{ workout.name }}
+    </div>
     <ListSelect
+      v-else
       v-model="selectedId"
       :items="workouts"
       :label="t('Workout', 'Workout')"
-      :disable="running"
       style="max-width: 400px"
       @add="add"
       @remove="remove"
@@ -79,10 +112,20 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         :color="PHASES[pos.phase].color"
         :animation-speed="animationSpeed"
       >
-        <span
-          id="wo-time"
-          class="wo-time"
-        >{{ display }}</span>
+        <div class="column items-center">
+          <span
+            id="wo-round"
+            class="text-h6"
+          >{{ pos.rep }}/{{ workout.reps }}</span>
+          <span
+            id="wo-time"
+            class="wo-time"
+          >{{ display }}</span>
+          <span
+            id="wo-total"
+            class="text-grey-7 text-h6"
+          >{{ totalLeft }}</span>
+        </div>
       </ProgressRing>
       <q-btn
         v-if="!running && !atStart && pos.phase !== 'done'"
@@ -96,11 +139,6 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         class="absolute-top-right"
         @click="reset"
       />
-    </div>
-
-    <div class="text-h6">
-      {{ t("Round", "Runde") }} {{ pos.rep }} / {{ workout.reps }}
-      <span class="text-grey-7 text-body1">· {{ t("Total left", "Gesamt übrig") }} {{ totalLeft }}</span>
     </div>
 
     <div class="row q-gutter-lg items-center">
