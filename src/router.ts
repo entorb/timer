@@ -17,7 +17,7 @@ export const tabs = [
     name: "Anticipation",
     nameDe: "Vorfreude",
     icon: mdiPartyPopper,
-    desc: "Count down to events: vacation, birthday, concert, Christmas, ...",
+    desc: "Count down to events: vacation, birthday, concert, Christmas...",
     descDe: "Countdown bis zu Ereignissen, Urlaub, Geburtstag, Konzert, Weihnachten...",
     component: () => import("./anticipation/AnticipationPage.vue"),
   },

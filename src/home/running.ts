@@ -16,6 +16,7 @@ export interface Running {
   days?: number // anticipation: calendar days
   phase?: string // workout / pomodoro phase
   lapMs?: number // stopwatch: current lap
+  stageMs?: number // workout: remaining in current stage
 }
 
 // persisted states of all sub-apps, as read from localStorage
@@ -46,8 +47,10 @@ function workoutItems(
 ) {
   if (w == null || st?.startTs == null) return []
   const endTs = st.startTs + wo.totalMs(w)
-  const { phase } = wo.position(w, now - st.startTs)
-  return endTs > since ? [{ ...countdown("/workout", endTs, now, w.name), phase }] : []
+  const { phase, remainingMs } = wo.position(w, now - st.startTs)
+  return endTs > since
+    ? [{ ...countdown("/workout", endTs, now, w.name), phase, stageMs: remainingMs }]
+    : []
 }
 
 function pomoItems(s: pomo.PomoSettings, st: pomo.PomoState | undefined, now: number) {

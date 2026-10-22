@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/vue"
 import { computed, ref, watch } from "vue"
 import { readJson, writeJson } from "@/shared/storage"
 import { DAY_MS } from "@/shared/time"
@@ -24,6 +25,7 @@ export function useGeo() {
   /* c8 ignore start */
   function locate() {
     if (!("geolocation" in navigator)) {
+      Sentry.captureMessage("geolocation unsupported", "warning")
       failed.value = true
       return
     }
@@ -34,11 +36,14 @@ export function useGeo() {
         coords.value = { lat: round(p.coords.latitude), lon: round(p.coords.longitude) }
         failed.value = false
       },
-      () => {
+      // denied (user choice, also iOS PWA without Safari permission): not reported; unavailable, timeout: report
+      (e) => {
+        if (e.code !== e.PERMISSION_DENIED)
+          Sentry.captureMessage(`geolocation failed: ${e.code} ${e.message}`, "warning")
         failed.value = true
       },
-      // no GPS: network/wifi position, cached up to 1 day
-      { enableHighAccuracy: false, maximumAge: DAY_MS },
+      // no GPS: network/wifi position, cached up to 1 day; timeout: iOS may never call back
+      { enableHighAccuracy: false, maximumAge: DAY_MS, timeout: 15_000 },
     )
   }
   /* c8 ignore stop */

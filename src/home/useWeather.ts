@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/vue"
 import { onActivated, onDeactivated, onScopeDispose, type Ref, ref, watch } from "vue"
 import { readJson, writeJson } from "@/shared/storage"
 import type { Coords } from "./useGeo"
@@ -8,12 +9,18 @@ const REFRESH_MS = 15 * 60_000
 
 /* c8 ignore start */
 async function load(c: Coords): Promise<Weather | undefined> {
+  let response: Response
   try {
-    const response = await fetch(weatherUrl(c))
-    return response.ok ? parseWeather(await response.json(), c, Date.now()) : undefined
+    response = await fetch(weatherUrl(c))
   } catch {
     return undefined // offline: keep cached forecast
   }
+  if (!response.ok) {
+    Sentry.captureMessage(`weather HTTP ${response.status}`, "warning")
+    return undefined
+  }
+  // parse errors (API change) reject unhandled → Sentry
+  return parseWeather(await response.json(), c, Date.now())
 }
 /* c8 ignore stop */
 

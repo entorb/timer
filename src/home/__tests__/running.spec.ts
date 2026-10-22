@@ -58,7 +58,14 @@ describe("runningItems", () => {
     expect(runningItems(src, NOW)).toEqual([
       { path: "/anticipation", label: "Xmas", ms: 5000, days: 0, endTs: NOW + 5000 },
       { path: "/anticipation", label: "Past", ms: 3000, days: 0 },
-      { path: "/workout", label: "Tabata", ms: 234_000, endTs: NOW + 234_000, phase: "prepare" },
+      {
+        path: "/workout",
+        label: "Tabata",
+        ms: 234_000,
+        endTs: NOW + 234_000,
+        phase: "prepare",
+        stageMs: 4000,
+      },
       { path: "/eta", label: "Queue", ms: 8000, endTs: NOW + 8000 },
       { path: "/multitimer", label: "Tea", ms: 2000, endTs: NOW + 2000 },
       { path: "/stopwatch", label: "A", ms: 4000, lapMs: 1000 },

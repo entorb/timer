@@ -9,11 +9,11 @@ export interface Countdown {
 export const ORIGIN = "tmr-ant"
 const KEY_DATA = "tmr-ant-data"
 
-// "2" -> 2:00, "14" -> 14:00, "2000" / "20:00" / "20.00" -> 20:00, "930" -> 9:30, "" -> 0:00
+// "2" -> 2:00, "14" -> 14:00, "2000" / "20:00" / "20.00" -> 20:00, "930" -> 9:30, "" -> 8:00
 // undefined if invalid
 export function parseTime(raw: string): { hour: number; minute: number } | undefined {
   const input = raw.trim()
-  if (input === "") return { hour: 0, minute: 0 }
+  if (input === "") return { hour: 8, minute: 0 }
   const match = /^(\d{1,2})(?:[:.](\d{1,2})|(\d{2}))?$/.exec(input)
   const hour = Number(match?.[1])
   const minute = Number(match?.[2] ?? match?.[3] ?? 0)
