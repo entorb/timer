@@ -1,3 +1,5 @@
+import { readJson } from "@/shared/storage"
+
 export type Phase = "focus" | "short" | "long"
 
 export interface PomoSettings {
@@ -22,6 +24,19 @@ export const initialState = (s: PomoSettings): PomoState => ({
   phase: "focus",
   round: 1,
   remainingMs: phaseMs(s, "focus"),
+})
+
+export const ORIGIN = "tmr-pomo"
+export const KEY_SETTINGS = "tmr-pomo-settings"
+export const KEY_STATE = "tmr-pomo-state"
+
+export const loadSettings = (): PomoSettings => ({
+  ...DEFAULT_SETTINGS,
+  ...readJson(KEY_SETTINGS, {}),
+})
+export const loadState = (s: PomoSettings): PomoState => ({
+  ...initialState(s),
+  ...readJson(KEY_STATE, {}),
 })
 
 // untouched since start or reset: nothing to reset

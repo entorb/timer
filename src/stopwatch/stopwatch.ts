@@ -1,4 +1,10 @@
 import { calculateWeightedLinearRegression } from "@/eta/helperLinReg"
+import { readJson } from "@/shared/storage"
+
+export const ORIGIN = "tmr-sw"
+export const KEY_DATA = "tmr-sw-data"
+
+export const loadAthletes = (fallback: Athlete[] = []) => readJson(KEY_DATA, fallback)
 
 export interface Athlete {
   id: number

@@ -2,11 +2,12 @@
 import { mdiClose, mdiPlus } from "@quasar/extras/mdi-v7"
 import { ref } from "vue"
 import { confirmDialog } from "@/shared/confirm"
+import DeleteAllButton from "@/shared/DeleteAllButton.vue"
 import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatDateTime, secondsToString } from "@/shared/time"
+import { formatDateTime, isoDay, secondsToString } from "@/shared/time"
 
-import { isoDay } from "./anticipation"
+import { ORIGIN } from "./anticipation"
 import { topLabel, useAnticipation } from "./useAnticipation"
 
 const { events, sorted, add, remove } = useAnticipation()
@@ -23,11 +24,6 @@ function submit() {
   }
 }
 
-function confirmDeleteAll() {
-  confirmDialog(t("Delete all?", "Alle löschen?"), () => {
-    events.value = []
-  })
-}
 </script>
 
 <template>
@@ -84,15 +80,9 @@ function confirmDeleteAll() {
       v-if="events.length > 0"
       class="row justify-center"
     >
-      <q-btn
-        id="btn-deleteAll"
-        type="button"
-        flat
-        round
-        color="negative"
-        :icon="mdiClose"
-        :aria-label="t('Delete all events', 'Alle Ereignisse löschen')"
-        @click="confirmDeleteAll"
+      <DeleteAllButton
+        :label="t('Delete all events', 'Alle Ereignisse löschen')"
+        @confirmed="events = []"
       />
     </div>
 
@@ -130,6 +120,6 @@ function confirmDeleteAll() {
       </q-item>
     </q-list>
 
-    <StatsLine origin="tmr-ant" />
+    <StatsLine :origin="ORIGIN" />
   </q-page>
 </template>

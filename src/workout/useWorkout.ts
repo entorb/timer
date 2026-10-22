@@ -1,4 +1,4 @@
-import { computed, onScopeDispose, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 
 import {
   dueInBackground,
@@ -9,14 +9,12 @@ import {
 } from "@/shared/feedback"
 import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
-import { readJson, writeJson } from "@/shared/storage"
+import { writeJson } from "@/shared/storage"
+import { nowSec } from "@/shared/time"
+import { useClock } from "@/shared/useClock"
 import { useWakeLock } from "@/shared/useWakeLock"
 
 import * as wo from "./workout"
-
-const KEY_WORKOUTS = "tmr-wo-workouts"
-const KEY_SELECTED = "tmr-wo-selected"
-const KEY_STATE = "tmr-wo-state"
 
 const CUE_SOUNDS: Record<wo.Cue, Sound> = {
   beep: SOUNDS.beep,
@@ -34,11 +32,11 @@ export const PHASES = computed<Record<wo.Phase, { label: string; color: string }
 }))
 
 export function useWorkout() {
-  const workouts = ref(readJson<wo.Workout[]>(KEY_WORKOUTS, []))
+  const workouts = ref(wo.loadWorkouts())
   if (workouts.value.length === 0) workouts.value = [{ ...wo.DEFAULT_WORKOUT }]
-  const selectedId = ref(readJson(KEY_SELECTED, wo.DEFAULT_WORKOUT.id))
-  const state = ref(readJson<wo.WorkoutState>(KEY_STATE, { elapsedMs: 0 }))
-  const now = ref(Date.now())
+  const selectedId = ref(wo.loadSelectedId())
+  const state = ref(wo.loadState())
+  const now = useClock({ active: () => running.value, onTick: playCues })
 
   // fallback: selected one was deleted
   const workout = computed(
@@ -52,12 +50,12 @@ export function useWorkout() {
   const elapsedMs = computed(() => Math.min(wo.elapsed(state.value, now.value), total.value))
   const pos = computed(() => wo.position(workout.value, elapsedMs.value))
 
-  watch(workouts, (value) => writeJson(KEY_WORKOUTS, value), { deep: true })
+  watch(workouts, (value) => writeJson(wo.KEY_WORKOUTS, value), { deep: true })
   watch(selectedId, (value) => {
-    writeJson(KEY_SELECTED, value)
+    writeJson(wo.KEY_SELECTED, value)
     reset()
   })
-  watch(state, (value) => writeJson(KEY_STATE, value), { deep: true })
+  watch(state, (value) => writeJson(wo.KEY_STATE, value), { deep: true })
   useWakeLock(running)
   useBackgroundSounds(() => {
     const { startTs } = state.value
@@ -69,9 +67,8 @@ export function useWorkout() {
 
   // elapsed at the previous tick, cues in between get played
   let last = elapsedMs.value
-  function tick() {
+  function playCues() {
     if (!running.value) return
-    now.value = Date.now()
     const startTs = state.value.startTs ?? now.value
     const cues = wo.cuesBetween(workout.value, last, elapsedMs.value)
     // back from background: only the latest cue, no burst
@@ -81,12 +78,10 @@ export function useWorkout() {
     last = elapsedMs.value
     if (elapsedMs.value >= total.value) state.value = { elapsedMs: total.value }
   }
-  tick()
-  const interval = globalThis.setInterval(tick, 250)
-  onScopeDispose(() => globalThis.clearInterval(interval))
+  playCues()
 
   function toggle() {
-    now.value = Date.now()
+    now.value = nowSec()
     if (running.value) {
       state.value = wo.pause(state.value, now.value)
       return
@@ -95,17 +90,17 @@ export function useWorkout() {
     // -1: cues at 0 (go without prepare) are due too
     last = state.value.elapsedMs === 0 ? -1 : state.value.elapsedMs
     state.value = wo.start(state.value, now.value)
-    statsWrite("tmr-wo")
+    statsWrite(wo.ORIGIN)
   }
 
   function reset() {
     state.value = { elapsedMs: 0 }
-    now.value = Date.now()
+    now.value = nowSec()
   }
 
   // jump to next / previous segment start, keeps running
   function skip(dir: 1 | -1) {
-    now.value = Date.now()
+    now.value = nowSec()
     const ms = wo.skipTarget(workout.value, elapsedMs.value, dir)
     last = ms
     state.value = running.value ? { startTs: now.value - ms, elapsedMs: ms } : { elapsedMs: ms }

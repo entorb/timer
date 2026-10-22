@@ -23,10 +23,13 @@ test("Up", async ({ page }) => {
   await enter(page, "#input-items", "1")
   // 1
 
+  // same second would replace the last row
+  await page.clock.fastForward(1000)
   await enter(page, "#input-items", "12")
   await expectFirstLast(page, 1, 12)
   // 1,12
 
+  await page.clock.fastForward(1000)
   await page.locator("#btn-plus-1").click()
   await expectFirstLast(page, 1, 12 + 1)
   // 1,12,13
@@ -46,10 +49,12 @@ test("Down", async ({ page }) => {
   // stored into local storage only after entering of items
 
   await enter(page, "#input-items", "99")
+  await page.clock.fastForward(1000)
   await enter(page, "#input-items", "66")
   await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("0")
   await expectFirstLast(page, 99, 66)
 
+  await page.clock.fastForward(1000)
   await page.locator("#btn-plus-1").click()
   await expectFirstLast(page, 99, 66 - 1)
 
@@ -99,6 +104,7 @@ test("Decimal input", async ({ page }) => {
   await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("12.1")
 
   await enter(page, "#input-items", "0.1")
+  await page.clock.fastForward(1000)
   await enter(page, "#input-items", "0,2")
   await expectFirstLast(page, 0.1, 0.2)
 })
@@ -107,6 +113,7 @@ test("Multiple sets", async ({ page }) => {
   await enter(page, "#input-target", "10")
   await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("10")
   await enter(page, "#input-items", "1")
+  await page.clock.fastForward(1000)
   await enter(page, "#input-items", "2")
   await expectFirstLast(page, 1, 2)
 
@@ -114,6 +121,7 @@ test("Multiple sets", async ({ page }) => {
   await expect(page.locator("#btn-plus-1")).toBeHidden()
   await enter(page, "#input-target", "0")
   await enter(page, "#input-items", "50")
+  await page.clock.fastForward(1000)
   await enter(page, "#input-items", "40")
   await expectFirstLast(page, 50, 40)
 

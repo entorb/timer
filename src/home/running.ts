@@ -1,5 +1,5 @@
 import { type Countdown, remaining } from "@/anticipation/anticipation"
-import { reviveSets, type StoredSet } from "@/eta/sets"
+import type { EtaSet } from "@/eta/sets"
 import { calcStats } from "@/eta/stats"
 import type { MeetingState } from "@/meeting/meeting"
 import type { Timer } from "@/multitimer/timers"
@@ -23,7 +23,7 @@ export interface Sources {
   events: Countdown[]
   workout?: wo.Workout
   workoutState?: wo.WorkoutState
-  etaSets: StoredSet[]
+  etaSets: EtaSet[]
   timers: Timer[]
   athletes: sw.Athlete[]
   meeting?: MeetingState
@@ -64,7 +64,7 @@ export function runningItems(src: Sources, now: number, since = now): Running[] 
     const item = { path: "/anticipation", label: ev.name, ms: seconds * 1000, days }
     return past ? item : { ...item, endTs: ev.date.getTime() }
   })
-  const etas = reviveSets(src.etaSets).flatMap((set) => {
+  const etas = src.etaSets.flatMap((set) => {
     const etaMs = calcStats(set.data, set.target, set.settings.weightedReg)?.etaMs ?? 0
     return etaMs > since ? [countdown("/eta", etaMs, now, set.name)] : []
   })

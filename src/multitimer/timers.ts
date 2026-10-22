@@ -1,5 +1,5 @@
 import { readJson, writeJson } from "@/shared/storage"
-import { parseDecimal, UNIT_SECONDS, type Unit } from "@/shared/time"
+import { nowSec, parseDecimal, UNIT_SECONDS, type Unit } from "@/shared/time"
 
 export interface Timer {
   name: string
@@ -8,6 +8,7 @@ export interface Timer {
 }
 
 // storage keys are kept from the Vue version, so existing user data stays readable
+export const ORIGIN = "tmr-mt"
 const KEY_DATA = "tmr-mt-data"
 const KEY_RECENT = "tmr-mt-recent"
 
@@ -32,7 +33,7 @@ export function parseTimeInput(raw: string): { time: number; unit: Unit } | unde
   return time != null && time > 0 ? { time, unit } : undefined
 }
 
-export function createTimer(name: string, time: number, unit: Unit, now = Date.now()): Timer {
+export function createTimer(name: string, time: number, unit: Unit, now = nowSec()): Timer {
   return {
     name,
     dateStart: new Date(now),

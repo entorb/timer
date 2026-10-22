@@ -1,5 +1,6 @@
 import { computed, ref, watch } from "vue"
 import { readJson, writeJson } from "@/shared/storage"
+import { DAY_MS } from "@/shared/time"
 
 const KEY_GEO = "tmr-geo"
 
@@ -37,7 +38,7 @@ export function useGeo() {
         failed.value = true
       },
       // no GPS: network/wifi position, cached up to 1 day
-      { enableHighAccuracy: false, maximumAge: 86_400_000 },
+      { enableHighAccuracy: false, maximumAge: DAY_MS },
     )
   }
   /* c8 ignore stop */

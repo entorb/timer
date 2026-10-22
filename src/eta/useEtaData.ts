@@ -2,24 +2,23 @@ import { computed, ref, watch } from "vue"
 import { t } from "@/shared/i18n"
 import { statsWrite } from "@/shared/stats"
 import { readJson, writeJson } from "@/shared/storage"
+import { DAY_MS, roundTs } from "@/shared/time"
 
 import { helperCalcSpeedFromPreviousRow } from "./helper"
-import { DEFAULT_SETTINGS, type EtaSet, newSet, reviveSets, type StoredSet } from "./sets"
+import { DEFAULT_SETTINGS, type EtaSet, KEY_SETS, loadSets, newSet, ORIGIN } from "./sets"
 import type { DataRowRedType, DataRowType } from "./types"
 
-const KEY_SETS = "tmr-eta-sets"
 const KEY_SELECTED = "tmr-eta-selected"
-const DAY_IN_MS = 86_400 * 1000
 
 const setName = (n: number) => `${t("ETA", "ETA")} ${n}`
 
-const loadSets = (): EtaSet[] => {
-  const stored = reviveSets(readJson<StoredSet[]>(KEY_SETS, []))
+const loadOrNew = (): EtaSet[] => {
+  const stored = loadSets()
   return stored.length > 0 ? stored : [newSet(setName(1))]
 }
 
 export function useEtaData() {
-  const sets = ref(loadSets())
+  const sets = ref(loadOrNew())
   const selectedId = ref(readJson(KEY_SELECTED, ""))
 
   watch(sets, (value) => writeJson(KEY_SETS, value), { deep: true, immediate: true })
@@ -51,12 +50,15 @@ export function useEtaData() {
   const showDays = computed(() => {
     const first = data.value[0]?.date.getTime() ?? 0
     const last = data.value.at(-1)?.date.getTime() ?? 0
-    return last - first >= DAY_IN_MS
+    return last - first >= DAY_MS
   })
 
+  // whole seconds; same second as the last row replaces it (zero time delta = no speed)
   function addRow(row: DataRowRedType) {
-    data.value.push(row)
-    if (data.value.length === 3) statsWrite("tmr-eta")
+    const date = new Date(roundTs(row.date.getTime()))
+    if (data.value.at(-1)?.date.getTime() === date.getTime()) data.value.pop()
+    data.value.push({ ...row, date })
+    if (data.value.length === 3) statsWrite(ORIGIN)
   }
 
   function updateRow(index: number, row: DataRowRedType) {

@@ -4,11 +4,11 @@ import { topLabel } from "@/anticipation/useAnticipation"
 import { PHASES as POMO_PHASES } from "@/pomodoro/usePomodoro"
 import { tabs } from "@/router"
 import { t } from "@/shared/i18n"
-import { formatClock, formatDateTime } from "@/shared/time"
+import { DAY_MS, formatClock, formatDateTime } from "@/shared/time"
+import { useClock } from "@/shared/useClock"
 import { PHASES as WO_PHASES } from "@/workout/useWorkout"
 import DayClock from "./DayClock.vue"
 import type { Running } from "./running"
-import { useClock } from "./useClock"
 import { useRunning } from "./useRunning"
 
 // one tick for clock and running list
@@ -18,11 +18,12 @@ const running = useRunning(now)
 // countdowns round up (like their pages): 0:00 only at the very end
 const duration = (r: Running) => formatClock(r.endTs == null ? r.ms : Math.ceil(r.ms / 1000) * 1000)
 
-function phaseLabel(path: string, phase?: string): string {
-  const phases: Record<string, { label: string }> =
-    path === "/pomodoro" ? POMO_PHASES.value : WO_PHASES.value
-  return phase == null ? "" : (phases[phase]?.label ?? "")
+const PHASES: Record<string, typeof POMO_PHASES | typeof WO_PHASES> = {
+  "/pomodoro": POMO_PHASES,
+  "/workout": WO_PHASES,
 }
+const phaseLabel = (path: string, phase?: string): string =>
+  phase == null ? "" : ((PHASES[path]?.value as Record<string, { label: string }>)?.[phase]?.label ?? "")
 const items = computed(() =>
   running.value.map((r) => {
     const tab = tabs.find((tb) => tb.path === r.path)
@@ -34,7 +35,7 @@ const items = computed(() =>
       lap: r.lapMs == null ? "" : formatClock(r.lapMs),
       time:
         r.days == null ? duration(r) : topLabel(r.ms / 1000, r.days, r.endTs == null),
-      end: r.endTs == null || r.days != null ? "" : formatDateTime(new Date(r.endTs), r.ms >= 86_400_000),
+      end: r.endTs == null || r.days != null ? "" : formatDateTime(new Date(r.endTs), r.ms >= DAY_MS),
     }
   }),
 )

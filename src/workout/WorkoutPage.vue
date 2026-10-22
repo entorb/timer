@@ -6,9 +6,9 @@ import ListSelect from "@/shared/ListSelect.vue"
 import ProgressRing from "@/shared/ProgressRing.vue"
 import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
-
 import { PHASES, useWorkout } from "./useWorkout"
 import type { Phase } from "./workout"
+import { ORIGIN } from "./workout"
 
 const { workouts, selectedId, workout, running, pos, total, elapsedMs, toggle, reset, skip, add, remove } =
   useWorkout()
@@ -164,7 +164,7 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
     </q-expansion-item>
 
     <StatsLine
-      origin="tmr-wo"
+      :origin="ORIGIN"
     />
   </q-page>
 </template>

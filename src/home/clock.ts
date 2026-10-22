@@ -48,6 +48,6 @@ export function ringGradient(sunrise = 6, sunset = 18): string {
   return `conic-gradient(from ${m.midnight * 15}deg, ${list})`
 }
 
-// "18.10.26": always German format, like formatDateTime
+// "18.10.": always German format, like formatDateTime
 export const formatDay = (date: Date): string =>
-  date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" })
+  date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" })

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import {
   calendarDays,
   finalCountdown,
-  isoDay,
   loadEvents,
   parseTime,
   remaining,
@@ -53,10 +52,6 @@ describe("parseTime", () => {
   it.each(["24", "12:60", "2460", "12345", "abc", "1:2:3"])("rejects '%s'", (input) => {
     expect(parseTime(input)).toBeUndefined()
   })
-})
-
-it("isoDay is local date", () => {
-  expect(isoDay(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05")
 })
 
 it("calendarDays across DST", () => {

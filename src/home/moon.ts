@@ -1,10 +1,11 @@
+import { DAY_MS } from "@/shared/time"
+
 // moon phase from mean synodic month
 // ponytail: mean cycle ignores orbit eccentricity, phase off by up to ~0.5 day; upgrade = Meeus lunar phase terms
 
 const SYNODIC_DAYS = 29.530588853
 // reference new moon 2000-01-06 18:14 UTC
 const NEW_MOON_MS = Date.UTC(2000, 0, 6, 18, 14)
-const DAY_MS = 86_400_000
 
 // 0 new, 0.25 first quarter, 0.5 full, 0.75 last quarter
 export function moonPhase(date: Date): number {
