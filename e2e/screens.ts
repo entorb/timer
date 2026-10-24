@@ -142,8 +142,8 @@ test("workout", async ({ page }) => {
   await shot(page, "workout-03-work-pause")
   await page.locator("#btn-wo-toggle").click()
 
-  // 5s prepare + 20s work → rest
-  await page.clock.fastForward(22_000)
+  // 5s prepare + 60s work → 3s rest
+  await page.clock.fastForward(58_000)
   await expect(page.locator("#wo-phase")).toHaveText(tr("Rest", "Pause"))
   await shot(page, "workout-04-rest")
 

@@ -9,6 +9,10 @@ test("Workout: prepare, work, add persists", async ({ page }) => {
   await expect(page.locator("#wo-phase")).toHaveText("Work")
   await page.getByRole("button", { name: "Pause" }).click()
   await page.getByRole("button", { name: "Add: Workout" }).click()
+  await page.getByLabel("Work (s)").fill("180")
+  await page.getByLabel("Rest (s)").fill("30")
+  await page.locator("#btn-wo-save").click()
+  await expect(page.getByText("180/30x4")).toBeVisible()
   const count = () =>
     page.evaluate(() => JSON.parse(localStorage.getItem("tmr-wo-workouts") ?? "[]").length)
   await expect.poll(count).toBe(2)

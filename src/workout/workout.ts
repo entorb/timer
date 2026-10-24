@@ -7,8 +7,7 @@ export type Cue = "beep" | "go" | "tick" | "gong" | "cheers"
 export interface Workout {
   id: string
   name: string
-  prepare: number // seconds
-  work: number
+  work: number // seconds
   rest: number
   reps: number
 }
@@ -25,21 +24,29 @@ export interface Segment {
   duration: number
 }
 
+const PREPARE_S = 5
+
 export const DEFAULT_WORKOUT: Workout = {
-  id: "tabata",
-  name: "Tabata",
-  prepare: 5,
-  work: 20,
-  rest: 10,
-  reps: 8,
+  id: "default",
+  name: "60/3x4",
+  work: 60,
+  rest: 3,
+  reps: 4,
 }
+
+export const autoName = (w: Omit<Workout, "id" | "name">) => `${w.work}/${w.rest}x${w.reps}`
 
 export const ORIGIN = "tmr-wo"
 export const KEY_WORKOUTS = "tmr-wo-workouts"
 export const KEY_SELECTED = "tmr-wo-selected"
 export const KEY_STATE = "tmr-wo-state"
 
-export const loadWorkouts = () => readJson<Workout[]>(KEY_WORKOUTS, [])
+// TODO: remove after 25.10.2026
+// migration: drop old `prepare` field and old Tabata default
+export const loadWorkouts = () =>
+  readJson<Array<Workout & { prepare?: number }>>(KEY_WORKOUTS, [])
+    .filter((w) => w.id !== "tabata")
+    .map(({ prepare: _, ...w }) => w)
 export const loadSelectedId = () => readJson(KEY_SELECTED, DEFAULT_WORKOUT.id)
 export const loadState = () => readJson<WorkoutState>(KEY_STATE, { elapsedMs: 0 })
 
@@ -52,7 +59,7 @@ export function segments(w: Workout): Segment[] {
     list.push({ phase, rep, start, duration: seconds * 1000 })
     start += seconds * 1000
   }
-  push("prepare", 0, w.prepare)
+  push("prepare", 0, PREPARE_S)
   for (let rep = 1; rep <= w.reps; rep++) {
     push("work", rep, w.work)
     if (rep < w.reps) push("rest", rep, w.rest)
@@ -60,7 +67,7 @@ export function segments(w: Workout): Segment[] {
   return list
 }
 
-export const totalMs = (w: Workout) => (w.prepare + w.reps * w.work + (w.reps - 1) * w.rest) * 1000
+export const totalMs = (w: Workout) => (PREPARE_S + w.reps * w.work + (w.reps - 1) * w.rest) * 1000
 
 export const isRunning = (st: WorkoutState) => st.startTs != null
 
@@ -95,7 +102,7 @@ export function formatPhaseTime(remainingMs: number, durationMs: number): string
   return durationMs < 100_000 ? `${seconds}` : formatClock(seconds * 1000)
 }
 
-// most recently used first
+// most recently started first
 export function touchWorkout(workouts: Workout[], id: string): Workout[] {
   const index = workouts.findIndex((w) => w.id === id)
   const used = workouts[index]

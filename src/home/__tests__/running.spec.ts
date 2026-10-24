@@ -60,9 +60,9 @@ describe("runningItems", () => {
       { path: "/anticipation", label: "Past", ms: 3000, days: 0 },
       {
         path: "/workout",
-        label: "Tabata",
-        ms: 234_000,
-        endTs: NOW + 234_000,
+        label: "60/3x4",
+        ms: 253_000,
+        endTs: NOW + 253_000,
         phase: "prepare",
         stageMs: 4000,
       },
