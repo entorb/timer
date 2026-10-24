@@ -130,7 +130,7 @@ test("pomodoro", async ({ page }) => {
 
 test("workout", async ({ page }) => {
   await page.goto("./workout")
-  await expect(page.locator("#wo-time")).toHaveText("0:05")
+  await expect(page.locator("#wo-time")).toHaveText("5")
   await shot(page, "workout-01-prepare")
 
   await page.locator("#btn-wo-toggle").click()

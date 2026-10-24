@@ -32,9 +32,9 @@ export const PHASES = computed<Record<wo.Phase, { label: string; color: string }
 }))
 
 export function useWorkout() {
-  const workouts = ref(wo.loadWorkouts())
-  if (workouts.value.length === 0) workouts.value = [{ ...wo.DEFAULT_WORKOUT }]
   const selectedId = ref(wo.loadSelectedId())
+  const workouts = ref(wo.touchWorkout(wo.loadWorkouts(), selectedId.value))
+  if (workouts.value.length === 0) workouts.value = [{ ...wo.DEFAULT_WORKOUT }]
   const state = ref(wo.loadState())
   const now = useClock({ active: () => running.value, onTick: playCues })
 
@@ -53,6 +53,7 @@ export function useWorkout() {
   watch(workouts, (value) => writeJson(wo.KEY_WORKOUTS, value), { deep: true })
   watch(selectedId, (value) => {
     writeJson(wo.KEY_SELECTED, value)
+    workouts.value = wo.touchWorkout(workouts.value, value)
     reset()
   })
   watch(state, (value) => writeJson(wo.KEY_STATE, value), { deep: true })

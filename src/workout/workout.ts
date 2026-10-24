@@ -1,4 +1,5 @@
 import { readJson } from "@/shared/storage"
+import { formatClock } from "@/shared/time"
 
 export type Phase = "prepare" | "work" | "rest" | "done"
 export type Cue = "beep" | "go" | "tick" | "gong" | "cheers"
@@ -75,9 +76,32 @@ export const pause = (st: WorkoutState, now: number): WorkoutState => ({
 
 export function position(w: Workout, elapsedMs: number) {
   const seg = segments(w).find((s) => elapsedMs < s.start + s.duration)
-  if (seg == null) return { phase: "done" as Phase, rep: w.reps, remainingMs: 0, progress: 1 }
+  if (seg == null) {
+    return { phase: "done" as Phase, rep: w.reps, remainingMs: 0, duration: 0, progress: 1 }
+  }
   const remainingMs = seg.start + seg.duration - elapsedMs
-  return { phase: seg.phase, rep: seg.rep, remainingMs, progress: 1 - remainingMs / seg.duration }
+  return {
+    phase: seg.phase,
+    rep: seg.rep,
+    remainingMs,
+    duration: seg.duration,
+    progress: 1 - remainingMs / seg.duration,
+  }
+}
+
+// short phases stay in seconds ("20"), longer ones use m:ss ("2:05")
+export function formatPhaseTime(remainingMs: number, durationMs: number): string {
+  const seconds = Math.ceil(remainingMs / 1000)
+  return durationMs < 100_000 ? `${seconds}` : formatClock(seconds * 1000)
+}
+
+// most recently used first
+export function touchWorkout(workouts: Workout[], id: string): Workout[] {
+  const index = workouts.findIndex((w) => w.id === id)
+  const used = workouts[index]
+  return used == null || index === 0
+    ? workouts
+    : [used, ...workouts.slice(0, index), ...workouts.slice(index + 1)]
 }
 
 // all cues of the workout with their time, sorted

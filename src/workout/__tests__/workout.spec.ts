@@ -4,12 +4,14 @@ import {
   cuesBetween,
   DEFAULT_WORKOUT,
   elapsed,
+  formatPhaseTime,
   pause,
   position,
   segments,
   skipTarget,
   start,
   totalMs,
+  touchWorkout,
 } from "../workout"
 
 const w = DEFAULT_WORKOUT
@@ -27,11 +29,27 @@ describe("workout", () => {
   })
 
   it("position at boundaries", () => {
-    expect(position(w, 0)).toMatchObject({ phase: "prepare", remainingMs: 5 * S })
+    expect(position(w, 0)).toMatchObject({ phase: "prepare", remainingMs: 5 * S, duration: 5 * S })
     expect(position(w, 5 * S)).toMatchObject({ phase: "work", rep: 1, remainingMs: 20 * S })
     expect(position(w, 25 * S)).toMatchObject({ phase: "rest", rep: 1, remainingMs: 10 * S })
     expect(position(w, 35 * S)).toMatchObject({ phase: "work", rep: 2 })
-    expect(position(w, 235 * S)).toMatchObject({ phase: "done", remainingMs: 0 })
+    expect(position(w, 235 * S)).toMatchObject({ phase: "done", remainingMs: 0, duration: 0 })
+  })
+
+  it("formats short phases as seconds, long phases as m:ss", () => {
+    expect(formatPhaseTime(5 * S, 5 * S)).toBe("5")
+    expect(formatPhaseTime(99 * S, 99 * S)).toBe("99")
+    expect(formatPhaseTime(99 * S, 100 * S)).toBe("1:39")
+    expect(formatPhaseTime(125 * S, 300 * S)).toBe("2:05")
+    expect(formatPhaseTime(0, 20 * S)).toBe("0")
+    expect(formatPhaseTime(0, 0)).toBe("0")
+  })
+
+  it("moves the most recently used workout first", () => {
+    const workouts = [w, { ...w, id: "b" }, { ...w, id: "c" }]
+    expect(touchWorkout(workouts, "c").map((wo) => wo.id)).toEqual(["c", "tabata", "b"])
+    expect(touchWorkout(workouts, "tabata")).toBe(workouts)
+    expect(touchWorkout(workouts, "missing")).toBe(workouts)
   })
 
   it("pause and resume keeps elapsed", () => {
