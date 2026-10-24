@@ -31,7 +31,7 @@ export interface Weather extends Coords {
 
 // unixtime: hours map to device-local time like the ring; timezone=auto: today = location's day
 export const weatherUrl = (c: Coords) =>
-  `${API}?latitude=${c.lat}&longitude=${c.lon}&hourly=temperature_2m,weather_code&forecast_days=1&timezone=auto&timeformat=unixtime`
+  `${API}?latitude=${c.lat}&longitude=${c.lon}&hourly=temperature_2m,weather_code&forecast_days=2&timezone=auto&timeformat=unixtime`
 
 interface Response {
   hourly?: { time?: unknown; weather_code?: unknown; temperature_2m?: unknown }
@@ -68,18 +68,20 @@ export interface Hour {
   temp: number
 }
 
-// today's local hours with data
-export function todayHours(w: Weather, now: number): Hour[] {
+// next 24 local hours with data, sorted by ring hour: today from 2h ago (not before 0:00), earlier hours show tomorrow
+export function ringHours(w: Weather, now: number): Hour[] {
   const day = new Date(now)
   day.setHours(0, 0, 0, 0)
-  const start = day.getTime()
-  return w.time.flatMap((t, i) => {
-    const ms = t * 1000
-    const code = w.code[i]
-    const temp = w.temp[i]
-    const skip = ms < start || ms >= start + DAY_MS || code == null || temp == null
-    return skip ? [] : [{ hour: new Date(ms).getHours(), code, temp }]
-  })
+  const start = Math.max(day.getTime(), Math.floor(now / HOUR_MS) * HOUR_MS - 2 * HOUR_MS)
+  return w.time
+    .flatMap((t, i) => {
+      const ms = t * 1000
+      const code = w.code[i]
+      const temp = w.temp[i]
+      const skip = ms < start || ms >= start + DAY_MS || code == null || temp == null
+      return skip ? [] : [{ hour: new Date(ms).getHours(), code, temp }]
+    })
+    .sort((x, y) => x.hour - y.hour)
 }
 
 const MIN_SPAN = 8
@@ -102,9 +104,8 @@ export function tempGradient(hours: Hour[]): string | undefined {
   return `conic-gradient(${stops.join(", ")}, ${tempColor(first.temp, lo, hi)} 360deg)`
 }
 
-// even hours like the ring numbers; past hours hidden unless < 3h old
-export const tempLabels = (hours: Hour[], nowHour: number): Hour[] =>
-  hours.filter((h) => h.hour % 2 === 0 && h.hour > nowHour - 3)
+// even hours like the ring numbers
+export const tempLabels = (hours: Hour[]): Hour[] => hours.filter((h) => h.hour % 2 === 0)
 
 const SUN = "#facc15"
 const SUN_PALE = "#fde68a"
