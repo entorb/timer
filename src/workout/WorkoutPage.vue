@@ -8,7 +8,7 @@ import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 import { PHASES, useWorkout } from "./useWorkout"
 import type { Phase } from "./workout"
-import { ORIGIN } from "./workout"
+import { formatPhaseTime, ORIGIN } from "./workout"
 
 const { workouts, selectedId, workout, running, pos, total, elapsedMs, toggle, reset, skip, add, remove } =
   useWorkout()
@@ -55,9 +55,15 @@ watchEffect(() => {
   if (!running.value) ringValue.value = target.value
 })
 
-// round up, so it shows 0:20 at start and 0:00 only at the very end
-const display = computed(() => formatClock(Math.ceil(pos.value.remainingMs / 1000) * 1000))
+// round up: a short phase starts at its full seconds and reaches 0 only at the very end
+const display = computed(() => formatPhaseTime(pos.value.remainingMs, pos.value.duration))
 const totalLeft = computed(() => formatClock(Math.ceil((total.value - elapsedMs.value) / 1000) * 1000))
+// empty instead of hidden, so the count above and below keeps the timer centered
+const round = computed(() =>
+  pos.value.phase === "work" && pos.value.rep === workout.value.reps
+    ? ""
+    : `${pos.value.rep}/${workout.value.reps}`,
+)
 
 const fields = computed(
   () =>
@@ -83,7 +89,8 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
     <div
       v-if="running"
       id="wo-title"
-      class="text-h6 text-weight-bold"
+      class="text-h6 text-weight-bold full-width"
+      style="max-width: 400px"
     >
       {{ workout.name }}
     </div>
@@ -115,15 +122,16 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
         <div class="column items-center">
           <span
             id="wo-round"
-            class="text-h6"
-          >{{ pos.rep }}/{{ workout.reps }}</span>
+            class="text-grey-7 text-h5"
+          >{{ round }}</span>
           <span
             id="wo-time"
             class="wo-time"
           >{{ display }}</span>
           <span
+            v-if="pos.phase !== 'work' || pos.rep < workout.reps"
             id="wo-total"
-            class="text-grey-7 text-h6"
+            class="text-grey-7 text-h5"
           >{{ totalLeft }}</span>
         </div>
       </ProgressRing>
