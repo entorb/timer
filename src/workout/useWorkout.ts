@@ -33,7 +33,8 @@ export const PHASES = computed<Record<wo.Phase, { label: string; color: string }
 
 export function useWorkout() {
   const selectedId = ref(wo.loadSelectedId())
-  const workouts = ref(wo.touchWorkout(wo.loadWorkouts(), selectedId.value))
+  // stored order = last started first
+  const workouts = ref(wo.loadWorkouts())
   if (workouts.value.length === 0) workouts.value = [{ ...wo.DEFAULT_WORKOUT }]
   const state = ref(wo.loadState())
   const now = useClock({ active: () => running.value, onTick: playCues })
@@ -53,7 +54,6 @@ export function useWorkout() {
   watch(workouts, (value) => writeJson(wo.KEY_WORKOUTS, value), { deep: true })
   watch(selectedId, (value) => {
     writeJson(wo.KEY_SELECTED, value)
-    workouts.value = wo.touchWorkout(workouts.value, value)
     reset()
   })
   watch(state, (value) => writeJson(wo.KEY_STATE, value), { deep: true })
@@ -82,6 +82,7 @@ export function useWorkout() {
   playCues()
 
   function toggle() {
+    workouts.value = wo.touchWorkout(workouts.value, workout.value.id)
     now.value = nowSec()
     if (running.value) {
       state.value = wo.pause(state.value, now.value)
@@ -107,15 +108,17 @@ export function useWorkout() {
     state.value = running.value ? { startTs: now.value - ms, elapsedMs: ms } : { elapsedMs: ms }
   }
 
-  // copy of the current one, as starting point
-  function add() {
-    const copy = {
-      ...workout.value,
-      id: crypto.randomUUID(),
-      name: t("New workout", "Neues Workout"),
+  // create (no id) or update; empty name -> generated from the numbers
+  function save(form: Omit<wo.Workout, "id">, id?: string) {
+    const w = {
+      ...form,
+      id: id ?? crypto.randomUUID(),
+      name: form.name.trim() || wo.autoName(form),
     }
-    workouts.value.push(copy)
-    selectedId.value = copy.id
+    const index = workouts.value.findIndex((x) => x.id === id)
+    if (index === -1) workouts.value.push(w)
+    else workouts.value[index] = w
+    selectedId.value = w.id
   }
 
   function remove() {
@@ -135,7 +138,7 @@ export function useWorkout() {
     toggle,
     reset,
     skip,
-    add,
+    save,
     remove,
   }
 }

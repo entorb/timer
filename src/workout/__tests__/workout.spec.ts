@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest"
 
+import { writeJson } from "@/shared/storage"
+
 import {
+  autoName,
   cuesBetween,
-  DEFAULT_WORKOUT,
   elapsed,
   formatPhaseTime,
+  KEY_WORKOUTS,
+  loadWorkouts,
   pause,
   position,
   segments,
@@ -14,7 +18,7 @@ import {
   touchWorkout,
 } from "../workout"
 
-const w = DEFAULT_WORKOUT
+const w = { id: "tabata", name: "Tabata", work: 20, rest: 10, reps: 8 }
 const S = 1000
 const cues = (...args: Parameters<typeof cuesBetween>) => cuesBetween(...args).map((c) => c.cue)
 
@@ -68,8 +72,16 @@ describe("workout", () => {
     expect(cues(w, 230 * S, 235 * S)).toEqual(["beep", "beep", "beep", "cheers"])
   })
 
-  it("no prepare: go right at start", () => {
-    expect(cues({ ...w, prepare: 0 }, -1, 0)).toEqual(["go"])
+  it("auto name from numbers", () => {
+    expect(autoName({ work: 180, rest: 30, reps: 4 })).toBe("180/30x4")
+  })
+
+  it("migration drops prepare and old Tabata default", () => {
+    writeJson(KEY_WORKOUTS, [
+      { ...w, prepare: 5 },
+      { ...w, id: "b", prepare: 10 },
+    ])
+    expect(loadWorkouts()).toEqual([{ ...w, id: "b" }])
   })
 
   it("skip: next segment start, back to current or previous start", () => {

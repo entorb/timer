@@ -10,10 +10,11 @@ interface Props {
   label: string
   disable?: boolean
   dense?: boolean
+  customEdit?: boolean // pencil emits `edit` instead of the rename popup
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits<{ add: []; remove: []; rename: [name: string] }>()
+const emit = defineEmits<{ add: []; edit: []; remove: []; rename: [name: string] }>()
 const selectedId = defineModel<string>({ required: true })
 const options = computed(() => props.items.map((i) => ({ label: i.name, value: i.id })))
 const name = computed(() => props.items.find((i) => i.id === selectedId.value)?.name ?? props.items[0]?.name ?? "")
@@ -47,9 +48,11 @@ function confirmRemove() {
       :dense="dense"
       :icon="mdiPencil"
       :disable="disable"
-      :aria-label="`${t('Rename', 'Umbenennen')}: ${label}`"
+      :aria-label="`${customEdit ? t('Edit', 'Bearbeiten') : t('Rename', 'Umbenennen')}: ${label}`"
+      @click="customEdit && emit('edit')"
     >
       <q-popup-edit
+        v-if="!customEdit"
         v-slot="scope"
         :model-value="name"
         auto-save
