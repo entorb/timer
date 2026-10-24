@@ -8,7 +8,7 @@ import { moonPath, moonPhase } from "./moon"
 import { sunTimes } from "./sun"
 import { useGeo } from "./useGeo"
 import { useWeather } from "./useWeather"
-import { currentWeather, tempGradient, tempLabels, todayHours, weatherIcon } from "./weather"
+import { currentWeather, ringHours, tempGradient, tempLabels, weatherIcon } from "./weather"
 
 // shared with the running list on the home page: same tick
 const props = defineProps<{ now: number }>()
@@ -48,7 +48,7 @@ const moon = computed(() => ({
 const hourTs = computed(() => Math.floor(now.value.getTime() / HOUR_MS) * HOUR_MS)
 const isDay = (hour: number) => hour >= marks.value.sunrise && hour <= marks.value.sunset
 const hours = computed(() =>
-  weather.value == null ? [] : todayHours(weather.value, hourTs.value),
+  weather.value == null ? [] : ringHours(weather.value, hourTs.value),
 )
 const forecast = computed(() =>
   hours.value
@@ -58,10 +58,8 @@ const forecast = computed(() =>
       ...weatherIcon(h.code, isDay(h.hour)),
     })),
 )
-// number, minute steps: labels recompute once per minute
-const nowHour = computed(() => Math.floor(hourOf(now.value) * 60) / 60)
 const temps = computed(() =>
-  tempLabels(hours.value, nowHour.value).map((h) => ({
+  tempLabels(hours.value).map((h) => ({
     ...polar(h.hour, TEMP_R),
     temp: `${Math.round(h.temp)}°`,
   })),

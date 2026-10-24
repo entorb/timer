@@ -5,10 +5,10 @@ import {
   currentWeather,
   isStale,
   parseWeather,
+  ringHours,
   tempColor,
   tempGradient,
   tempLabels,
-  todayHours,
   type Weather,
   weatherIcon,
   weatherUrl,
@@ -62,12 +62,14 @@ describe("weather", () => {
     expect(currentWeather(W, start - HOUR_MS)).toBeUndefined()
   })
 
-  it("todayHours: today's local hours only, nulls skipped", () => {
-    const today = todayHours(W, start + 13.5 * HOUR_MS)
-    expect(today).toHaveLength(24)
-    expect(today[5]).toEqual({ hour: 5, code: 5, temp: 2.5 })
-    expect(todayHours(W, start + 25 * HOUR_MS)[1]).toEqual({ hour: 1, code: 25, temp: 12.5 })
-    expect(todayHours({ ...W, temp: W.temp.map(() => null) }, start)).toEqual([])
+  it("ringHours: 24h ring, hours older than 2h show tomorrow, nulls skipped", () => {
+    const ring = ringHours(W, start + 13.5 * HOUR_MS)
+    expect(ring).toHaveLength(24)
+    expect(ring[5]).toEqual({ hour: 5, code: 29, temp: 14.5 })
+    expect(ring[12]).toEqual({ hour: 12, code: 12, temp: 6 })
+    expect(ringHours(W, start + 1.5 * HOUR_MS)[0]).toEqual({ hour: 0, code: 0, temp: 0 })
+    expect(ringHours(W, start + 25 * HOUR_MS)[1]).toEqual({ hour: 1, code: 25, temp: 12.5 })
+    expect(ringHours({ ...W, temp: W.temp.map(() => null) }, start)).toEqual([])
   })
 
   it("tempColor: coldest blue .. warmest red, clamped", () => {
@@ -83,17 +85,16 @@ describe("weather", () => {
   })
 
   it("tempGradient: hour stops relative to day range, first color closes at 360deg", () => {
-    const g = tempGradient(todayHours(W, start))
+    const g = tempGradient(ringHours(W, start))
     expect(g).toMatch(/^conic-gradient\(hsl\(240 90% 68%\) 0deg, /)
     expect(g).toMatch(/hsl\(0 90% 68%\) 345deg, hsl\(240 90% 68%\) 360deg\)$/)
     expect(tempGradient([])).toBeUndefined()
   })
 
-  it("tempLabels: even hours, past only if < 3h old", () => {
-    const hours = todayHours(W, start)
-    expect(tempLabels(hours, 14.4).map((h) => h.hour)).toEqual([12, 14, 16, 18, 20, 22])
-    expect(tempLabels(hours, 15).map((h) => h.hour)).toEqual([14, 16, 18, 20, 22])
-    expect(tempLabels(hours, 0.5)).toHaveLength(12)
+  it("tempLabels: even hours only", () => {
+    expect(tempLabels(ringHours(W, start)).map((h) => h.hour)).toEqual([
+      0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22,
+    ])
   })
 
   it("weatherIcon: day/night for clear, 95+ thunderstorm", () => {
