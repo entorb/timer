@@ -25,13 +25,13 @@ New feature = new folder with the same split + entry in `tabs` in `src/router.ts
 
 ## Commands
 
-| Task | Command |
-| ---- | ------- |
-| After each task: format + lint (biome, autofixes) | `scripts/chk_js_format.sh` |
-| After each feature: all checks (`chk_*.sh`) | `scripts/run_checks.sh` |
-| Unit tests only | `scripts/chk_js_test.sh` |
-| Types only | `scripts/chk_js_types.sh` |
-| E2E (starts dev server) | `scripts/run_e2e.sh` |
+| Task                                                     | Command                           |
+| -------------------------------------------------------- | --------------------------------- |
+| After each task: format + lint (biome, autofixes)        | `scripts/chk_js_format.sh`        |
+| After each feature: all checks (`chk_*.sh`)              | `scripts/run_checks.sh`           |
+| Unit tests only                                          | `scripts/chk_js_test.sh`          |
+| Types only                                               | `scripts/chk_js_types.sh`         |
+| E2E (starts dev server)                                  | `scripts/run_e2e.sh`              |
 | Screenshots per sub-app (mobile) → `tmp/screens/<lang>/` | `scripts/run_screens.sh [en\|de]` |
 
 Scripts print `OK` on success, else first 100 lines of errors. Fix and rerun only the failing one.
@@ -49,6 +49,8 @@ Before writing a helper/constant/component, grep `src/shared` and the other feat
 Only network calls: `shared/stats.ts`, `home/useWeather.ts`.
 
 `meeting` builds on `stopwatch/stopwatch.ts` (start/stop/elapsed, resume shifts `start`). localStorage keys prefixed `tmr-`, dark+lang in one `tmr-settings` key; stats origin per sub-app: `tmr-eta|mt|ant|sw|pomo|wo|mm`, same footer via `StatsLine` (prop `origin` only). New origin must be whitelisted on stats server (`entorb.net/web-stats-json.php`), else not counted.
+
+`workout`: prepare fixed (5s); create/edit via dialog (work/rest/reps, empty name → `autoName` e.g. `180/30x4`); select order = last start, newest first (`touchWorkout` only in `toggle`, not on select); migration in `loadWorkouts` marked "Remove" (no `TODO`, sonar S1135) after 25.10.2026.
 
 `anticipation` (Vorfreude): display-only countdowns to dates (past dates count up), no sound/wake lock, reuses `clearName` from `multitimer/timers.ts`.
 
@@ -84,7 +86,9 @@ Return minimal interface, mutate returned refs directly (no setters):
 pomodoro.settings.value.focus = 30
 
 // ❌ DON'T
-function setFocus(value: number) { settings.value.focus = value }
+function setFocus(value: number) {
+  settings.value.focus = value
+}
 ```
 
 One responsibility per composable. No helper for one-liners.
@@ -118,14 +122,18 @@ SVG `foreignObject` (DayClock center weather): no `opacity`/`transform`/`positio
 
 ## Lint traps
 
-| Rule | Trigger | Fix |
-| ---- | ------- | --- |
-| `vue/no-boolean-default` | `withDefaults(props, { boolProp: true })` | Omit from `withDefaults`, use `?? true` at call site |
-| `noNonNullAssertion` (biome) | `foo!.bar` | `foo?.bar ?? fallback` |
-| `noExcessiveCognitiveComplexity` (biome) | function score > 15 | Extract helpers, reduce nesting, simplify ternaries |
-| `Object is possibly 'undefined'` (TS) | `arr[i]` after guard | `arr[i]?.prop ?? fallback`, `arr.at(-1)` |
-| `typescript:S6582` (sonar) | `a == null \|\| a.x !== y` | `a?.x !== y \|\| a.y ...` (TS narrows after the first operand) |
-| cspell | new word in code/comments | add to `cspell-words.txt` |
+| Rule                                     | Trigger                                   | Fix                                                            |
+| ---------------------------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| `vue/no-boolean-default`                 | `withDefaults(props, { boolProp: true })` | Omit from `withDefaults`, use `?? true` at call site           |
+| `noNonNullAssertion` (biome)             | `foo!.bar`                                | `foo?.bar ?? fallback`                                         |
+| `noExcessiveCognitiveComplexity` (biome) | function score > 15                       | Extract helpers, reduce nesting, simplify ternaries            |
+| `Object is possibly 'undefined'` (TS)    | `arr[i]` after guard                      | `arr[i]?.prop ?? fallback`, `arr.at(-1)`                       |
+| `typescript:S6582` (sonar)               | `a == null \|\| a.x !== y`                | `a?.x !== y \|\| a.y ...` (TS narrows after the first operand) |
+| `typescript:S3358` (sonar)               | nested ternary                            | `if`/early returns                                             |
+| `typescript:S7755` (sonar)               | `arr[arr.length - 1]`                     | `arr.at(-1)`                                                   |
+| `typescript:S1135` (sonar)               | `TODO` comment                            | word it "Remove after ..." instead                             |
+| `css:S9423` (sonar)                      | `!important`                              | resolve specificity; if overriding inline style, `/* NOSONAR why */` |
+| cspell                                   | new word in code/comments                 | add to `cspell-words.txt`                                      |
 
 ## Checklist
 
