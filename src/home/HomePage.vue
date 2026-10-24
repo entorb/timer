@@ -23,8 +23,11 @@ const timeLabel = (r: Running) => {
   return r.days == null ? duration(r) : topLabel(r.ms / 1000, r.days, r.endTs == null)
 }
 // workout: stage left on top, workout left below
-const endLabel = (r: Running) =>
-  r.stageMs != null ? duration(r) : r.endTs == null || r.days != null ? "" : formatDateTime(new Date(r.endTs), r.ms >= DAY_MS)
+const endLabel = (r: Running) => {
+  if (r.stageMs != null) return duration(r)
+  if (r.endTs == null || r.days != null) return ""
+  return formatDateTime(new Date(r.endTs), r.ms >= DAY_MS)
+}
 
 const PHASES: Record<string, typeof POMO_PHASES | typeof WO_PHASES> = {
   "/pomodoro": POMO_PHASES,

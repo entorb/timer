@@ -136,8 +136,7 @@ const ICONS: Array<[number, string, string | undefined, string?]> = [
 
 // mdi path (24x24) + fill (undefined = currentColor) for WMO code
 export function weatherIcon(code: number, day: boolean): { d: string; fill?: string } {
-  const [max, dayIcon, night, fill] =
-    ICONS.find(([m]) => code <= m) ?? ICONS[ICONS.length - 1] ?? []
+  const [max, dayIcon, night, fill] = ICONS.find(([m]) => code <= m) ?? ICONS.at(-1) ?? []
   if (dayIcon == null) return { d: mdiWeatherLightning }
   if (day || night == null) return { d: dayIcon, fill }
   return { d: night, fill: max != null && max <= 2 ? undefined : fill }
