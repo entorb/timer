@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiCog, mdiPause, mdiPlay, mdiRestart, mdiSkipNext, mdiSkipPrevious } from "@quasar/extras/mdi-v7"
+import { mdiPause, mdiPlay, mdiRestart, mdiSkipNext, mdiSkipPrevious } from "@quasar/extras/mdi-v7"
 import { computed, ref, watch, watchEffect } from "vue"
 import { t } from "@/shared/i18n"
 import ListSelect from "@/shared/ListSelect.vue"
@@ -8,9 +8,9 @@ import StatsLine from "@/shared/StatsLine.vue"
 import { formatClock } from "@/shared/time"
 import { PHASES, useWorkout } from "./useWorkout"
 import type { Phase } from "./workout"
-import { formatPhaseTime, ORIGIN } from "./workout"
+import { autoName, formatPhaseTime, ORIGIN } from "./workout"
 
-const { workouts, selectedId, workout, running, pos, total, elapsedMs, toggle, reset, skip, add, remove } =
+const { workouts, selectedId, workout, running, pos, total, elapsedMs, toggle, reset, skip, save, remove } =
   useWorkout()
 
 const atStart = computed(() => !running.value && elapsedMs.value === 0)
@@ -65,19 +65,27 @@ const round = computed(() =>
     : `${pos.value.rep}/${workout.value.reps}`,
 )
 
-const fields = computed(
-  () =>
-    [
-      { key: "prepare", label: t("Prepare (s)", "Vorbereitung (s)") },
-      { key: "work", label: t("Work (s)", "Arbeit (s)") },
-      { key: "rest", label: t("Rest (s)", "Pause (s)") },
-      { key: "reps", label: t("Repetitions", "Wiederholungen") },
-    ] as const,
-)
+// create / edit dialog; editId null = create
+const dialog = ref(false)
+const editId = ref<string | undefined>()
+const form = ref({ name: "", work: 0, rest: 0, reps: 0 })
+const valid = computed(() => {
+  const { work, rest, reps } = form.value
+  return [work, rest, reps].every(Number.isInteger) && work > 0 && rest >= 0 && reps > 0
+})
 
-function setField(key: (typeof fields.value)[number]["key"], value: string | number | null) {
-  const n = Math.round(Number(value))
-  if (Number.isFinite(n) && (n > 0 || (key !== "reps" && n === 0))) workout.value[key] = n
+function openForm(id?: string) {
+  const { name, work, rest, reps } = workout.value
+  // auto name stays empty, so it follows changed numbers
+  form.value = { name: id == null || name === autoName(workout.value) ? "" : name, work, rest, reps }
+  editId.value = id
+  dialog.value = true
+}
+
+function submit() {
+  if (!valid.value) return
+  save(form.value, editId.value)
+  dialog.value = false
 }
 </script>
 
@@ -100,9 +108,10 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
       :items="workouts"
       :label="t('Workout', 'Workout')"
       style="max-width: 400px"
-      @add="add"
+      custom-edit
+      @add="openForm()"
+      @edit="openForm(workout.id)"
       @remove="remove"
-      @rename="workout.name = $event"
     />
 
     <div
@@ -182,32 +191,70 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
       />
     </div>
 
-    <q-expansion-item
-      v-if="!running"
-      :default-opened="atStart"
-      :icon="mdiCog"
-      :label="t('Settings', 'Einstellungen')"
-      class="full-width"
-      style="max-width: 400px"
-    >
-      <div class="q-pa-sm q-gutter-y-sm">
-        <div class="row q-col-gutter-sm">
-          <q-input
-            v-for="f in fields"
-            :key="f.key"
-            :model-value="workout[f.key]"
-            :label="f.label"
-            type="number"
-            inputmode="numeric"
-            min="0"
-            dense
-            outlined
-            class="col-6"
-            @update:model-value="setField(f.key, $event)"
-          />
-        </div>
-      </div>
-    </q-expansion-item>
+    <q-dialog v-model="dialog">
+      <q-card style="width: 400px; max-width: 90vw">
+        <q-form @submit="submit">
+          <q-card-section>
+            <div class="text-h6 text-weight-bold">
+              {{ editId == null ? t("New workout", "Neues Workout") : t("Edit workout", "Workout bearbeiten") }}
+            </div>
+          </q-card-section>
+          <q-card-section class="q-pt-none q-gutter-y-md">
+            <q-input
+              v-model.number="form.work"
+              :label="t('Work (s)', 'Arbeit (s)')"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              outlined
+              input-class="text-h6"
+            />
+            <q-input
+              v-model.number="form.rest"
+              :label="t('Rest (s)', 'Pause (s)')"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              outlined
+              input-class="text-h6"
+            />
+            <q-input
+              v-model.number="form.reps"
+              :label="t('Repetitions', 'Wiederholungen')"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              outlined
+              input-class="text-h6"
+            />
+            <q-input
+              v-model="form.name"
+              :label="t('Name (optional)', 'Name (optional)')"
+              :placeholder="autoName(form)"
+              outlined
+            />
+          </q-card-section>
+          <q-card-actions class="q-pa-md q-pt-none">
+            <q-btn
+              v-close-popup
+              type="button"
+              flat
+              :label="t('Cancel', 'Abbrechen')"
+              class="text-body1"
+            />
+            <q-space />
+            <q-btn
+              id="btn-wo-save"
+              type="submit"
+              color="primary"
+              :disable="!valid"
+              :label="t('Save', 'Speichern')"
+              class="text-body1"
+            />
+          </q-card-actions>
+        </q-form>
+      </q-card>
+    </q-dialog>
 
     <StatsLine
       :origin="ORIGIN"
