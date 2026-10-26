@@ -237,9 +237,7 @@ function confirmDeleteAll() {
       </q-expansion-item>
     </q-list>
 
-    <StatsLine
-      :origin="ORIGIN"
-    />
+    <StatsLine v-if="target === 0" :origin="ORIGIN" />
   </q-page>
 </template>
 
