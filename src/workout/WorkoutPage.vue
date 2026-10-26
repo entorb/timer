@@ -256,9 +256,7 @@ function submit() {
       </q-card>
     </q-dialog>
 
-    <StatsLine
-      :origin="ORIGIN"
-    />
+    <StatsLine v-if="!running" :origin="ORIGIN" />
   </q-page>
 </template>
 
