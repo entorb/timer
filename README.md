@@ -1,5 +1,8 @@
 # Timer
 
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=entorb_timer&metric=ncloc)](https://sonarcloud.io/summary/overall?id=entorb_timer)
+[![Security issues](https://sonarcloud.io/api/project_badges/measure?project=entorb_timer&metric=software_quality_security_issues)](https://sonarcloud.io/summary/overall?id=entorb_timer)
+
 Mobile-optimized PWA timer toolbox, built with [Vue.js](https://vuejs.org) and [Quasar](https://quasar.dev).
 
 Hosted at [entorb.net/timer/](https://entorb.net/timer/). [Feedback](https://entorb.net/contact.php?origin=timer) is highly appreciated.
@@ -28,3 +31,5 @@ All sounds are synthesized via Web Audio in `src/shared/feedback.ts` (no audio f
 - `pnpm exec playwright install chromium && ./scripts/run_e2e.sh`
 - `./scripts/run_spelling.sh`
 - [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_timer)
+
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/overall?id=entorb_timer)
