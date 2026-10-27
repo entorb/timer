@@ -17,13 +17,13 @@ export default defineConfig({
     Vue({ template: { transformAssetUrls } }),
     quasar(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       workbox: { globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"] },
       manifest: {
-        name: "Timer: ETA, Multi-Timer, Stopwatch, Pomodoro",
+        name: "Timer: Anticipation, Workout, ETA, Multi-Timer, Stopwatch, Pomodoro",
         short_name: "Timer",
         description:
-          "Timer toolbox: ETA estimation, multiple countdown timers, multi-athlete lap stopwatch and Pomodoro timer.",
+          "Timer toolbox: countdown to events, interval workout, ETA estimation, multiple countdown timers, multi-athlete lap stopwatch, meeting cost meter and Pomodoro timer.",
         icons: [
           {
             src: "icons/apple-touch-icon.png",
