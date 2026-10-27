@@ -62,7 +62,7 @@ export function usePomodoro() {
       state.value = pomo.pause(state.value, now.value)
     } else {
       state.value = pomo.start(state.value, now.value)
-      statsWrite(pomo.ORIGIN)
+      void statsWrite(pomo.ORIGIN)
     }
   }
 

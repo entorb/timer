@@ -53,7 +53,7 @@ export function useAnticipation() {
     if (i < 0) events.value.push(event)
     else events.value[i] = event
     now.value = nowSec()
-    statsWrite(ORIGIN)
+    void statsWrite(ORIGIN)
     return true
   }
 

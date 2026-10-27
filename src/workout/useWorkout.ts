@@ -87,7 +87,7 @@ export function useWorkout() {
     // -1: cues at 0 (go without prepare) are due too
     last = state.value.elapsedMs === 0 ? -1 : state.value.elapsedMs
     state.value = wo.start(state.value, now.value)
-    statsWrite(wo.ORIGIN)
+    void statsWrite(wo.ORIGIN)
   }
 
   function reset() {

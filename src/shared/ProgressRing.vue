@@ -46,10 +46,3 @@ defineSlots<{ default?: () => unknown }>()
     </q-circular-progress>
   </div>
 </template>
-
-<style scoped>
-/* Quasar sets an inline `ease`; linear keeps steady motion between 1s ticks */
-:deep(.q-circular-progress__circle) {
-  transition-timing-function: linear !important; /* NOSONAR inline style needs it */
-}
-</style>
