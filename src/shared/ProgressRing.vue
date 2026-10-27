@@ -8,6 +8,7 @@ interface Props {
   animationSpeed?: number
   label?: string
   underLabel?: string
+  size?: string
 }
 
 defineProps<Props>()
@@ -21,7 +22,7 @@ defineSlots<{ default?: () => unknown }>()
       :value="under"
       :min="0"
       :max="1"
-      size="min(80vw, 320px)"
+      :size="size ?? 'min(80vw, 320px)'"
       :thickness="0.2"
       :color="underColor"
       track-color="grey-3"
@@ -32,7 +33,7 @@ defineSlots<{ default?: () => unknown }>()
       :value="value"
       :min="0"
       :max="1"
-      size="min(80vw, 320px)"
+      :size="size ?? 'min(80vw, 320px)'"
       :thickness="0.2"
       :color="color"
       :track-color="under != null ? 'transparent' : 'grey-3'"
