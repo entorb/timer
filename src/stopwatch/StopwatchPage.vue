@@ -382,7 +382,10 @@ async function copyCsv() {
       </div>
     </div>
 
-    <StatsLine v-if="!anyRunning" :origin="ORIGIN" />
+    <StatsLine
+      v-if="!anyRunning"
+      :origin="ORIGIN"
+    />
   </q-page>
 </template>
 

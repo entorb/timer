@@ -325,7 +325,10 @@ function setStart(value: InputValue) {
       </div>
     </q-expansion-item>
 
-    <StatsLine v-if="!running" :origin="ORIGIN" />
+    <StatsLine
+      v-if="!running"
+      :origin="ORIGIN"
+    />
   </q-page>
 </template>
 
