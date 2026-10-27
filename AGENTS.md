@@ -11,8 +11,8 @@ src/
   router.ts          # tabs (path, name, nameDe, desc, descDe, icon, lazy page) = app navigation
   App.vue            # shell: tabs, lang/dark toggle, info dialog
   home/HomePage.vue  # start page `/`: running list (running.ts + useRunning.ts: reads via the sub-apps' pure `load*` functions, no feature composables → no sounds; pages are `keep-alive`, so it re-reads in `onActivated`, finished countdowns stay at 0:00 until next visit; anticipation events, ETAs, timers, stopwatches...) above `tabs`; DayClock (24h ring, clock.ts, tick from `shared/useClock` passed as prop; sunrise/sunset: sun.ts + useGeo.ts, coords in `tmr-geo`, sun/moon use Erlangen until user shares position (`place` in useGeo; weather only for own `coords`), geo button toggles locate/delete (deleting also drops weather); moon phase: moon.ts; weather: outer temp ring (color relative to day range, temps at even hours from 3h ago, icons at odd; sun ring moves inside it, takes outer place without weather), weather.ts + useWeather.ts, Open-Meteo, cache `tmr-weather` 1h) + `tabs` with desc (use cases)
-  shared/            # i18n (t, lang), feedback (sound/vibrate), confirm (confirmDialog), DeleteAllButton, useClock (`now` timestamp tick: `ms`, `active`, `onTick`; aligned to full seconds), ListSelect (switch/rename/add/delete named items), ProgressRing, stats, storage, time, useWakeLock
-  <feature>/         # eta, multitimer, anticipation, pomodoro, stopwatch, workout, meeting
+  shared/            # i18n (t, lang), feedback (sound/vibrate), confirm (confirmDialog), DeleteAllButton, useClock (`now` timestamp tick: `ms`, `active`, `onTick`; aligned to full seconds; without `onTick` paused while its KeepAlive page is hidden), ListSelect (switch/rename/add/delete named items) + `list.ts` `pickById` (selected or first), ProgressRing, stats, storage, time, useWakeLock
+  <feature>/         # anticipation, workout, eta, multitimer, stopwatch, meeting, pomodoro
     <Feature>Page.vue  # view, dumb
     use<Feature>.ts    # composable: refs, persistence, timers
     <feature>.ts       # pure logic (no Vue), unit tested
@@ -21,7 +21,7 @@ e2e/                 # Playwright specs + helper-e2e.ts; screens.ts = screenshot
 scripts/             # checks, see below
 ```
 
-New feature = new folder with the same split + entry in `tabs` in `src/router.ts`. Order of `tabs` = order in dropdown and start page; `desc`/`descDe` (short use cases) shown on start page, keep them current when a feature changes.
+New feature = new folder with the same split + entry in `tabs` in `src/router.ts`. Order of `tabs` = order in dropdown and start page; `desc`/`descDe` (short use cases) shown on start page, keep them current when a feature changes. Feature added/removed/reordered → also update manifest name/description in `vite.config.ts`, `<meta description/keywords>` in `index.html`, Features list in `README.md`.
 
 ## Commands
 
@@ -42,15 +42,17 @@ Before writing a helper/constant/component, grep `src/shared` and the other feat
 
 - Persistence lives in the pure `<feature>.ts`: exported `KEY_*`, `ORIGIN` (stats), `load*()` (with defaults). Composables and `home/useRunning.ts` call these, never `readJson("tmr-...")` with literal keys.
 - `statsWrite(ORIGIN)` and `<StatsLine :origin="ORIGIN" />`, no literal origins.
-- Time constants: `HOUR_MS`, `DAY_MS`, `UNIT_SECONDS` from `@/shared/time`, no `86_400_000` literals. Date helpers (`isoDay`, `pad`, `formatClock`, ...) there too.
+- Time constants: `MINUTE_MS`, `HOUR_MS`, `DAY_MS`, `UNIT_SECONDS` from `@/shared/time`, no `60_000` / `86_400` literals. Date helpers (`isoDay`, `hhmm`, `pad`, `formatClock`, ...) there too.
 - Every tick via `useClock({ ms, active, onTick })` (gate with `active` so paused pages don't re-render; sounds in `onTick`), never a raw `setInterval`. Default 1s; sub-second only stopwatch with tenths. Timestamps from user actions via `nowSec()` (whole seconds), raw `Date.now()` only in stopwatch. ETA `addRow` rounds too, same second replaces the last row (zero time delta = no speed).
 - Phase labels/colors (`PHASES`) exported from `use<Feature>.ts`, reused by home.
 
-Only network calls: `shared/stats.ts`, `home/useWeather.ts`.
+Stats writes while offline are queued in `tmr-stats-pending`, `statsFlush()` sends them at app start (`main.ts`) and after the next successful write; no fetch when `!navigator.onLine`. `statsWrite`/`statsFlush` are async but never reject: call them as `void statsWrite(ORIGIN)`.
+
+Only network calls: `shared/stats.ts`, `home/useWeather.ts`, Sentry, Matomo (`index.html`), SW update. Each skips when `!navigator.onLine` (offline fetch makes mobile OS prompt for wifi); Sentry/Matomo not initialized when app starts offline.
 
 `meeting` builds on `stopwatch/stopwatch.ts` (start/stop/elapsed, resume shifts `start`). localStorage keys prefixed `tmr-`, dark+lang in one `tmr-settings` key; stats origin per sub-app: `tmr-eta|mt|ant|sw|pomo|wo|mm`, same footer via `StatsLine` (prop `origin` only). New origin must be whitelisted on stats server (`entorb.net/web-stats-json.php`), else not counted.
 
-`workout`: prepare fixed (5s); create/edit via dialog (work/rest/reps, empty name → `autoName` e.g. `180/30x4`); select order = last start, newest first (`touchWorkout` only in `toggle`, not on select); migration in `loadWorkouts` marked "Remove" (no `TODO`, sonar S1135) after 25.10.2026.
+`workout`: prepare fixed (5s); create/edit via dialog (work/rest/reps, empty name → `autoName` e.g. `180/30x4`); select order = last start, newest first (`touchWorkout` only in `toggle`, not on select).
 
 `anticipation` (Vorfreude): display-only countdowns to dates (past dates count up), no sound/wake lock, reuses `clearName` from `multitimer/timers.ts`.
 
@@ -74,7 +76,7 @@ Every user-visible string (labels, `aria-label`, errors) needs both languages. R
 - Timers store end timestamps (`endTs`), not decrementing counters; derive remaining from `now`.
 - Sounds: all synthesized (Web Audio) in `src/shared/feedback.ts` (`SOUNDS`, `playSound`), no audio files. Review in dev: `/timer/review-audio.html` (root html, not a build input).
 - Background (hidden page): intervals get frozen, so each sound-making composable registers `useBackgroundSounds(() => [{ ts, sound }])` (scheduled on audio clock at hide) and its tick skips events due while hidden via `dueInBackground(dueTs)` (no late sounds on return). Every sound-making composable also has `useWakeLock`.
-- PWA: `registerSW` from `virtual:pwa-register` in `main.ts` (needs `workbox-window` dep). autoUpdate reloads page on new SW; `router.onError` reloads on stale lazy chunk.
+- PWA: `registerSW` from `virtual:pwa-register` in `main.ts` (needs `workbox-window` dep). `registerType: prompt`: confirm dialog on new SW (`onNeedRefresh`) before reload; `router.onError` reloads on stale lazy chunk.
 - Browser-only side effects untestable in vitest: mark `/* c8 ignore next N */`.
 
 ## Composables
@@ -132,7 +134,8 @@ SVG `foreignObject` (DayClock center weather): no `opacity`/`transform`/`positio
 | `typescript:S3358` (sonar)               | nested ternary                            | `if`/early returns                                             |
 | `typescript:S7755` (sonar)               | `arr[arr.length - 1]`                     | `arr.at(-1)`                                                   |
 | `typescript:S1135` (sonar)               | `TODO` comment                            | word it "Remove after ..." instead                             |
-| `css:S9423` (sonar)                      | `!important`                              | resolve specificity; if overriding inline style, `/* NOSONAR why */` |
+| `typescript:S9383` (sonar)               | unawaited promise call                    | `void promise` if it never rejects, else `await` / `.catch`    |
+| `css:S9423` (sonar)                      | `!important`                              | resolve specificity; inline styles (Quasar) cannot be overridden without it, drop the override (NOSONAR does not suppress css) |
 | cspell                                   | new word in code/comments                 | add to `cspell-words.txt`                                      |
 
 ## Checklist

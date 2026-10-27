@@ -9,9 +9,12 @@ Hosted at [entorb.net/timer/](https://entorb.net/timer/). [Feedback](https://ent
 
 ## Features
 
+- **Anticipation** (Vorfreude): count down to events like vacation, birthday, concert or Christmas. Past dates count up.
+- **Workout**: interval timer of work, rest and repeats: Tabata, HIIT, circuit training, stretching.
 - **ETA**: calculate remaining (waiting) time / estimated time of arrival via (weighted) linear regression. Port of [eta-vue](https://github.com/entorb/eta-vue).
 - **Multi-Timer**: several named countdowns at once, with alarm. Recently used timers as quick chips. Port of [entorb.net-apps/multitimer](https://github.com/entorb/entorb.net-apps/tree/main/multitimer).
 - **Stopwatch**: lap times for multiple athletes. Common start ("Start all") or individual start by tapping a tile. Tap again records a lap. Shows lap count, current, last and best lap, lap table, CSV export.
+- **Meeting Meter**: taximeter for meetings, shows cost and people hours.
 - **Pomodoro**: 25 min focus, 5 min short break, 15 min long break after 4 rounds (configurable), auto-advance with sound.
 
 All data stays in the browser's localStorage. ETA and Multi-Timer use the same storage keys as their predecessors, so existing data on entorb.net is kept.
