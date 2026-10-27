@@ -8,6 +8,7 @@ import {
   useBackgroundSounds,
 } from "@/shared/feedback"
 import { t } from "@/shared/i18n"
+import { pickById } from "@/shared/list"
 import { statsWrite } from "@/shared/stats"
 import { writeJson } from "@/shared/storage"
 import { nowSec } from "@/shared/time"
@@ -39,13 +40,7 @@ export function useWorkout() {
   const state = ref(wo.loadState())
   const now = useClock({ active: () => running.value, onTick: playCues })
 
-  // fallback: selected one was deleted
-  const workout = computed(
-    () =>
-      workouts.value.find((w) => w.id === selectedId.value) ??
-      workouts.value[0] ??
-      wo.DEFAULT_WORKOUT,
-  )
+  const workout = computed(() => pickById(workouts.value, selectedId.value) ?? wo.DEFAULT_WORKOUT)
   const total = computed(() => wo.totalMs(workout.value))
   const running = computed(() => wo.isRunning(state.value))
   const elapsedMs = computed(() => Math.min(wo.elapsed(state.value, now.value), total.value))

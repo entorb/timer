@@ -1,4 +1,5 @@
 import { readJson } from "@/shared/storage"
+import { MINUTE_MS } from "@/shared/time"
 
 export type Phase = "focus" | "short" | "long"
 
@@ -18,7 +19,7 @@ export interface PomoState {
 
 export const DEFAULT_SETTINGS: PomoSettings = { focus: 25, short: 5, long: 15, rounds: 4 }
 
-export const phaseMs = (s: PomoSettings, phase: Phase) => s[phase] * 60_000
+export const phaseMs = (s: PomoSettings, phase: Phase) => s[phase] * MINUTE_MS
 
 export const initialState = (s: PomoSettings): PomoState => ({
   phase: "focus",

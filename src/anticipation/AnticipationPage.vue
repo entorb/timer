@@ -5,7 +5,7 @@ import { confirmDialog } from "@/shared/confirm"
 import DeleteAllButton from "@/shared/DeleteAllButton.vue"
 import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatDateTime, isoDay, pad, secondsToString } from "@/shared/time"
+import { formatDateTime, hhmm, isoDay, secondsToString } from "@/shared/time"
 
 import { type Countdown, ORIGIN } from "./anticipation"
 import { topLabel, useAnticipation } from "./useAnticipation"
@@ -21,7 +21,7 @@ function edit(event: Countdown) {
   editing.value = event
   inputName.value = event.name
   inputDate.value = isoDay(event.date)
-  inputTime.value = `${event.date.getHours()}:${pad(event.date.getMinutes())}`
+  inputTime.value = hhmm(event.date)
 }
 
 function submit() {

@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest"
 import { reviveSets } from "@/eta/sets"
 import { DEFAULT_SETTINGS } from "@/pomodoro/pomodoro"
 import { DEFAULT_WORKOUT } from "@/workout/workout"
-import { runningItems, type Sources } from "../running"
+import { etaEnds, runningItems, type Sources } from "../running"
 
 const NOW = 1_000_000_000
 const empty: Sources = {
   events: [],
-  etaSets: [],
+  etas: [],
   timers: [],
   athletes: [],
   pomoSettings: DEFAULT_SETTINGS,
@@ -29,16 +29,18 @@ describe("runningItems", () => {
       ],
       workout: DEFAULT_WORKOUT,
       workoutState: { startTs: NOW - 1000, elapsedMs: 0 },
-      etaSets: reviveSets([
-        {
-          name: "Queue",
-          target: 0,
-          data: [
-            { date: new Date(NOW - 2000).toISOString(), items: 10 },
-            { date: new Date(NOW - 1000).toISOString(), items: 9 },
-          ],
-        },
-      ]),
+      etas: etaEnds(
+        reviveSets([
+          {
+            name: "Queue",
+            target: 0,
+            data: [
+              { date: new Date(NOW - 2000).toISOString(), items: 10 },
+              { date: new Date(NOW - 1000).toISOString(), items: 9 },
+            ],
+          },
+        ]),
+      ),
       timers: [
         { name: "Tea", dateStart: new Date(NOW - 1000), dateEnd: new Date(NOW + 2000) },
         { name: "Done", dateStart: new Date(NOW - 2000), dateEnd: new Date(NOW - 1000) },

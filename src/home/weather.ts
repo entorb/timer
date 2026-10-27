@@ -14,12 +14,10 @@ import {
   mdiWeatherSnowyRainy,
   mdiWeatherSunny,
 } from "@quasar/extras/mdi-v7"
-import { UNIT_SECONDS } from "@/shared/time"
+import { DAY_MS, HOUR_MS, UNIT_SECONDS } from "@/shared/time"
 import type { Coords } from "./useGeo"
 
 const API = "https://api.open-meteo.com/v1/forecast"
-const HOUR_MS = UNIT_SECONDS.hour * 1000
-const DAY_MS = UNIT_SECONDS.day * 1000
 
 // hourly arrays share index; time in unix seconds (GMT), values null when model has no data
 export interface Weather extends Coords {

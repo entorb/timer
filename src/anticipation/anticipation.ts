@@ -1,5 +1,5 @@
 import { readJson, writeJson } from "@/shared/storage"
-import { DAY_MS, pad } from "@/shared/time"
+import { DAY_MS, pad, UNIT_SECONDS } from "@/shared/time"
 
 export interface Countdown {
   name: string
@@ -40,9 +40,10 @@ export function remaining(
 // last 24h "HH:MM", last hour "MM:SS", else undefined
 export function finalCountdown(seconds: number): string | undefined {
   const s = Math.floor(seconds)
-  if (s >= 86_400) return undefined
-  return s >= 3600
-    ? `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}`
+  const { hour } = UNIT_SECONDS
+  if (s >= UNIT_SECONDS.day) return undefined
+  return s >= hour
+    ? `${pad(Math.floor(s / hour))}:${pad(Math.floor((s % hour) / 60))}`
     : `${pad(Math.floor(s / 60))}:${pad(s % 60)}`
 }
 
