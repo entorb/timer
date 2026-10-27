@@ -63,7 +63,9 @@
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['trackPageView'])
       _paq.push(['enableLinkTracking'])
+      // offline: skip loading tracker, so mobile OS does not prompt for wifi
       ;(() => {
+        if (!navigator.onLine) return
         var u = 'https://entorb.net/stats/matomo/'
         _paq.push(['setTrackerUrl', u + 'matomo.php'])
         _paq.push(['setSiteId', '2'])
