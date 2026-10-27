@@ -33,13 +33,21 @@ async function shareApp() {
   $q.notify({ message: t("Link copied", "Link kopiert"), timeout: 1500 })
 }
 
+const isInstalled =
+  globalThis.matchMedia("(display-mode: standalone)").matches ||
+  (navigator as Navigator & { standalone?: boolean }).standalone === true
+
 const installSteps = computed(() => [
   {
-    platform: "Android, Windows",
+    platform: "Android",
+    how: t('Menu (3 dots) -> "Add to Home screen"', 'Menü (3 Punkte) → "Zum Startbildschirm hinzufügen"'),
+  },
+  {
+    platform: "Windows",
     how: t("Chrome or Edge -> Install", "Chrome oder Edge -> Installieren"),
   },
   {
-    platform: "iOS",
+    platform: "iPhone",
     how: t("Safari -> Share -> Add to Home Screen", "Safari -> Teilen -> Zum Home-Bildschirm"),
   },
   {
@@ -135,10 +143,16 @@ const installSteps = computed(() => [
           <span class="text-primary">Timer Apps - Info</span>
         </q-card-section>
         <q-card-section class="q-pt-none">
-          <div class="text-subtitle1">
+          <div
+            v-if="!isInstalled"
+            class="text-subtitle1"
+          >
             {{ t("Install as app", "Als App installieren") }}
           </div>
-          <ul class="q-pl-md">
+          <ul
+            v-if="!isInstalled"
+            class="q-pl-md"
+          >
             <li
               v-for="step in installSteps"
               :key="step.platform"
