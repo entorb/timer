@@ -2,6 +2,7 @@ export type Unit = "sec" | "min" | "hour" | "day"
 
 export const UNIT_SECONDS: Record<Unit, number> = { sec: 1, min: 60, hour: 3600, day: 86_400 }
 
+export const MINUTE_MS = UNIT_SECONDS.min * 1000
 export const HOUR_MS = UNIT_SECONDS.hour * 1000
 export const DAY_MS = UNIT_SECONDS.day * 1000
 
@@ -14,6 +15,9 @@ export const roundTs = (ts: number, ms = 1000) => Math.round(ts / ms) * ms
 export const nowSec = () => roundTs(Date.now())
 
 export const pad = (n: number) => n.toString().padStart(2, "0")
+
+// local "14:05"
+export const hhmm = (date: Date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`
 
 // "1,5" -> 1.5; undefined for empty or non-numeric input
 export function parseDecimal(raw: string): number | undefined {
@@ -31,7 +35,8 @@ export function formatDateTime(date: Date, showDays = false): string {
 }
 
 // ponytail: average month/year lengths (30.44d / 365.25d), not calendar exact
-const YEAR = 365.25 * 86_400
+const { hour: HOUR, day: DAY } = UNIT_SECONDS
+const YEAR = 365.25 * DAY
 const MONTH = YEAR / 12
 
 // largest 2 units ("2M 20d", "3d 4h"), years with 3 ("1y 2M 20d")
@@ -39,14 +44,14 @@ export function secondsToString(totalSeconds: number): string {
   const rounded = Math.round(totalSeconds)
   const years = Math.floor(rounded / YEAR)
   const months = Math.floor((rounded % YEAR) / MONTH)
-  const days = Math.floor(((rounded % YEAR) % MONTH) / 86_400)
-  const hours = Math.floor((rounded % 86_400) / 3600)
-  const minutes = Math.floor((rounded % 3600) / 60)
+  const days = Math.floor(((rounded % YEAR) % MONTH) / DAY)
+  const hours = Math.floor((rounded % DAY) / HOUR)
+  const minutes = Math.floor((rounded % HOUR) / 60)
   const seconds = rounded % 60
 
   if (years > 0) return `${years}y ${months}M ${days}d`
   if (months > 0) return `${months}M ${days}d`
-  if (rounded >= 86_400) return `${Math.floor(rounded / 86_400)}d ${hours}h`
+  if (rounded >= DAY) return `${Math.floor(rounded / DAY)}d ${hours}h`
   if (hours > 0) return `${hours}h ${minutes}m`
   if (minutes >= 15) return `${minutes}m`
   if (minutes > 0) return `${minutes}m ${seconds}s`
@@ -57,8 +62,8 @@ export function secondsToString(totalSeconds: number): string {
 export function formatClock(ms: number, tenths = false): string {
   const t = Math.max(0, ms)
   const h = Math.floor(t / HOUR_MS)
-  const m = Math.floor((t % HOUR_MS) / 60_000)
-  const s = Math.floor((t % 60_000) / 1000)
+  const m = Math.floor((t % HOUR_MS) / MINUTE_MS)
+  const s = Math.floor((t % MINUTE_MS) / 1000)
   const clock = h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`
   return tenths ? `${clock}.${Math.floor((t % 1000) / 100)}` : clock
 }

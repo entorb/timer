@@ -2,7 +2,7 @@
 import { mdiMapMarkerAlertOutline, mdiMapMarkerOff, mdiMapMarkerOutline } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
 import { t } from "@/shared/i18n"
-import { formatDateTime, UNIT_SECONDS } from "@/shared/time"
+import { formatDateTime, HOUR_MS } from "@/shared/time"
 import { dayMarks, formatDay, hourOf, polar, ringGradient } from "./clock"
 import { moonPath, moonPhase } from "./moon"
 import { sunTimes } from "./sun"
@@ -24,7 +24,6 @@ const SUNRISE_COLORS = { fill: "#fde047", stroke: "#c2410c" }
 const SUNSET_COLORS = { fill: "#fb923c", stroke: "#b91c1c" }
 // mdi path 24x24 -> ~17 units centered
 const WEATHER_FIT = "scale(0.72) translate(-12 -12)"
-const HOUR_MS = UNIT_SECONDS.hour * 1000
 
 const now = computed(() => new Date(props.now))
 const { coords, place, failed, locate, clear } = useGeo()

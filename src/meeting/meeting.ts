@@ -1,5 +1,5 @@
 import { readJson } from "@/shared/storage"
-import { HOUR_MS, pad } from "@/shared/time"
+import { DAY_MS, HOUR_MS, MINUTE_MS } from "@/shared/time"
 // pause / resume / elapsed are the stopwatch ones: resume shifts `start` by the pause
 import * as sw from "@/stopwatch/stopwatch"
 
@@ -23,8 +23,6 @@ export const DEFAULT_CONFIG: MeetingConfig = {
 }
 
 const MAX_PARTICIPANTS = 1000
-const MINUTE_MS = 60_000
-const SESSION_EXPIRY_MS = 24 * HOUR_MS
 
 export const initialState = (): MeetingState => ({
   timer: { id: 1, name: "", laps: [] },
@@ -65,8 +63,7 @@ export function reset(st: MeetingState) {
   st.pausedMs = 0
 }
 
-export const isExpired = (st: MeetingState, now: number) =>
-  (wallStart(st) ?? now) < now - SESSION_EXPIRY_MS
+export const isExpired = (st: MeetingState, now: number) => (wallStart(st) ?? now) < now - DAY_MS
 
 // "14:30" (<input type="time">) -> timestamp today; false if invalid, in the future or after the end
 export function setStartClock(st: MeetingState, hhmm: string, now: number): boolean {
@@ -87,11 +84,6 @@ export function setPausedMinutes(st: MeetingState, minutes: number, now: number)
   st.timer.start = start
   st.pausedMs = ms
   return true
-}
-
-export const clockOf = (ts: number) => {
-  const d = new Date(ts)
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
 export function calc(st: MeetingState, cfg: MeetingConfig, now: number) {

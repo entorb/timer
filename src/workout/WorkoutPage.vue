@@ -132,7 +132,7 @@ function submit() {
         <div class="column items-center">
           <span
             id="wo-round"
-            class="text-grey-7 text-h5"
+            class="text-h5"
           >{{ round }}</span>
           <span
             id="wo-time"
@@ -141,7 +141,7 @@ function submit() {
           <span
             v-if="pos.phase !== 'work' || pos.rep < workout.reps"
             id="wo-total"
-            class="text-grey-7 text-h5"
+            class="text-h5"
           >{{ totalLeft }}</span>
         </div>
       </ProgressRing>

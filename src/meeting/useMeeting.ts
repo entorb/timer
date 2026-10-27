@@ -2,7 +2,7 @@ import { computed, ref, watch } from "vue"
 
 import { statsWrite } from "@/shared/stats"
 import { writeJson } from "@/shared/storage"
-import { nowSec } from "@/shared/time"
+import { hhmm, nowSec } from "@/shared/time"
 import { useClock } from "@/shared/useClock"
 import { useWakeLock } from "@/shared/useWakeLock"
 
@@ -20,7 +20,7 @@ export function useMeeting() {
   const calcs = computed(() => mtg.calc(state.value, config.value, now.value))
   const startClock = computed(() => {
     const ts = mtg.wallStart(state.value)
-    return ts == null ? "" : mtg.clockOf(ts)
+    return ts == null ? "" : hhmm(new Date(ts))
   })
 
   watch(state, (value) => writeJson(mtg.KEY_STATE, value), { deep: true })

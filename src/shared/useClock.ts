@@ -1,4 +1,12 @@
-import { type MaybeRefOrGetter, onScopeDispose, ref, toValue } from "vue"
+import {
+  getCurrentInstance,
+  type MaybeRefOrGetter,
+  onActivated,
+  onDeactivated,
+  onScopeDispose,
+  ref,
+  toValue,
+} from "vue"
 
 import { roundTs } from "./time"
 
@@ -12,12 +20,22 @@ interface ClockOptions {
 // aligned to the `ms` grid (just after each full second): no skipped / doubled seconds on jitter
 export function useClock({ ms = 1000, active = true, onTick }: ClockOptions = {}) {
   const now = ref(roundTs(Date.now(), toValue(ms)))
+  // KeepAlive keeps hidden pages rendering: pause display-only clocks there, onTick ones keep ringing
+  let shown = true
+  /* c8 ignore next 7 */
+  if (onTick == null && getCurrentInstance() != null) {
+    onActivated(() => {
+      shown = true
+      now.value = roundTs(Date.now(), toValue(ms))
+    })
+    onDeactivated(() => (shown = false))
+  }
   let timeout: ReturnType<typeof setTimeout> | undefined
   function schedule() {
     const step = toValue(ms)
     timeout = globalThis.setTimeout(
       () => {
-        if (toValue(active)) {
+        if (shown && toValue(active)) {
           const prev = now.value
           now.value = roundTs(Date.now(), step)
           onTick?.(prev)

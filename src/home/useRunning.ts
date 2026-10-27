@@ -4,9 +4,10 @@ import { loadSets } from "@/eta/sets"
 import * as mtg from "@/meeting/meeting"
 import { loadTimers } from "@/multitimer/timers"
 import * as pomo from "@/pomodoro/pomodoro"
+import { pickById } from "@/shared/list"
 import { loadAthletes } from "@/stopwatch/stopwatch"
 import * as wo from "@/workout/workout"
-import { runningItems, type Sources } from "./running"
+import { etaEnds, runningItems, type Sources } from "./running"
 
 // loaders of the sub-apps, not their composables (no sounds / wake lock)
 function readSources(): Sources {
@@ -15,9 +16,9 @@ function readSources(): Sources {
   const pomoSettings = pomo.loadSettings()
   return {
     events: loadEvents(),
-    workout: workouts.find((w) => w.id === selected) ?? workouts[0] ?? wo.DEFAULT_WORKOUT,
+    workout: pickById(workouts, selected) ?? wo.DEFAULT_WORKOUT,
     workoutState: wo.loadState(),
-    etaSets: loadSets(),
+    etas: etaEnds(loadSets()),
     timers: loadTimers(),
     athletes: loadAthletes(),
     meeting: mtg.loadState(),
