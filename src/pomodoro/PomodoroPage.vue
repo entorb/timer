@@ -148,7 +148,10 @@ function setField(key: (typeof fields.value)[number]["key"], value: string | num
       </div>
     </q-expansion-item>
 
-    <StatsLine v-if="!running" :origin="ORIGIN" />
+    <StatsLine
+      v-if="!running"
+      :origin="ORIGIN"
+    />
   </q-page>
 </template>
 

@@ -92,7 +92,7 @@ function submit() {
 <template>
   <q-page
     padding
-    class="column items-center page-gap"
+    class="column items-center page-gap wo-page"
   >
     <div
       v-if="running"
@@ -122,9 +122,10 @@ function submit() {
       {{ PHASES[pos.phase].label }}
     </div>
 
-    <div class="relative-position">
+    <div class="relative-position wo-ring">
       <ProgressRing
         :value="ringValue"
+        size="min(80vw, 320px, 100dvh - 100px)"
         :color="PHASES[pos.phase].color"
         :animation-speed="animationSpeed"
       >
@@ -256,7 +257,10 @@ function submit() {
       </q-card>
     </q-dialog>
 
-    <StatsLine v-if="!running" :origin="ORIGIN" />
+    <StatsLine
+      v-if="!running"
+      :origin="ORIGIN"
+    />
   </q-page>
 </template>
 
@@ -265,5 +269,23 @@ function submit() {
   font-size: clamp(4rem, 18vw, 6.2rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+/* phone landscape: ring left, title / phase / controls right */
+@media (orientation: landscape) and (max-height: 500px) {
+  .wo-page {
+    display: grid;
+    grid-template-columns: auto minmax(0, 400px);
+    justify-content: center;
+    align-items: center;
+    column-gap: 32px;
+  }
+  .wo-ring {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+  }
+  .wo-time {
+    font-size: clamp(3rem, 16dvh, 6.2rem);
+  }
 }
 </style>

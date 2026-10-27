@@ -172,6 +172,9 @@ function resetAll() {
       </q-item>
     </q-list>
 
-    <StatsLine v-if="!sorted.some((s) => s.remaining > 0)" :origin="ORIGIN" />
+    <StatsLine
+      v-if="!sorted.some((s) => s.remaining > 0)"
+      :origin="ORIGIN"
+    />
   </q-page>
 </template>
