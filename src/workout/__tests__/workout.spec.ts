@@ -1,14 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { writeJson } from "@/shared/storage"
-
 import {
   autoName,
   cuesBetween,
   elapsed,
   formatPhaseTime,
-  KEY_WORKOUTS,
-  loadWorkouts,
   pause,
   position,
   segments,
@@ -74,14 +70,6 @@ describe("workout", () => {
 
   it("auto name from numbers", () => {
     expect(autoName({ work: 180, rest: 30, reps: 4 })).toBe("180/30x4")
-  })
-
-  it("migration drops prepare and old Tabata default", () => {
-    writeJson(KEY_WORKOUTS, [
-      { ...w, prepare: 5 },
-      { ...w, id: "b", prepare: 10 },
-    ])
-    expect(loadWorkouts()).toEqual([{ ...w, id: "b" }])
   })
 
   it("skip: next segment start, back to current or previous start", () => {

@@ -41,12 +41,7 @@ export const KEY_WORKOUTS = "tmr-wo-workouts"
 export const KEY_SELECTED = "tmr-wo-selected"
 export const KEY_STATE = "tmr-wo-state"
 
-// TODO: remove after 25.10.2026
-// migration: drop old `prepare` field and old Tabata default
-export const loadWorkouts = () =>
-  readJson<Array<Workout & { prepare?: number }>>(KEY_WORKOUTS, [])
-    .filter((w) => w.id !== "tabata")
-    .map(({ prepare: _, ...w }) => w)
+export const loadWorkouts = () => readJson<Workout[]>(KEY_WORKOUTS, [])
 export const loadSelectedId = () => readJson(KEY_SELECTED, DEFAULT_WORKOUT.id)
 export const loadState = () => readJson<WorkoutState>(KEY_STATE, { elapsedMs: 0 })
 

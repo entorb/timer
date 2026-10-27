@@ -1,5 +1,6 @@
 import { computed, ref, watch } from "vue"
 import { t } from "@/shared/i18n"
+import { pickById } from "@/shared/list"
 import { statsWrite } from "@/shared/stats"
 import { readJson, writeJson } from "@/shared/storage"
 import { DAY_MS, roundTs } from "@/shared/time"
@@ -24,10 +25,7 @@ export function useEtaData() {
   watch(sets, (value) => writeJson(KEY_SETS, value), { deep: true, immediate: true })
   watch(selectedId, (value) => writeJson(KEY_SELECTED, value))
 
-  // fallback: selected one was deleted
-  const set = computed(
-    () => sets.value.find((s) => s.id === selectedId.value) ?? sets.value[0] ?? newSet(setName(1)),
-  )
+  const set = computed(() => pickById(sets.value, selectedId.value) ?? newSet(setName(1)))
   const data = computed(() => set.value.data)
   const settings = computed(() => set.value.settings)
   const target = computed({

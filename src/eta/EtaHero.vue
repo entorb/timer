@@ -3,7 +3,7 @@ import { computed } from "vue"
 import { t } from "@/shared/i18n"
 import ProgressRing from "@/shared/ProgressRing.vue"
 
-import { formatDateTime, secondsToString, type Unit } from "@/shared/time"
+import { formatDateTime, secondsToString, UNIT_SECONDS, type Unit } from "@/shared/time"
 
 import { unitLabel } from "./helper"
 import { iconEta, iconSave, iconSpeed, iconTimeLastInput, iconTimeRunning } from "./icons"
@@ -32,7 +32,7 @@ const pctEstimated = computed(() => Math.round(100 * props.est.percent) - pctMea
 function etaToString(): string {
   return formatDateTime(
     new Date(props.stats.etaMs),
-    props.showDays || props.est.secToEta >= 86_400,
+    props.showDays || props.est.secToEta >= UNIT_SECONDS.day,
   )
 }
 </script>

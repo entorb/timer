@@ -13,7 +13,7 @@ import {
 import { computed } from "vue"
 import { t } from "@/shared/i18n"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatClock, parseDecimal } from "@/shared/time"
+import { formatClock, MINUTE_MS, parseDecimal } from "@/shared/time"
 
 import { activities, clampCount, efficiency, eur, isStarted, ORIGIN, purchases } from "./meeting"
 import { useMeeting } from "./useMeeting"
@@ -22,7 +22,7 @@ const m = useMeeting()
 const { state, config, running, calcs } = m
 
 const started = computed(() => isStarted(state.value))
-const elapsedMs = computed(() => calcs.value.minutes * 60_000)
+const elapsedMs = computed(() => calcs.value.minutes * MINUTE_MS)
 const color = computed(() => efficiency(calcs.value.minutes, calcs.value.people))
 const alternatives = computed(() => activities(calcs.value.peopleHours))
 const shopping = computed(() => purchases(calcs.value.totalCost))
@@ -156,7 +156,7 @@ function setStart(value: InputValue) {
       <div class="col-6">
         <q-input
           for="input-mtg-pause"
-          :model-value="Math.round(state.pausedMs / 60_000)"
+          :model-value="Math.round(state.pausedMs / MINUTE_MS)"
           :label="t('Pause (min)', 'Pause (min)')"
           type="number"
           min="0"

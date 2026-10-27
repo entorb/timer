@@ -24,13 +24,20 @@ export interface Sources {
   events: Countdown[]
   workout?: wo.Workout
   workoutState?: wo.WorkoutState
-  etaSets: EtaSet[]
+  etas: Array<{ name: string; etaMs: number }> // see etaEnds
   timers: Timer[]
   athletes: sw.Athlete[]
   meeting?: MeetingState
   pomoSettings: pomo.PomoSettings
   pomoState?: pomo.PomoState
 }
+
+// regression independent of `now`: once per read, not per tick
+export const etaEnds = (sets: EtaSet[]) =>
+  sets.map((set) => ({
+    name: set.name,
+    etaMs: calcStats(set.data, set.target, set.settings.weightedReg)?.etaMs ?? 0,
+  }))
 
 const countdown = (path: string, endTs: number, now: number, label?: string): Running => ({
   path,
@@ -67,10 +74,9 @@ export function runningItems(src: Sources, now: number, since = now): Running[] 
     const item = { path: "/anticipation", label: ev.name, ms: seconds * 1000, days }
     return past ? item : { ...item, endTs: ev.date.getTime() }
   })
-  const etas = src.etaSets.flatMap((set) => {
-    const etaMs = calcStats(set.data, set.target, set.settings.weightedReg)?.etaMs ?? 0
-    return etaMs > since ? [countdown("/eta", etaMs, now, set.name)] : []
-  })
+  const etas = src.etas
+    .filter((e) => e.etaMs > since)
+    .map((e) => countdown("/eta", e.etaMs, now, e.name))
   const timers = src.timers
     .filter((tm) => tm.dateEnd.getTime() > since)
     .map((tm) => countdown("/multitimer", tm.dateEnd.getTime(), now, tm.name))

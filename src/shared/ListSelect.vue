@@ -3,6 +3,7 @@ import { mdiDelete, mdiPencil, mdiPlus } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
 import { confirmDialog } from "@/shared/confirm"
 import { t } from "@/shared/i18n"
+import { pickById } from "@/shared/list"
 
 // select one of several named items: switch, rename, add, delete
 interface Props {
@@ -17,7 +18,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{ add: []; edit: []; remove: []; rename: [name: string] }>()
 const selectedId = defineModel<string>({ required: true })
 const options = computed(() => props.items.map((i) => ({ label: i.name, value: i.id })))
-const name = computed(() => props.items.find((i) => i.id === selectedId.value)?.name ?? props.items[0]?.name ?? "")
+const name = computed(() => pickById(props.items, selectedId.value)?.name ?? "")
 
 function confirmRemove() {
   confirmDialog(t(`Delete "${name.value}"?`, `"${name.value}" löschen?`), () => emit("remove"))

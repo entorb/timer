@@ -1,11 +1,12 @@
 import * as Sentry from "@sentry/vue"
 import { onActivated, onDeactivated, onScopeDispose, type Ref, ref, watch } from "vue"
 import { readJson, writeJson } from "@/shared/storage"
+import { MINUTE_MS } from "@/shared/time"
 import type { Coords } from "./useGeo"
 import { isStale, parseWeather, type Weather, weatherUrl } from "./weather"
 
 const KEY_WEATHER = "tmr-weather"
-const REFRESH_MS = 15 * 60_000
+const REFRESH_MS = 15 * MINUTE_MS
 
 /* c8 ignore start */
 async function load(c: Coords): Promise<Weather | undefined> {
@@ -39,7 +40,8 @@ export function useWeather(coords: Ref<Coords | null>) {
     })
   }
 
-  watch(coords, refresh, { immediate: true })
+  // first fetch via onActivated (also runs on mount under KeepAlive)
+  watch(coords, refresh)
   // page is kept alive in other tabs: poll only while home is shown
   let interval: ReturnType<typeof setInterval> | undefined
   const stop = () => {

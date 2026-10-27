@@ -1,10 +1,10 @@
 import { t } from "@/shared/i18n"
-import { pad, type Unit } from "@/shared/time"
+import { hhmm, isoDay, pad, type Unit } from "@/shared/time"
 
 import type { DataRowRedType } from "./types"
 
 export const helperDateToIsoString = (date: Date): string =>
-  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  `${isoDay(date)}T${hhmm(date)}:${pad(date.getSeconds())}`
 
 // used at StatsTable and TooltipSpeed
 export const helperValueToString = (value: number): string => {
