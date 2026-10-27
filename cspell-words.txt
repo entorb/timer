@@ -159,6 +159,7 @@ meteo
 minuten
 multitimer
 nach
+neue
 neues
 nicht
 noaa
@@ -183,6 +184,7 @@ pomofocus
 prek
 programmieren
 prozess
+punkte
 ranklotzen
 recalc
 refetched
@@ -221,6 +223,7 @@ springen
 stammen
 standardwerte
 standort
+startbildschirm
 starten
 startzeit
 stattdessen
@@ -246,6 +249,7 @@ typeless
 uhrzeit
 umbenennen
 umschalten
+unawaited
 undefinded
 unfonts
 ungültige
