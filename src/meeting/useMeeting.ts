@@ -32,7 +32,7 @@ export function useMeeting() {
     if (running.value) {
       mtg.pause(state.value, now.value)
     } else {
-      if (!mtg.isStarted(state.value)) statsWrite(mtg.ORIGIN)
+      if (!mtg.isStarted(state.value)) void statsWrite(mtg.ORIGIN)
       mtg.start(state.value, now.value)
     }
   }

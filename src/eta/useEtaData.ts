@@ -56,7 +56,7 @@ export function useEtaData() {
     const date = new Date(roundTs(row.date.getTime()))
     if (data.value.at(-1)?.date.getTime() === date.getTime()) data.value.pop()
     data.value.push({ ...row, date })
-    if (data.value.length === 3) statsWrite(ORIGIN)
+    if (data.value.length === 3) void statsWrite(ORIGIN)
   }
 
   function updateRow(index: number, row: DataRowRedType) {

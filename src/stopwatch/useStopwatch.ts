@@ -45,7 +45,7 @@ export function useStopwatch() {
 
   function startAll() {
     act(sw.start)
-    statsWrite(sw.ORIGIN)
+    void statsWrite(sw.ORIGIN)
   }
 
   function add() {

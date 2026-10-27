@@ -56,7 +56,7 @@ export function useMultiTimer() {
   function add(name: string, time: number, unit: Unit) {
     timers.value.push(createTimer(name, time, unit))
     now.value = nowSec()
-    statsWrite(ORIGIN)
+    void statsWrite(ORIGIN)
   }
 
   // returns false if time input is invalid
