@@ -10,6 +10,8 @@ import { createApp } from "vue"
 import App from "./App.vue"
 import router from "./router"
 import { onVisibilityChange, unlockAudio } from "./shared/feedback"
+import { t } from "./shared/i18n"
+import { statsFlush } from "./shared/stats"
 
 // audio needs a user gesture first, resume also after iOS suspended it
 document.addEventListener("pointerdown", unlockAudio)
@@ -19,15 +21,23 @@ document.addEventListener("visibilitychange", onVisibilityChange)
 // iOS Safari ignores user-scalable=no and touch-action for pinch zoom
 document.addEventListener("gesturestart", (e) => e.preventDefault())
 
-// autoUpdate: new SW activates + drops old precache -> reload so lazy chunks match.
+statsFlush()
+
 // Installed PWA resumes without navigation, so browser never checks for updates: do it on resume.
-/* c8 ignore next 10 */
-registerSW({
+// New version: ask before reload, running timers would be lost.
+/* c8 ignore next 20 */
+const updateSW = registerSW({
   immediate: true,
+  onNeedRefresh: () =>
+    Dialog.create({
+      message: t("New version available. Reload?", "Neue Version verfügbar. Neu laden?"),
+      cancel: true,
+      persistent: true,
+    }).onOk(() => updateSW(true)),
   onRegisteredSW: (_url, reg) => {
     document.addEventListener(
       "visibilitychange",
-      () => document.visibilityState === "visible" && reg?.update(),
+      () => document.visibilityState === "visible" && navigator.onLine && reg?.update(),
     )
   },
 })
