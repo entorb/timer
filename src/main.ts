@@ -44,10 +44,12 @@ const updateSW = registerSW({
 
 const app = createApp(App)
 
-Sentry.init({
-  app,
-  dsn: "https://94e85103ca60ae8be4e92e873b325a31@o4507139041525760.ingest.de.sentry.io/4512292162109520",
-})
+// offline: skip, a fetch would make mobile OS prompt for wifi; capture* calls are no-ops without init
+if (navigator.onLine)
+  Sentry.init({
+    app,
+    dsn: "https://94e85103ca60ae8be4e92e873b325a31@o4507139041525760.ingest.de.sentry.io/4512292162109520",
+  })
 
 app
   .use(router)
