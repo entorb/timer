@@ -11,7 +11,7 @@ const STATS_URL = "https://entorb.net/web-stats-json.php"
 const runningOnProd = () => globalThis.location.hostname === "entorb.net"
 
 export async function statsRead(origin: string): Promise<StatsDataType | undefined> {
-  if (!runningOnProd()) return undefined
+  if (!runningOnProd() || !navigator.onLine) return undefined
   try {
     const response = await fetch(`${STATS_URL}?origin=${origin}&action=read`)
     return response.ok ? await response.json() : undefined

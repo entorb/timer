@@ -32,7 +32,7 @@ export function useWeather(coords: Ref<Coords | null>) {
   function refresh() {
     const c = coords.value
     if (c == null) weather.value = null // location deleted: drop forecast
-    if (c == null || !isStale(weather.value, c, Date.now())) return
+    if (c == null || !navigator.onLine || !isStale(weather.value, c, Date.now())) return
     // location changed meanwhile: drop outdated response
     void load(c).then((w) => {
       if (w != null && coords.value === c) weather.value = w
@@ -42,10 +42,14 @@ export function useWeather(coords: Ref<Coords | null>) {
   watch(coords, refresh, { immediate: true })
   // page is kept alive in other tabs: poll only while home is shown
   let interval: ReturnType<typeof setInterval> | undefined
-  const stop = () => globalThis.clearInterval(interval)
+  const stop = () => {
+    globalThis.clearInterval(interval)
+    globalThis.removeEventListener("online", refresh)
+  }
   onActivated(() => {
     refresh()
     interval = globalThis.setInterval(refresh, REFRESH_MS)
+    globalThis.addEventListener("online", refresh) // back online: fetch without waiting for the poll
   })
   onDeactivated(stop)
   onScopeDispose(stop)
