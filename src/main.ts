@@ -21,7 +21,7 @@ document.addEventListener("visibilitychange", onVisibilityChange)
 // iOS Safari ignores user-scalable=no and touch-action for pinch zoom
 document.addEventListener("gesturestart", (e) => e.preventDefault())
 
-statsFlush()
+void statsFlush()
 
 // Installed PWA resumes without navigation, so browser never checks for updates: do it on resume.
 // New version: ask before reload, running timers would be lost.
