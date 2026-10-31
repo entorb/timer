@@ -17,6 +17,6 @@ echo "### E2E tests"
 
 echo "## Frontend Build and Transfer"
 pnpm run build
-rsync -rhv --delete --no-perms dist/ entorb@entorb.net:html/timer/
+rsync -rhv --delete --no-perms dist/ entorb@mab.uberspace.de:html/timer/
 
 echo "## DONE"
