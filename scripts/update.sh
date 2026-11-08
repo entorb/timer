@@ -27,6 +27,8 @@ rm -f pnpm-lock.yaml
 echo "### Node packages"
 pnpm up --latest
 pnpm exec biome migrate --write
+# ensure biome.json is formatted after migration
+pnpm biome format --write biome.json
 
 echo "### Node package audit"
 ./scripts/chk_js_package_audit.sh
