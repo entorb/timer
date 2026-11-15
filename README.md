@@ -31,7 +31,7 @@ All sounds are synthesized via Web Audio in `src/shared/feedback.ts` (no audio f
 ## Code Checks
 
 - `./scripts/run_checks.sh`
-- `pnpm exec playwright install chromium && ./scripts/run_e2e.sh`
+- `pnpm exec playwright install --only-shell chromium && ./scripts/run_e2e.sh`
 - `./scripts/run_spelling.sh`
 - [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_timer)
 
