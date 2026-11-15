@@ -48,10 +48,7 @@ pnpm exec playwright install --only-shell chromium
 echo "## Git"
 if [ -n "$(git status --porcelain)" ]; then
   echo "### git push"
-  git add pnpm-lock.yaml
-  git diff --staged --quiet || git commit -m "chore(deps): Lock" -- pnpm-lock.yaml
-
-  FILES="package.json pnpm-workspace.yaml biome.json .pre-commit-config.yaml .nvmrc"
+  FILES="pnpm-lock.yaml package.json pnpm-workspace.yaml biome.json .pre-commit-config.yaml .nvmrc"
   # shellcheck disable=SC2086
   git add $FILES
   # shellcheck disable=SC2086
