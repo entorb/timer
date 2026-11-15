@@ -50,7 +50,7 @@ function confirmRemove() {
       :icon="mdiPencil"
       :disable="disable"
       :aria-label="`${customEdit ? t('Edit', 'Bearbeiten') : t('Rename', 'Umbenennen')}: ${label}`"
-      @click="customEdit && emit('edit')"
+      @click="() => { if (customEdit) emit('edit') }"
     >
       <q-popup-edit
         v-if="!customEdit"

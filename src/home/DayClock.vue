@@ -274,7 +274,7 @@ const ringStyle = computed(() => ({
       class="absolute-top-right"
       :icon="geoIcon"
       :aria-label="geoLabel"
-      @click="coords == null ? locate() : clear()"
+      @click="() => { if (coords == null) locate(); else clear() }"
     />
   </div>
 </template>

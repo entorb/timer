@@ -92,7 +92,7 @@ const router = createRouter({
 /* c8 ignore next 4 */
 router.onError((err: Error, to) => {
   if (/dynamically imported module|module script failed/iu.test(err.message))
-    window.location.assign(router.resolve(to).href)
+    globalThis.location.assign(router.resolve(to).href)
 })
 
 export default router

@@ -46,7 +46,7 @@ export function useMeeting() {
     startClock,
     toggle,
     reset: () => mtg.reset(state.value),
-    setStartClock: (hhmm: string) => mtg.setStartClock(state.value, hhmm, nowSec()),
+    setStartClock: (clock: string) => mtg.setStartClock(state.value, clock, nowSec()),
     setPausedMinutes: (min: number) => mtg.setPausedMinutes(state.value, min, nowSec()),
   }
 }

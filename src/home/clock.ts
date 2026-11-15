@@ -17,8 +17,8 @@ export function polar(hour: number, r: number): Point {
 
 // noon between sunrise and sunset, midnight opposite
 // sunset < sunrise: day crosses local midnight (location far from device time zone) -> sunset next day
-export function dayMarks(sunrise = 6, sunset = 18) {
-  if (sunset < sunrise) sunset += 24
+export function dayMarks(sunrise = 6, sunsetIn = 18) {
+  const sunset = sunsetIn < sunrise ? sunsetIn + 24 : sunsetIn
   const noon = (sunrise + sunset) / 2
   return { midnight: noon - 12, sunrise, noon, sunset }
 }

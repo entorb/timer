@@ -70,18 +70,18 @@ export function setStartClock(st: MeetingState, hhmm: string, now: number): bool
   const [h, m] = hhmm.split(":").map(Number)
   if (h == null || m == null || Number.isNaN(h + m) || st.timer.start == null) return false
   const ts = new Date(now).setHours(h, m, 0, 0)
-  const start = ts + st.pausedMs
-  if (ts > now || start > (st.timer.stop ?? now)) return false
-  st.timer.start = start
+  const newStart = ts + st.pausedMs
+  if (ts > now || newStart > (st.timer.stop ?? now)) return false
+  st.timer.start = newStart
   return true
 }
 
 export function setPausedMinutes(st: MeetingState, minutes: number, now: number): boolean {
   const ms = Math.round(minutes * MINUTE_MS)
   if (st.timer.start == null || Number.isNaN(ms) || ms < 0) return false
-  const start = st.timer.start + ms - st.pausedMs
-  if (start > (st.timer.stop ?? now)) return false
-  st.timer.start = start
+  const newStart = st.timer.start + ms - st.pausedMs
+  if (newStart > (st.timer.stop ?? now)) return false
+  st.timer.start = newStart
   st.pausedMs = ms
   return true
 }
