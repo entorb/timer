@@ -41,6 +41,8 @@ echo "### run_checks.sh"
 ./scripts/run_checks.sh
 
 echo "### run_e2e.sh"
+# playwright may have been bumped above, fetch its matching headless shell
+pnpm exec playwright install --only-shell chromium
 ./scripts/run_e2e.sh
 
 echo "## Git"
