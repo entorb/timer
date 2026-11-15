@@ -20,25 +20,11 @@
   },
   "formatter": {
     "enabled": true,
-    "indentWidth": 2,
     "indentStyle": "space",
+    "indentWidth": 2,
     "lineEnding": "lf",
     "lineWidth": 100,
     "attributePosition": "multiline"
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "preset": "recommended",
-      "complexity": {
-        "noExcessiveCognitiveComplexity": {
-          "level": "error",
-          "options": {
-            "maxAllowedComplexity": 15
-          }
-        }
-      }
-    }
   },
   "javascript": {
     "formatter": {
@@ -51,6 +37,26 @@
       "selfCloseVoidElements": "always"
     },
     "experimentalFullSupportEnabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 15
+          }
+        }
+      },
+      "style": {
+        "noUselessElse": "error",
+        "useCollapsedElseIf": "error",
+        "useConsistentTypeDefinitions": "error",
+        "useConsistentObjectDefinitions": "error"
+      }
+    }
   },
   "assist": {
     "enabled": true,
