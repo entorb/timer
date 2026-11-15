@@ -25,17 +25,17 @@ export function dayMarks(sunrise = 6, sunset = 18) {
 
 // [fraction of segment, color], first half of day; mirrored at noon
 const NIGHT_STOPS: Array<[number, string]> = [
-  [0, "#0b1437"],
-  [0.75, "#1e3a8a"],
+  [0, "#000000"],
+  [0.75, "#262626"],
 ]
 const DAY_STOPS: Array<[number, string]> = [
-  [0, "#60a5fa"],
-  [0.35, "#a5d8ff"],
-  [0.7, "#fde68a"],
-  [1, "#fbbf24"],
+  [0, "#737373"],
+  [0.35, "#a3a3a3"],
+  [0.7, "#e5e5e5"],
+  [1, "#ffffff"],
 ]
 
-// CSS conic gradient night blue -> noon yellow; starts at midnight, stops as hours after midnight
+// CSS conic gradient midnight black -> noon white; starts at midnight, stops as hours after midnight
 export function ringGradient(sunrise = 6, sunset = 18): string {
   const m = dayMarks(sunrise, sunset)
   const lerp = (a: number, b: number, f: number) => a + (b - a) * f - m.midnight

@@ -26,13 +26,13 @@ describe("clock", () => {
     expect(dayMarks(19, 7)).toMatchObject({ midnight: 13, noon: 25, sunset: 31 })
   })
 
-  it("ringGradient: night at midnight, yellow at noon, symmetric", () => {
+  it("ringGradient: night at midnight, white at noon, symmetric", () => {
     const g = ringGradient()
-    expect(g).toMatch(/^conic-gradient\(from 0deg, #0b1437 0deg, /)
-    expect(g).toContain("#60a5fa 90deg")
-    expect(g).toContain("#fbbf24 180deg")
-    expect(g).toContain("#60a5fa 270deg")
-    expect(g).toMatch(/#0b1437 360deg\)$/)
+    expect(g).toMatch(/^conic-gradient\(from 0deg, #000000 0deg, /)
+    expect(g).toContain("#737373 90deg")
+    expect(g).toContain("#ffffff 180deg")
+    expect(g).toContain("#737373 270deg")
+    expect(g).toMatch(/#000000 360deg\)$/)
     expect(ringGradient(7, 19)).toMatch(/^conic-gradient\(from 15deg, /)
   })
 
