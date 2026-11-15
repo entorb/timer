@@ -2,7 +2,7 @@ import { Lang } from "quasar"
 import langDe from "quasar/lang/de-DE"
 import langEn from "quasar/lang/en-US"
 import { ref, watchEffect } from "vue"
-import { readSettings, updateSettings } from "./storage"
+import { readSettings, updateSettings } from "./storage.ts"
 
 export type LangType = "en" | "de"
 

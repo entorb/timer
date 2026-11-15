@@ -2,12 +2,12 @@
 import { mdiClose, mdiPlus, mdiRestart } from "@quasar/extras/mdi-v7"
 import { ref, useTemplateRef } from "vue"
 import DeleteAllButton from "@/shared/DeleteAllButton.vue"
-import { lang, t } from "@/shared/i18n"
+import { lang, t } from "@/shared/i18n.ts"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatDateTime, secondsToString } from "@/shared/time"
-import { ORIGIN } from "./timers"
+import { formatDateTime, secondsToString } from "@/shared/time.ts"
+import { ORIGIN } from "./timers.ts"
 
-import { useMultiTimer } from "./useMultiTimer"
+import { useMultiTimer } from "./useMultiTimer.ts"
 
 const { timers, sorted, recent, addFromInput, addFromRecent, reset, remove } = useMultiTimer()
 

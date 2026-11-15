@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { mdiPause, mdiPlay, mdiRestart, mdiSkipNext, mdiSkipPrevious } from "@quasar/extras/mdi-v7"
 import { computed, ref, watch, watchEffect } from "vue"
-import { t } from "@/shared/i18n"
+import { t } from "@/shared/i18n.ts"
 import ListSelect from "@/shared/ListSelect.vue"
 import ProgressRing from "@/shared/ProgressRing.vue"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatClock } from "@/shared/time"
-import { PHASES, useWorkout } from "./useWorkout"
-import type { Phase } from "./workout"
-import { autoName, formatPhaseTime, ORIGIN } from "./workout"
+import { formatClock } from "@/shared/time.ts"
+import { PHASES, useWorkout } from "./useWorkout.ts"
+import type { Phase } from "./workout.ts"
+import { autoName, formatPhaseTime, ORIGIN } from "./workout.ts"
 
 const { workouts, selectedId, workout, running, pos, total, elapsedMs, toggle, reset, skip, save, remove } =
   useWorkout()

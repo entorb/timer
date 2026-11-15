@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { mdiCheck, mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@quasar/extras/mdi-v7"
 import { ref } from "vue"
-import { confirmDialog } from "@/shared/confirm"
+import { confirmDialog } from "@/shared/confirm.ts"
 import DeleteAllButton from "@/shared/DeleteAllButton.vue"
-import { t } from "@/shared/i18n"
+import { t } from "@/shared/i18n.ts"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatDateTime, hhmm, isoDay, secondsToString } from "@/shared/time"
+import { formatDateTime, hhmm, isoDay, secondsToString } from "@/shared/time.ts"
 
-import { type Countdown, ORIGIN } from "./anticipation"
-import { topLabel, useAnticipation } from "./useAnticipation"
+import { type Countdown, ORIGIN } from "./anticipation.ts"
+import { topLabel, useAnticipation } from "./useAnticipation.ts"
 
 const { events, sorted, add, remove } = useAnticipation()
 

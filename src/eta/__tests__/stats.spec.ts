@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { calcStats, estimate, etaPassed } from "../stats"
+import { calcStats, estimate, etaPassed } from "../stats.ts"
 
 const t0 = new Date("2023-01-01T00:00:00Z").getTime()
 const row = (sec: number, items: number) => ({ date: new Date(t0 + sec * 1000), items })

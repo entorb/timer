@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import { t } from "@/shared/i18n"
-import { formatDateTime, parseDecimal, type Unit } from "@/shared/time"
+import { t } from "@/shared/i18n.ts"
+import { formatDateTime, parseDecimal, type Unit } from "@/shared/time.ts"
 
-import { colorItems, colorSpeed } from "./colors"
-import { helperDateToIsoString } from "./helper"
-import { iconEdit, iconItems, iconSave, iconSpeed, iconTimeLastInput, iconTrash } from "./icons"
+import { colorItems, colorSpeed } from "./colors.ts"
+import { helperDateToIsoString } from "./helper.ts"
+import { iconEdit, iconItems, iconSave, iconSpeed, iconTimeLastInput, iconTrash } from "./icons.ts"
 import TooltipSpeed from "./TooltipSpeed.vue"
-import type { DataRowRedType, DataRowType } from "./types"
+import type { DataRowRedType, DataRowType } from "./types.ts"
 
 interface Props {
   data: DataRowType[]

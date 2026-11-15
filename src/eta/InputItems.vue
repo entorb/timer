@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue"
 
-import { t } from "@/shared/i18n"
-import { parseDecimal } from "@/shared/time"
+import { t } from "@/shared/i18n.ts"
+import { parseDecimal } from "@/shared/time.ts"
 
-import { colorItems } from "./colors"
-import { iconItems, iconSave } from "./icons"
-import type { DataRowRedType } from "./types"
+import { colorItems } from "./colors.ts"
+import { iconItems, iconSave } from "./icons.ts"
+import type { DataRowRedType } from "./types.ts"
 
 interface Props {
   currentItems: number

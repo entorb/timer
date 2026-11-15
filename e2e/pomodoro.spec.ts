@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test("Pomodoro: start and pause", async ({ page }) => {
+it("Pomodoro: start and pause", async ({ page }) => {
   await page.goto("./pomodoro")
   await expect(page.locator("#pomo-time")).toHaveText("25:00")
   await page.locator("#btn-pomo-toggle").click()

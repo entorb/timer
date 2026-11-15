@@ -1,14 +1,14 @@
 import { computed, ref, watch } from "vue"
 
-import { vibrateShort } from "@/shared/feedback"
-import { t } from "@/shared/i18n"
-import { statsWrite } from "@/shared/stats"
-import { readJson, writeJson } from "@/shared/storage"
-import { parseClock } from "@/shared/time"
-import { useClock } from "@/shared/useClock"
-import { useWakeLock } from "@/shared/useWakeLock"
+import { vibrateShort } from "@/shared/feedback.ts"
+import { t } from "@/shared/i18n.ts"
+import { statsWrite } from "@/shared/stats.ts"
+import { readJson, writeJson } from "@/shared/storage.ts"
+import { parseClock } from "@/shared/time.ts"
+import { useClock } from "@/shared/useClock.ts"
+import { useWakeLock } from "@/shared/useWakeLock.ts"
 
-import * as sw from "./stopwatch"
+import * as sw from "./stopwatch.ts"
 
 const KEY_TENTHS = "tmr-sw-tenths"
 

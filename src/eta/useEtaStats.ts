@@ -1,11 +1,11 @@
 import { computed, type MaybeRefOrGetter, toValue } from "vue"
 
-import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
-import { useClock } from "@/shared/useClock"
-import { useWakeLock } from "@/shared/useWakeLock"
+import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback.ts"
+import { useClock } from "@/shared/useClock.ts"
+import { useWakeLock } from "@/shared/useWakeLock.ts"
 
-import type { EtaSet } from "./sets"
-import { calcStats, estimate, etaPassed } from "./stats"
+import type { EtaSet } from "./sets.ts"
+import { calcStats, estimate, etaPassed } from "./stats.ts"
 
 const setStats = (s: EtaSet) => calcStats(s.data, s.target, s.settings.weightedReg)
 

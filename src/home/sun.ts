@@ -1,11 +1,11 @@
-import { DAY_MS } from "@/shared/time"
+import { DAY_MS } from "@/shared/time.ts"
 
 // sunrise/sunset: NOAA sunrise equation (suncalc style), accuracy ~1 min
 // https://en.wikipedia.org/wiki/Sunrise_equation
 
 const RAD = Math.PI / 180
-const J1970 = 2440588
-const J2000 = 2451545
+const J1970 = 2_440_588
+const J2000 = 2_451_545
 const J0 = 0.0009
 const OBLIQUITY = 23.4397 * RAD
 // sun center below horizon at rise/set: refraction + sun radius
@@ -26,7 +26,7 @@ export function sunTimes(date: Date, lat: number, lon: number): SunTimes | undef
   const phi = lat * RAD
   const n = Math.round(toDays(date) - J0 - lw / (2 * Math.PI))
   const ds = J0 + lw / (2 * Math.PI) + n
-  const m = (357.5291 + 0.98560028 * ds) * RAD
+  const m = (357.5291 + 0.985_600_28 * ds) * RAD
   const c = (1.9148 * Math.sin(m) + 0.02 * Math.sin(2 * m) + 0.0003 * Math.sin(3 * m)) * RAD
   const l = m + c + 102.9372 * RAD + Math.PI
   const noon = ds + 0.0053 * Math.sin(m) - 0.0069 * Math.sin(2 * l)

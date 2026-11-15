@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { DEFAULT_SETTINGS, reviveSets } from "../sets"
+import { DEFAULT_SETTINGS, reviveSets } from "../sets.ts"
 
 describe("reviveSets", () => {
   it("revives dates, fills defaults", () => {

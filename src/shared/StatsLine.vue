@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
-import { t } from "./i18n"
-import type { StatsDataType } from "./stats"
-import { statsRead } from "./stats"
+import { t } from "./i18n.ts"
+import type { StatsDataType } from "./stats.ts"
+import { statsRead } from "./stats.ts"
 
 
 const props = defineProps<{ origin: string }>()

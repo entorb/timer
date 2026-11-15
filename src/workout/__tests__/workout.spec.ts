@@ -12,7 +12,7 @@ import {
   start,
   totalMs,
   touchWorkout,
-} from "../workout"
+} from "../workout.ts"
 
 const w = { id: "tabata", name: "Tabata", work: 20, rest: 10, reps: 8 }
 const S = 1000

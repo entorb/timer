@@ -1,13 +1,13 @@
 import { computed, ref, watch } from "vue"
-import { t } from "@/shared/i18n"
-import { pickById } from "@/shared/list"
-import { statsWrite } from "@/shared/stats"
-import { readJson, writeJson } from "@/shared/storage"
-import { DAY_MS, roundTs } from "@/shared/time"
+import { t } from "@/shared/i18n.ts"
+import { pickById } from "@/shared/list.ts"
+import { statsWrite } from "@/shared/stats.ts"
+import { readJson, writeJson } from "@/shared/storage.ts"
+import { DAY_MS, roundTs } from "@/shared/time.ts"
 
-import { helperCalcSpeedFromPreviousRow } from "./helper"
-import { DEFAULT_SETTINGS, type EtaSet, KEY_SETS, loadSets, newSet, ORIGIN } from "./sets"
-import type { DataRowRedType, DataRowType } from "./types"
+import { helperCalcSpeedFromPreviousRow } from "./helper.ts"
+import { DEFAULT_SETTINGS, type EtaSet, KEY_SETS, loadSets, newSet, ORIGIN } from "./sets.ts"
+import type { DataRowRedType, DataRowType } from "./types.ts"
 
 const KEY_SELECTED = "tmr-eta-selected"
 

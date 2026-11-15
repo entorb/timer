@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { mdiDelete, mdiPencil, mdiPlus } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
-import { confirmDialog } from "@/shared/confirm"
-import { t } from "@/shared/i18n"
-import { pickById } from "@/shared/list"
+import { confirmDialog } from "@/shared/confirm.ts"
+import { t } from "@/shared/i18n.ts"
+import { pickById } from "@/shared/list.ts"
 
 // select one of several named items: switch, rename, add, delete
 interface Props {

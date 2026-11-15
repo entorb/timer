@@ -1,5 +1,5 @@
-import { readJson, writeJson } from "@/shared/storage"
-import { nowSec, parseDecimal, UNIT_SECONDS, type Unit } from "@/shared/time"
+import { readJson, writeJson } from "@/shared/storage.ts"
+import { nowSec, parseDecimal, UNIT_SECONDS, type Unit } from "@/shared/time.ts"
 
 export interface Timer {
   name: string
@@ -14,7 +14,7 @@ const KEY_RECENT = "tmr-mt-recent"
 
 const SUFFIX_UNIT: Record<string, Unit> = { s: "sec", m: "min", h: "hour", d: "day" }
 
-export const clearName = (name: string): string => name.replace(/[/|\\:"'{}[\]()]+/g, "").trim()
+export const clearName = (name: string): string => name.replace(/[/|\\:"'{}[\]()]+/gu, "").trim()
 
 // "20" = 20min, "10s", "1,5h", "2d", "1:30" = 1min 30s (unit suffix applies to the mm part)
 export function parseTimeInput(raw: string): { time: number; unit: Unit } | undefined {
@@ -23,7 +23,7 @@ export function parseTimeInput(raw: string): { time: number; unit: Unit } | unde
   if (suffixUnit != null) input = input.slice(0, -1)
 
   const unit = suffixUnit ?? "min"
-  const clock = /^(\d+):(\d{2})$/.exec(input)
+  const clock = /^(\d+):(\d{2})$/u.exec(input)
   // clock form in whole seconds, so labels stay free of fractions ("1:20" = "80s", not "1.3333m")
   if (clock) {
     const seconds = Math.round((Number(clock[1]) + Number(clock[2]) / 60) * UNIT_SECONDS[unit])

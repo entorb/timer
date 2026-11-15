@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
-import { reviveSets } from "@/eta/sets"
-import { DEFAULT_SETTINGS } from "@/pomodoro/pomodoro"
-import { DEFAULT_WORKOUT } from "@/workout/workout"
-import { etaEnds, runningItems, type Sources } from "../running"
+import { reviveSets } from "@/eta/sets.ts"
+import { DEFAULT_SETTINGS } from "@/pomodoro/pomodoro.ts"
+import { DEFAULT_WORKOUT } from "@/workout/workout.ts"
+import { etaEnds, runningItems, type Sources } from "../running.ts"
 
 const NOW = 1_000_000_000
 const empty: Sources = {

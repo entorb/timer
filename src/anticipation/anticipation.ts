@@ -1,5 +1,5 @@
-import { readJson, writeJson } from "@/shared/storage"
-import { DAY_MS, pad, UNIT_SECONDS } from "@/shared/time"
+import { readJson, writeJson } from "@/shared/storage.ts"
+import { DAY_MS, pad, UNIT_SECONDS } from "@/shared/time.ts"
 
 export interface Countdown {
   name: string
@@ -14,7 +14,7 @@ const KEY_DATA = "tmr-ant-data"
 export function parseTime(raw: string): { hour: number; minute: number } | undefined {
   const input = raw.trim()
   if (input === "") return { hour: 8, minute: 0 }
-  const match = /^(\d{1,2})(?:[:.](\d{1,2})|(\d{2}))?$/.exec(input)
+  const match = /^(\d{1,2})(?:[:.](\d{1,2})|(\d{2}))?$/u.exec(input)
   const hour = Number(match?.[1])
   const minute = Number(match?.[2] ?? match?.[3] ?? 0)
   return match != null && hour < 24 && minute < 60 ? { hour, minute } : undefined

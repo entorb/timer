@@ -1,4 +1,4 @@
-import { readJson, writeJson } from "./storage"
+import { readJson, writeJson } from "./storage.ts"
 
 export interface StatsDataType {
   accesscounts: number
@@ -11,7 +11,7 @@ const STATS_URL = "https://entorb.net/web-stats-json.php"
 const runningOnProd = () => globalThis.location.hostname === "entorb.net"
 
 export async function statsRead(origin: string): Promise<StatsDataType | undefined> {
-  if (!runningOnProd() || !navigator.onLine) return undefined
+  if (!(runningOnProd() && navigator.onLine)) return undefined
   try {
     const response = await fetch(`${STATS_URL}?origin=${origin}&action=read`)
     return response.ok ? await response.json() : undefined

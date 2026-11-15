@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { formatClock, parseClock } from "@/shared/time"
+import { formatClock, parseClock } from "@/shared/time.ts"
 
 import {
   type Athlete,
@@ -15,7 +15,7 @@ import {
   start,
   stop,
   toCsv,
-} from "../stopwatch"
+} from "../stopwatch.ts"
 
 const athlete = (): Athlete => ({ id: 1, name: "A", laps: [] })
 

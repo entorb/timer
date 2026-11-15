@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { mdiMapMarkerAlertOutline, mdiMapMarkerOff, mdiMapMarkerOutline } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
-import { t } from "@/shared/i18n"
-import { formatDateTime, HOUR_MS } from "@/shared/time"
-import { dayMarks, formatDay, hourOf, polar, ringGradient } from "./clock"
-import { moonPath, moonPhase } from "./moon"
-import { sunTimes } from "./sun"
-import { useGeo } from "./useGeo"
-import { useWeather } from "./useWeather"
-import { currentWeather, ringHours, tempGradient, tempLabels, weatherIcon } from "./weather"
+import { t } from "@/shared/i18n.ts"
+import { formatDateTime, HOUR_MS } from "@/shared/time.ts"
+import { dayMarks, formatDay, hourOf, polar, ringGradient } from "./clock.ts"
+import { moonPath, moonPhase } from "./moon.ts"
+import { sunTimes } from "./sun.ts"
+import { useGeo } from "./useGeo.ts"
+import { useWeather } from "./useWeather.ts"
+import { currentWeather, ringHours, tempGradient, tempLabels, weatherIcon } from "./weather.ts"
 
 // shared with the running list on the home page: same tick
 const props = defineProps<{ now: number }>()
@@ -66,7 +66,7 @@ const temps = computed(() =>
 const tempStyle = computed(() => ({ background: tempGradient(hours.value) }))
 const current = computed(() => {
   const c = weather.value == null ? undefined : currentWeather(weather.value, hourTs.value)
-  if (c == null) return undefined
+  if (c == null) return
   const day = isDay(hourOf(new Date(hourTs.value)))
   return { ...weatherIcon(c.code, day), temp: `${Math.round(c.temp)}°` }
 })

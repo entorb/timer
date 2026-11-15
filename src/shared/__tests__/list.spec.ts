@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { pickById } from "../list"
+import { pickById } from "../list.ts"
 
 describe("pickById", () => {
   const items = [{ id: "a" }, { id: "b" }]

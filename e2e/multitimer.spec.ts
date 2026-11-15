@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test("Multi-Timer: add, recent, delete", async ({ page }) => {
+it("Multi-Timer: add, recent, delete", async ({ page }) => {
   await page.goto("./multitimer")
   await page.locator("#input-name").fill("Tea")
   await page.locator("#input-time").fill("3")

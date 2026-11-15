@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { t } from "@/shared/i18n"
+import { t } from "@/shared/i18n.ts"
 import ProgressRing from "@/shared/ProgressRing.vue"
 
-import { formatDateTime, secondsToString, UNIT_SECONDS, type Unit } from "@/shared/time"
+import { formatDateTime, secondsToString, UNIT_SECONDS, type Unit } from "@/shared/time.ts"
 
-import { unitLabel } from "./helper"
-import { iconEta, iconSave, iconSpeed, iconTimeLastInput, iconTimeRunning } from "./icons"
-import { type EtaEstimate, type EtaStats, progress } from "./stats"
+import { unitLabel } from "./helper.ts"
+import { iconEta, iconSave, iconSpeed, iconTimeLastInput, iconTimeRunning } from "./icons.ts"
+import { type EtaEstimate, type EtaStats, progress } from "./stats.ts"
 import TooltipSpeed from "./TooltipSpeed.vue"
 
 interface Props {

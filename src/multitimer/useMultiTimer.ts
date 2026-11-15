@@ -1,11 +1,11 @@
 import { computed, ref, toRaw, watch } from "vue"
 
-import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
-import { statsWrite } from "@/shared/stats"
-import type { Unit } from "@/shared/time"
-import { nowSec } from "@/shared/time"
-import { useClock } from "@/shared/useClock"
-import { useWakeLock } from "@/shared/useWakeLock"
+import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback.ts"
+import { statsWrite } from "@/shared/stats.ts"
+import type { Unit } from "@/shared/time.ts"
+import { nowSec } from "@/shared/time.ts"
+import { useClock } from "@/shared/useClock.ts"
+import { useWakeLock } from "@/shared/useWakeLock.ts"
 
 import {
   clearName,
@@ -21,7 +21,7 @@ import {
   saveTimers,
   type Timer,
   timerLabel,
-} from "./timers"
+} from "./timers.ts"
 
 export function useMultiTimer() {
   const timers = ref<Timer[]>(loadTimers())

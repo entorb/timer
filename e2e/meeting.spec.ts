@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test("Meeting Meter: cost, pause, persists", async ({ page }) => {
+it("Meeting Meter: cost, pause, persists", async ({ page }) => {
   await page.clock.install()
   await page.goto("./meeting")
   await page.locator("#input-mtg-group1").fill("2")

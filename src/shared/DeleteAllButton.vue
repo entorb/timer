@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { mdiClose } from "@quasar/extras/mdi-v7"
-import { confirmDialog } from "./confirm"
-import { t } from "./i18n"
+import { confirmDialog } from "./confirm.ts"
+import { t } from "./i18n.ts"
 
 // round "x" button, confirms before emitting `confirmed`
 defineProps<{ label: string }>()

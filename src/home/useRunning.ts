@@ -1,13 +1,13 @@
 import { computed, onActivated, type Ref, shallowRef } from "vue"
-import { loadEvents } from "@/anticipation/anticipation"
-import { loadSets } from "@/eta/sets"
-import * as mtg from "@/meeting/meeting"
-import { loadTimers } from "@/multitimer/timers"
-import * as pomo from "@/pomodoro/pomodoro"
-import { pickById } from "@/shared/list"
-import { loadAthletes } from "@/stopwatch/stopwatch"
-import * as wo from "@/workout/workout"
-import { etaEnds, runningItems, type Sources } from "./running"
+import { loadEvents } from "@/anticipation/anticipation.ts"
+import { loadSets } from "@/eta/sets.ts"
+import * as mtg from "@/meeting/meeting.ts"
+import { loadTimers } from "@/multitimer/timers.ts"
+import * as pomo from "@/pomodoro/pomodoro.ts"
+import { pickById } from "@/shared/list.ts"
+import { loadAthletes } from "@/stopwatch/stopwatch.ts"
+import * as wo from "@/workout/workout.ts"
+import { etaEnds, runningItems, type Sources } from "./running.ts"
 
 // loaders of the sub-apps, not their composables (no sounds / wake lock)
 function readSources(): Sources {
@@ -32,6 +32,8 @@ export function useRunning(now: Ref<number>) {
   const read = () => ({ sources: readSources(), since: Date.now() })
   const snap = shallowRef(read())
   /* c8 ignore next */
-  onActivated(() => (snap.value = read()))
+  onActivated(() => {
+    snap.value = read()
+  })
   return computed(() => runningItems(snap.value.sources, now.value, snap.value.since))
 }

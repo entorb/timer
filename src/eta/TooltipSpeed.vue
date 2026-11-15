@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue"
 
-import { t } from "@/shared/i18n"
+import { t } from "@/shared/i18n.ts"
 
-import { UNIT_SECONDS, type Unit } from "@/shared/time"
+import { UNIT_SECONDS, type Unit } from "@/shared/time.ts"
 
-import { helperValueToString, unitLabel } from "./helper"
+import { helperValueToString, unitLabel } from "./helper.ts"
 
 interface Props {
   ips: number

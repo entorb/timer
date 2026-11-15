@@ -1,11 +1,11 @@
-import { type Countdown, remaining } from "@/anticipation/anticipation"
-import type { EtaSet } from "@/eta/sets"
-import { calcStats } from "@/eta/stats"
-import type { MeetingState } from "@/meeting/meeting"
-import type { Timer } from "@/multitimer/timers"
-import * as pomo from "@/pomodoro/pomodoro"
-import * as sw from "@/stopwatch/stopwatch"
-import * as wo from "@/workout/workout"
+import { type Countdown, remaining } from "@/anticipation/anticipation.ts"
+import type { EtaSet } from "@/eta/sets.ts"
+import { calcStats } from "@/eta/stats.ts"
+import type { MeetingState } from "@/meeting/meeting.ts"
+import type { Timer } from "@/multitimer/timers.ts"
+import * as pomo from "@/pomodoro/pomodoro.ts"
+import * as sw from "@/stopwatch/stopwatch.ts"
+import * as wo from "@/workout/workout.ts"
 
 // one running timer of a sub-app, label undefined = app name
 export interface Running {

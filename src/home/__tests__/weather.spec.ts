@@ -12,7 +12,7 @@ import {
   type Weather,
   weatherIcon,
   weatherUrl,
-} from "../weather"
+} from "../weather.ts"
 
 const C = { lat: 52.5, lon: 13.4 }
 const HOUR_MS = 3_600_000
@@ -29,7 +29,7 @@ const W: Weather = {
 
 describe("weather", () => {
   it("weatherUrl: coords + unixtime", () => {
-    expect(weatherUrl(C)).toMatch(/latitude=52\.5&longitude=13\.4&.*timeformat=unixtime/)
+    expect(weatherUrl(C)).toMatch(/latitude=52\.5&longitude=13\.4&.*timeformat=unixtime/u)
   })
 
   it("parseWeather: picks hourly arrays, rejects bad shape", () => {
@@ -86,8 +86,8 @@ describe("weather", () => {
 
   it("tempGradient: hour stops relative to day range, first color closes at 360deg", () => {
     const g = tempGradient(ringHours(W, start))
-    expect(g).toMatch(/^conic-gradient\(hsl\(240 90% 68%\) 0deg, /)
-    expect(g).toMatch(/hsl\(0 90% 68%\) 345deg, hsl\(240 90% 68%\) 360deg\)$/)
+    expect(g).toMatch(/^conic-gradient\(hsl\(240 90% 68%\) 0deg, /u)
+    expect(g).toMatch(/hsl\(0 90% 68%\) 345deg, hsl\(240 90% 68%\) 360deg\)$/u)
     expect(tempGradient([])).toBeUndefined()
   })
 

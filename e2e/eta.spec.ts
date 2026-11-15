@@ -1,6 +1,6 @@
-import { expect, type Page, test } from "@playwright/test"
+import { expect, test as it, type Page } from "@playwright/test"
 
-import { getEtaLocalStorageDataFirstLastRowItems, getEtaLocalStorageTarget } from "./helper-e2e"
+import { getEtaLocalStorageDataFirstLastRowItems, getEtaLocalStorageTarget } from "./helper-e2e.ts"
 
 const enter = async (page: Page, selector: string, value: string) => {
   await page.locator(selector).fill(value)
@@ -10,12 +10,12 @@ const enter = async (page: Page, selector: string, value: string) => {
 const expectFirstLast = (page: Page, first: number, last: number) =>
   expect.poll(() => getEtaLocalStorageDataFirstLastRowItems(page)).toEqual({ first, last })
 
-test.beforeEach(async ({ page }) => {
+it.beforeEach(async ({ page }) => {
   await page.clock.install()
   await page.goto("./eta")
 })
 
-test("Up", async ({ page }) => {
+it("Up", async ({ page }) => {
   await enter(page, "#input-target", "20")
   await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("20")
   await expect(page.locator("#input-items")).toBeFocused()
@@ -44,7 +44,7 @@ test("Up", async ({ page }) => {
   await expect(page.locator("#btn-edit-target")).toContainText("30")
 })
 
-test("Down", async ({ page }) => {
+it("Down", async ({ page }) => {
   await enter(page, "#input-target", "0")
   // stored into local storage only after entering of items
 
@@ -70,7 +70,7 @@ test("Down", async ({ page }) => {
   await expect(page.locator("#btn-plus-1")).toBeHidden()
 })
 
-test("Edit Dialog", async ({ page }) => {
+it("Edit Dialog", async ({ page }) => {
   await enter(page, "#input-target", "100")
 
   // fast-forward ensures distinct timestamps per row
@@ -99,7 +99,7 @@ test("Edit Dialog", async ({ page }) => {
   await expectFirstLast(page, 0, 5)
 })
 
-test("Decimal input", async ({ page }) => {
+it("Decimal input", async ({ page }) => {
   await enter(page, "#input-target", "12,1")
   await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("12.1")
 
@@ -109,7 +109,7 @@ test("Decimal input", async ({ page }) => {
   await expectFirstLast(page, 0.1, 0.2)
 })
 
-test("Multiple sets", async ({ page }) => {
+it("Multiple sets", async ({ page }) => {
   await enter(page, "#input-target", "10")
   await expect.poll(() => getEtaLocalStorageTarget(page)).toBe("10")
   await enter(page, "#input-items", "1")

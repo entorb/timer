@@ -8,7 +8,7 @@ import {
   toValue,
 } from "vue"
 
-import { roundTs } from "./time"
+import { roundTs } from "./time.ts"
 
 interface ClockOptions {
   ms?: MaybeRefOrGetter<number> // tick + resolution of `now`, sub-second only for stopwatch tenths
@@ -28,7 +28,9 @@ export function useClock({ ms = 1000, active = true, onTick }: ClockOptions = {}
       shown = true
       now.value = roundTs(Date.now(), toValue(ms))
     })
-    onDeactivated(() => (shown = false))
+    onDeactivated(() => {
+      shown = false
+    })
   }
   let timeout: ReturnType<typeof setTimeout> | undefined
   function schedule() {

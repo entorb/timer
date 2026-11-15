@@ -4,9 +4,9 @@ import { copyToClipboard, useQuasar } from "quasar"
 import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
 
-import { tabs } from "./router"
-import { lang, t, toggleLang } from "./shared/i18n"
-import { readSettings, updateSettings } from "./shared/storage"
+import { tabs } from "./router.ts"
+import { lang, t, toggleLang } from "./shared/i18n.ts"
+import { readSettings, updateSettings } from "./shared/storage.ts"
 
 const $q = useQuasar()
 const route = useRoute()

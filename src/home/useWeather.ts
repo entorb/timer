@@ -1,9 +1,9 @@
 import * as Sentry from "@sentry/vue"
 import { onActivated, onDeactivated, onScopeDispose, type Ref, ref, watch } from "vue"
-import { readJson, writeJson } from "@/shared/storage"
-import { MINUTE_MS } from "@/shared/time"
-import type { Coords } from "./useGeo"
-import { isStale, parseWeather, type Weather, weatherUrl } from "./weather"
+import { readJson, writeJson } from "@/shared/storage.ts"
+import { MINUTE_MS } from "@/shared/time.ts"
+import type { Coords } from "./useGeo.ts"
+import { isStale, parseWeather, type Weather, weatherUrl } from "./weather.ts"
 
 const KEY_WEATHER = "tmr-weather"
 const REFRESH_MS = 15 * MINUTE_MS

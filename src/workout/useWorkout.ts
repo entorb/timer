@@ -6,16 +6,16 @@ import {
   SOUNDS,
   type Sound,
   useBackgroundSounds,
-} from "@/shared/feedback"
-import { t } from "@/shared/i18n"
-import { pickById } from "@/shared/list"
-import { statsWrite } from "@/shared/stats"
-import { writeJson } from "@/shared/storage"
-import { nowSec } from "@/shared/time"
-import { useClock } from "@/shared/useClock"
-import { useWakeLock } from "@/shared/useWakeLock"
+} from "@/shared/feedback.ts"
+import { t } from "@/shared/i18n.ts"
+import { pickById } from "@/shared/list.ts"
+import { statsWrite } from "@/shared/stats.ts"
+import { writeJson } from "@/shared/storage.ts"
+import { nowSec } from "@/shared/time.ts"
+import { useClock } from "@/shared/useClock.ts"
+import { useWakeLock } from "@/shared/useWakeLock.ts"
 
-import * as wo from "./workout"
+import * as wo from "./workout.ts"
 
 const CUE_SOUNDS: Record<wo.Cue, Sound> = {
   beep: SOUNDS.beep,

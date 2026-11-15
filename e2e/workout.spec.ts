@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test("Workout: prepare, work, add persists", async ({ page }) => {
+it("Workout: prepare, work, add persists", async ({ page }) => {
   await page.clock.install()
   await page.goto("./workout")
   await expect(page.locator("#wo-time")).toHaveText("5")

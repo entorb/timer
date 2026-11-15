@@ -1,5 +1,5 @@
-import { helperLinReg } from "./helperLinReg"
-import type { DataRowRedType } from "./types"
+import { helperLinReg } from "./helperLinReg.ts"
+import type { DataRowRedType } from "./types.ts"
 
 export interface EtaStats {
   ips: number // slope of the lin. reg., items per sec

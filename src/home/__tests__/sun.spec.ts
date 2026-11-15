@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { sunTimes } from "../sun"
+import { sunTimes } from "../sun.ts"
 
 // minutes between result and expected UTC time
 const diffMin = (actual: Date | undefined, iso: string) =>

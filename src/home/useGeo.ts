@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/vue"
 import { computed, ref, watch } from "vue"
-import { readJson, writeJson } from "@/shared/storage"
-import { DAY_MS } from "@/shared/time"
+import { readJson, writeJson } from "@/shared/storage.ts"
+import { DAY_MS } from "@/shared/time.ts"
 
 const KEY_GEO = "tmr-geo"
 

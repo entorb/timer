@@ -22,11 +22,11 @@ import { CanvasRenderer } from "echarts/renderers"
 import { computed } from "vue"
 import VChart from "vue-echarts"
 
-import { t } from "@/shared/i18n"
-import { UNIT_SECONDS, type Unit } from "@/shared/time"
+import { t } from "@/shared/i18n.ts"
+import { UNIT_SECONDS, type Unit } from "@/shared/time.ts"
 
-import { colorItems, colorSpeed } from "./colors"
-import type { DataRowType } from "./types"
+import { colorItems, colorSpeed } from "./colors.ts"
+import type { DataRowType } from "./types.ts"
 
 interface Props {
   data: DataRowType[]

@@ -1,10 +1,10 @@
 import { computed, ref, watch } from "vue"
 
-import { clearName } from "@/multitimer/timers"
-import { t } from "@/shared/i18n"
-import { statsWrite } from "@/shared/stats"
-import { nowSec } from "@/shared/time"
-import { useClock } from "@/shared/useClock"
+import { clearName } from "@/multitimer/timers.ts"
+import { t } from "@/shared/i18n.ts"
+import { statsWrite } from "@/shared/stats.ts"
+import { nowSec } from "@/shared/time.ts"
+import { useClock } from "@/shared/useClock.ts"
 
 import {
   type Countdown,
@@ -14,7 +14,7 @@ import {
   parseTime,
   remaining,
   saveEvents,
-} from "./anticipation"
+} from "./anticipation.ts"
 
 // "12 days", "today", "3 days ago", last 24h as clock
 export function topLabel(seconds: number, days: number, past: boolean): string {

@@ -1,5 +1,5 @@
-import { readJson } from "@/shared/storage"
-import { MINUTE_MS } from "@/shared/time"
+import { readJson } from "@/shared/storage.ts"
+import { MINUTE_MS } from "@/shared/time.ts"
 
 export type Phase = "focus" | "short" | "long"
 

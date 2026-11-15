@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { calculateXAndY, helperLinReg } from "../helperLinReg"
+import { calculateXAndY, helperLinReg } from "../helperLinReg.ts"
 
 describe("calculateXAndY", () => {
   it("converts Date to Timestamp and subtracts the first timestamp", () => {

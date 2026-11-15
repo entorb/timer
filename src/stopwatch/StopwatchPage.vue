@@ -17,10 +17,10 @@ import {
 import * as Sentry from "@sentry/vue"
 import { useQuasar } from "quasar"
 import { computed, ref } from "vue"
-import { confirmDialog } from "@/shared/confirm"
-import { t } from "@/shared/i18n"
+import { confirmDialog } from "@/shared/confirm.ts"
+import { t } from "@/shared/i18n.ts"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatClock } from "@/shared/time"
+import { formatClock } from "@/shared/time.ts"
 
 import {
   type Athlete,
@@ -31,8 +31,8 @@ import {
   nextLapForecast,
   ORIGIN,
   toCsv,
-} from "./stopwatch"
-import { useStopwatch } from "./useStopwatch"
+} from "./stopwatch.ts"
+import { useStopwatch } from "./useStopwatch.ts"
 
 const $q = useQuasar()
 const sw = useStopwatch()

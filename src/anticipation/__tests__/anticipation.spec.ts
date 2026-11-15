@@ -6,7 +6,7 @@ import {
   parseTime,
   remaining,
   saveEvents,
-} from "../anticipation"
+} from "../anticipation.ts"
 
 const DAY = 86_400_000
 

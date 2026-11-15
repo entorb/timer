@@ -1,5 +1,5 @@
-import { readJson } from "@/shared/storage"
-import { formatClock } from "@/shared/time"
+import { readJson } from "@/shared/storage.ts"
+import { formatClock } from "@/shared/time.ts"
 
 export type Phase = "prepare" | "work" | "rest" | "done"
 export type Cue = "beep" | "go" | "tick" | "gong" | "cheers"

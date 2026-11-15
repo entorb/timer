@@ -2,10 +2,10 @@
 import type { QInput } from "quasar"
 import { nextTick, ref, useTemplateRef, watch } from "vue"
 
-import { t } from "@/shared/i18n"
-import { parseDecimal } from "@/shared/time"
+import { t } from "@/shared/i18n.ts"
+import { parseDecimal } from "@/shared/time.ts"
 
-import { iconTarget } from "./icons"
+import { iconTarget } from "./icons.ts"
 
 interface Props {
   target?: number

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { topLabel } from "@/anticipation/useAnticipation"
-import { PHASES as POMO_PHASES } from "@/pomodoro/usePomodoro"
-import { tabs } from "@/router"
-import { t } from "@/shared/i18n"
-import { DAY_MS, formatClock, formatDateTime } from "@/shared/time"
-import { useClock } from "@/shared/useClock"
-import { PHASES as WO_PHASES } from "@/workout/useWorkout"
+import { topLabel } from "@/anticipation/useAnticipation.ts"
+import { PHASES as POMO_PHASES } from "@/pomodoro/usePomodoro.ts"
+import { tabs } from "@/router.ts"
+import { t } from "@/shared/i18n.ts"
+import { DAY_MS, formatClock, formatDateTime } from "@/shared/time.ts"
+import { useClock } from "@/shared/useClock.ts"
+import { PHASES as WO_PHASES } from "@/workout/useWorkout.ts"
 import DayClock from "./DayClock.vue"
-import type { Running } from "./running"
-import { useRunning } from "./useRunning"
+import type { Running } from "./running.ts"
+import { useRunning } from "./useRunning.ts"
 
 // one tick for clock and running list
 const now = useClock()

@@ -1,7 +1,7 @@
-import { readJson } from "@/shared/storage"
-import type { Unit } from "@/shared/time"
+import { readJson } from "@/shared/storage.ts"
+import type { Unit } from "@/shared/time.ts"
 
-import type { DataRowRedType } from "./types"
+import type { DataRowRedType } from "./types.ts"
 
 export interface EtaSettings {
   unitSpeed: Unit

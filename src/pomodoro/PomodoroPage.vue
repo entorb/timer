@@ -8,12 +8,12 @@ import {
   mdiSkipNext,
 } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
-import { t } from "@/shared/i18n"
+import { t } from "@/shared/i18n.ts"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatClock } from "@/shared/time"
+import { formatClock } from "@/shared/time.ts"
 
-import { cycleRound, DEFAULT_SETTINGS, ORIGIN } from "./pomodoro"
-import { PHASES, usePomodoro } from "./usePomodoro"
+import { cycleRound, DEFAULT_SETTINGS, ORIGIN } from "./pomodoro.ts"
+import { PHASES, usePomodoro } from "./usePomodoro.ts"
 
 const { settings, state, running, canReset, remainingMs, progress, toggle, skip, reset } =
   usePomodoro()

@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test("Home is default, lists all apps, select navigates", async ({ page }) => {
+it("Home is default, lists all apps, select navigates", async ({ page }) => {
   await page.goto("./")
-  await expect(page).toHaveURL(/\/timer\/$/)
+  await expect(page).toHaveURL(/\/timer\/$/u)
   await expect(page.locator("[id^=home-] .q-item__label:first-child")).toHaveText([
     "Anticipation",
     "Workout",
@@ -13,7 +13,7 @@ test("Home is default, lists all apps, select navigates", async ({ page }) => {
     "Pomodoro",
   ])
   await page.locator("#home-eta").click()
-  await expect(page).toHaveURL(/\/timer\/eta$/)
+  await expect(page).toHaveURL(/\/timer\/eta$/u)
 
   const select = page.locator("#select-feature")
   for (const [name, path] of [

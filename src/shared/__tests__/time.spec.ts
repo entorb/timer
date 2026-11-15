@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { lang } from "../i18n"
+import { lang } from "../i18n.ts"
 import {
   formatClock,
   formatDateTime,
@@ -10,7 +10,7 @@ import {
   parseDecimal,
   secondsToString,
   UNIT_SECONDS,
-} from "../time"
+} from "../time.ts"
 
 describe("parseDecimal", () => {
   it("parses dot and comma", () => {

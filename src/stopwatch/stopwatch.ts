@@ -1,5 +1,5 @@
-import { calculateWeightedLinearRegression } from "@/eta/helperLinReg"
-import { readJson } from "@/shared/storage"
+import { calculateWeightedLinearRegression } from "@/eta/helperLinReg.ts"
+import { readJson } from "@/shared/storage.ts"
 
 export const ORIGIN = "tmr-sw"
 export const KEY_DATA = "tmr-sw-data"
@@ -41,7 +41,7 @@ export function lapStats(a: Athlete, now: number) {
 export function nextLapForecast(a: Athlete, now: number) {
   const times = lapTimes(a)
   const lastMark = a.laps.at(-1)
-  if (!isRunning(a) || lastMark == null) return undefined
+  if (!isRunning(a) || lastMark == null) return
   const last = times.at(-1) ?? 0
   let lapTime = last
   if (times.length >= 2) {
@@ -84,7 +84,7 @@ export function setLapTime(a: Athlete, index: number, ms: number, now: number): 
   const next = a.laps[index + 1]
   if (prev == null || a.laps[index] == null || Number.isNaN(ms) || ms <= 0) return false
   const mark = prev + ms
-  if (next != null ? mark >= next : mark > (a.stop ?? now)) return false
+  if (next == null ? mark > (a.stop ?? now) : mark >= next) return false
   a.laps[index] = mark
   return true
 }

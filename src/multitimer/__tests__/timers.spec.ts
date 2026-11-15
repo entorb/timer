@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest"
-import { secondsToString } from "@/shared/time"
+import { secondsToString } from "@/shared/time.ts"
 import {
   clearName,
   createTimer,
@@ -12,7 +12,7 @@ import {
   saveRecent,
   saveTimers,
   timerLabel,
-} from "../timers"
+} from "../timers.ts"
 
 describe("parseTimeInput", () => {
   it.each([

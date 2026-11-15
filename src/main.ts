@@ -8,10 +8,10 @@ import { Dark, Dialog, Notify, Quasar } from "quasar"
 import iconSet from "quasar/icon-set/svg-mdi-v7"
 import { createApp } from "vue"
 import App from "./App.vue"
-import router from "./router"
-import { onVisibilityChange, unlockAudio } from "./shared/feedback"
-import { t } from "./shared/i18n"
-import { statsFlush } from "./shared/stats"
+import router from "./router.ts"
+import { onVisibilityChange, unlockAudio } from "./shared/feedback.ts"
+import { t } from "./shared/i18n.ts"
+import { statsFlush } from "./shared/stats.ts"
 
 // audio needs a user gesture first, resume also after iOS suspended it
 document.addEventListener("pointerdown", unlockAudio)

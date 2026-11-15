@@ -1,14 +1,14 @@
 import { computed, ref, watch } from "vue"
 
-import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback"
-import { t } from "@/shared/i18n"
-import { statsWrite } from "@/shared/stats"
-import { writeJson } from "@/shared/storage"
-import { nowSec } from "@/shared/time"
-import { useClock } from "@/shared/useClock"
-import { useWakeLock } from "@/shared/useWakeLock"
+import { dueInBackground, playSound, SOUNDS, useBackgroundSounds } from "@/shared/feedback.ts"
+import { t } from "@/shared/i18n.ts"
+import { statsWrite } from "@/shared/stats.ts"
+import { writeJson } from "@/shared/storage.ts"
+import { nowSec } from "@/shared/time.ts"
+import { useClock } from "@/shared/useClock.ts"
+import { useWakeLock } from "@/shared/useWakeLock.ts"
 
-import * as pomo from "./pomodoro"
+import * as pomo from "./pomodoro.ts"
 
 export const PHASES = computed<Record<pomo.Phase, { label: string; color: string }>>(() => ({
   focus: { label: t("Focus", "Fokus"), color: "negative" },
@@ -22,7 +22,7 @@ export function usePomodoro() {
   const now = useClock({ active: () => running.value, onTick: catchUp })
 
   const running = computed(() => pomo.isRunning(state.value))
-  const canReset = computed(() => !running.value && !pomo.isInitial(state.value, settings.value))
+  const canReset = computed(() => !(running.value || pomo.isInitial(state.value, settings.value)))
   const remainingMs = computed(() => pomo.remaining(state.value, now.value))
   const progress = computed(
     () => 1 - remainingMs.value / pomo.phaseMs(settings.value, state.value.phase),

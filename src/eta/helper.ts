@@ -1,7 +1,7 @@
-import { t } from "@/shared/i18n"
-import { hhmm, isoDay, pad, type Unit } from "@/shared/time"
+import { t } from "@/shared/i18n.ts"
+import { hhmm, isoDay, pad, type Unit } from "@/shared/time.ts"
 
-import type { DataRowRedType } from "./types"
+import type { DataRowRedType } from "./types.ts"
 
 export const helperDateToIsoString = (date: Date): string =>
   `${isoDay(date)}T${hhmm(date)}:${pad(date.getSeconds())}`

@@ -1,12 +1,12 @@
 import { computed, ref, watch } from "vue"
 
-import { statsWrite } from "@/shared/stats"
-import { writeJson } from "@/shared/storage"
-import { hhmm, nowSec } from "@/shared/time"
-import { useClock } from "@/shared/useClock"
-import { useWakeLock } from "@/shared/useWakeLock"
+import { statsWrite } from "@/shared/stats.ts"
+import { writeJson } from "@/shared/storage.ts"
+import { hhmm, nowSec } from "@/shared/time.ts"
+import { useClock } from "@/shared/useClock.ts"
+import { useWakeLock } from "@/shared/useWakeLock.ts"
 
-import * as mtg from "./meeting"
+import * as mtg from "./meeting.ts"
 
 export function useMeeting() {
   const state = ref(mtg.loadState())

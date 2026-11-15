@@ -14,8 +14,8 @@ import {
   mdiWeatherSnowyRainy,
   mdiWeatherSunny,
 } from "@quasar/extras/mdi-v7"
-import { DAY_MS, HOUR_MS, UNIT_SECONDS } from "@/shared/time"
-import type { Coords } from "./useGeo"
+import { DAY_MS, HOUR_MS, UNIT_SECONDS } from "@/shared/time.ts"
+import type { Coords } from "./useGeo.ts"
 
 const API = "https://api.open-meteo.com/v1/forecast"
 
@@ -42,10 +42,10 @@ const isValues = (v: unknown, len: number): v is Array<number | null> =>
 export function parseWeather(json: unknown, c: Coords, now: number): Weather | undefined {
   const h = (json as Response | null)?.hourly
   const time = h?.time
-  if (!Array.isArray(time) || !time.every((x) => typeof x === "number")) return undefined
+  if (!(Array.isArray(time) && time.every((x) => typeof x === "number"))) return undefined
   const code = h?.weather_code
   const temp = h?.temperature_2m
-  if (!isValues(code, time.length) || !isValues(temp, time.length)) return undefined
+  if (!(isValues(code, time.length) && isValues(temp, time.length))) return undefined
   return { lat: c.lat, lon: c.lon, fetchedAt: now, time, code, temp }
 }
 

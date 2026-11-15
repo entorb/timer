@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from "vitest"
 import { effectScope, ref } from "vue"
-import { useClock } from "../useClock"
+import { useClock } from "../useClock.ts"
 
 afterEach(() => vi.useRealTimers())
 

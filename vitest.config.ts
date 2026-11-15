@@ -1,7 +1,6 @@
+import process from "node:process"
 import { fileURLToPath } from "node:url"
-
 import { configDefaults, defineConfig, mergeConfig } from "vitest/config"
-
 import viteConfig from "./vite.config.ts"
 
 // tests expect German local time, as in CI

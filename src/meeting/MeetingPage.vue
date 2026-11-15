@@ -11,12 +11,12 @@ import {
   mdiRestart,
 } from "@quasar/extras/mdi-v7"
 import { computed } from "vue"
-import { t } from "@/shared/i18n"
+import { t } from "@/shared/i18n.ts"
 import StatsLine from "@/shared/StatsLine.vue"
-import { formatClock, MINUTE_MS, parseDecimal } from "@/shared/time"
+import { formatClock, MINUTE_MS, parseDecimal } from "@/shared/time.ts"
 
-import { activities, clampCount, efficiency, eur, isStarted, ORIGIN, purchases } from "./meeting"
-import { useMeeting } from "./useMeeting"
+import { activities, clampCount, efficiency, eur, isStarted, ORIGIN, purchases } from "./meeting.ts"
+import { useMeeting } from "./useMeeting.ts"
 
 const m = useMeeting()
 const { state, config, running, calcs } = m

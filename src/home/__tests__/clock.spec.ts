@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { dayMarks, formatDay, hourOf, polar, ringGradient } from "../clock"
+import { dayMarks, formatDay, hourOf, polar, ringGradient } from "../clock.ts"
 
 describe("clock", () => {
   it("hourOf: fractional local hour", () => {
@@ -28,12 +28,12 @@ describe("clock", () => {
 
   it("ringGradient: night at midnight, white at noon, symmetric", () => {
     const g = ringGradient()
-    expect(g).toMatch(/^conic-gradient\(from 0deg, #000000 0deg, /)
+    expect(g).toMatch(/^conic-gradient\(from 0deg, #000000 0deg, /u)
     expect(g).toContain("#737373 90deg")
     expect(g).toContain("#ffffff 180deg")
     expect(g).toContain("#737373 270deg")
-    expect(g).toMatch(/#000000 360deg\)$/)
-    expect(ringGradient(7, 19)).toMatch(/^conic-gradient\(from 15deg, /)
+    expect(g).toMatch(/#000000 360deg\)$/u)
+    expect(ringGradient(7, 19)).toMatch(/^conic-gradient\(from 15deg, /u)
   })
 
   it("formatDay: dd.mm.", () => {

@@ -1,7 +1,7 @@
-import { readJson } from "@/shared/storage"
-import { DAY_MS, HOUR_MS, MINUTE_MS } from "@/shared/time"
+import { readJson } from "@/shared/storage.ts"
+import { DAY_MS, HOUR_MS, MINUTE_MS } from "@/shared/time.ts"
 // pause / resume / elapsed are the stopwatch ones: resume shifts `start` by the pause
-import * as sw from "@/stopwatch/stopwatch"
+import * as sw from "@/stopwatch/stopwatch.ts"
 
 export interface MeetingState {
   timer: sw.Athlete // laps unused

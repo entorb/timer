@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest"
-import { lang } from "@/shared/i18n"
+import { lang } from "@/shared/i18n.ts"
 import {
   formatDateTime,
   secondsToString as helperSecondsToString,
   parseDecimal,
-} from "@/shared/time"
+} from "@/shared/time.ts"
 import {
   helperCalcSpeedFromPreviousRow,
   helperDateToIsoString,
   helperValueToString,
-} from "../helper"
+} from "../helper.ts"
 
 describe("formatDateTime", () => {
   it("time without showing days", () => {

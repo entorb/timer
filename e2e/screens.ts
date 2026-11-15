@@ -1,6 +1,7 @@
 // not a test: exports screenshots of every sub-app, see scripts/run_screens.sh
 
-import { expect, type Page, test } from "@playwright/test"
+import process from "node:process"
+import { expect, test as it, type Page } from "@playwright/test"
 
 const LANG = process.env.SCREEN_LANG ?? "en"
 const OUT = `tmp/screens/${LANG}`
@@ -9,7 +10,7 @@ const MINUTE = 60_000
 const tr = (en: string, de: string) => (LANG === "de" ? de : en)
 
 // native inputs (time) follow browser locale
-test.use({ locale: tr("en-US", "de-DE") })
+it.use({ locale: tr("en-US", "de-DE") })
 
 const shot = (page: Page, name: string) =>
   page.screenshot({
@@ -25,7 +26,7 @@ const enter = async (page: Page, selector: string, value: string) => {
   await page.locator(selector).press("Enter")
 }
 
-test.beforeEach(async ({ page }) => {
+it.beforeEach(async ({ page }) => {
   await page.addInitScript(
     (lang) => localStorage.setItem("tmr-settings", JSON.stringify({ lang })),
     LANG,
@@ -33,13 +34,13 @@ test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date("2026-01-05T09:00:00") })
 })
 
-test("home", async ({ page }) => {
+it("home", async ({ page }) => {
   await page.goto("./")
   await expect(page.locator("#home-meeting")).toBeVisible()
   await shot(page, "home-01")
 })
 
-test("home with weather", async ({ page }) => {
+it("home with weather", async ({ page }) => {
   await page.addInitScript(() =>
     localStorage.setItem("tmr-geo", JSON.stringify({ lat: 52.5, lon: 13.4 })),
   )
@@ -57,7 +58,7 @@ test("home with weather", async ({ page }) => {
   await shot(page, "home-02-weather")
 })
 
-test("eta", async ({ page }) => {
+it("eta", async ({ page }) => {
   await page.goto("./eta")
   await expect(page.locator("#input-target")).toBeVisible()
   await shot(page, "eta-01-initial")
@@ -79,7 +80,7 @@ test("eta", async ({ page }) => {
   await shot(page, "eta-03-multiple-values")
 })
 
-test("multitimer", async ({ page }) => {
+it("multitimer", async ({ page }) => {
   await page.goto("./multitimer")
   await expect(page.locator("#input-name")).toBeVisible()
   await shot(page, "multitimer-01-initial")
@@ -98,13 +99,13 @@ test("multitimer", async ({ page }) => {
   await shot(page, "multitimer-03-multiple-timers")
 })
 
-test("stopwatch", async ({ page }) => {
+it("stopwatch", async ({ page }) => {
   await page.goto("./stopwatch")
   await expect(page.locator("#btn-start-all")).toBeVisible()
   await shot(page, "stopwatch-01-initial")
 
   await page.locator("#btn-start-all").click()
-  const lap = page.getByRole("button", { name: /^(Lap|Runde) / }).first()
+  const lap = page.getByRole("button", { name: /^(Lap|Runde) /u }).first()
   for (const ms of [62_000, 58_000, 65_000]) {
     await page.clock.fastForward(ms)
     await lap.click()
@@ -117,7 +118,7 @@ test("stopwatch", async ({ page }) => {
   await shot(page, "stopwatch-03-stopped")
 })
 
-test("pomodoro", async ({ page }) => {
+it("pomodoro", async ({ page }) => {
   await page.goto("./pomodoro")
   await expect(page.locator("#pomo-time")).toHaveText("25:00")
   await shot(page, "pomodoro-01-initial")
@@ -128,7 +129,7 @@ test("pomodoro", async ({ page }) => {
   await shot(page, "pomodoro-02-running")
 })
 
-test("workout", async ({ page }) => {
+it("workout", async ({ page }) => {
   await page.goto("./workout")
   await expect(page.locator("#wo-time")).toHaveText("5")
   await shot(page, "workout-01-prepare")
@@ -152,7 +153,7 @@ test("workout", async ({ page }) => {
   await shot(page, "workout-05-finish")
 })
 
-test("meeting", async ({ page }) => {
+it("meeting", async ({ page }) => {
   await page.goto("./meeting")
   await expect(page.locator("#btn-mtg-toggle")).toBeVisible()
   await shot(page, "meeting-01-initial")

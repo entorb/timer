@@ -12,7 +12,7 @@ import {
   pause,
   remaining,
   start,
-} from "../pomodoro"
+} from "../pomodoro.ts"
 
 const s = DEFAULT_SETTINGS
 const MIN = 60_000

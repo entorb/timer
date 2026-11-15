@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test("Stopwatch: start, lap, persists", async ({ page }) => {
+it("Stopwatch: start, lap, persists", async ({ page }) => {
   await page.clock.install()
   await page.goto("./stopwatch")
   await page.getByRole("button", { name: "Start Athlete 1" }).click()
@@ -18,8 +18,8 @@ test("Stopwatch: start, lap, persists", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Lap Athlete 2" })).toBeVisible()
   await page.locator("#btn-stop-all").click()
   const total = page.locator(".current").first()
-  await expect(total).toHaveText(/^\d+:\d\d$/)
+  await expect(total).toHaveText(/^\d+:\d\d$/u)
   await page.locator("#btn-tenths").click()
-  await expect(total).toHaveText(/^\d+:\d\d\.\d$/)
+  await expect(total).toHaveText(/^\d+:\d\d\.\d$/u)
   await expect(page.getByRole("button", { name: "Start Athlete 1" })).toBeVisible()
 })

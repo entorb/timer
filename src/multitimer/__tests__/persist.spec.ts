@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { effectScope, nextTick } from "vue"
 
-import { useMultiTimer } from "../useMultiTimer"
+import { useMultiTimer } from "../useMultiTimer.ts"
 
 describe("useMultiTimer persistence", () => {
   it("restores recent chips and timers after remount", async () => {
