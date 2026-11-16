@@ -59,16 +59,17 @@
     />
     <!-- Matomo -->
     <script>"use strict";
-      const _paq = (globalThis._paq = globalThis._paq || [])
+      // no const: matomo.js reassigns global _paq, a const would throw "readonly" (Sentry)
+      globalThis._paq = globalThis._paq || []
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView'])
-      _paq.push(['enableLinkTracking'])
+      globalThis._paq.push(['trackPageView'])
+      globalThis._paq.push(['enableLinkTracking'])
       // offline: skip loading tracker, so mobile OS does not prompt for wifi
       ;(() => {
         if (!navigator.onLine) return
         const u = 'https://entorb.net/stats/matomo/'
-        _paq.push(['setTrackerUrl', u + 'matomo.php'])
-        _paq.push(['setSiteId', '2'])
+        globalThis._paq.push(['setTrackerUrl', u + 'matomo.php'])
+        globalThis._paq.push(['setSiteId', '2'])
         const d = document,
           g = d.createElement('script'),
           s = d.getElementsByTagName('script')[0]
