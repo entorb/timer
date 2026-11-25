@@ -23,14 +23,14 @@ import { computed } from "vue"
 import VChart from "vue-echarts"
 
 import { t } from "@/shared/i18n.ts"
-import { UNIT_SECONDS, type Unit } from "@/shared/time.ts"
 
 import { colorItems, colorSpeed } from "./colors.ts"
+import { type SpeedUnit, speedInUnit } from "./helper.ts"
 import type { DataRowType } from "./types.ts"
 
 interface Props {
   data: DataRowType[]
-  unitSpeed: Unit
+  unitSpeed: SpeedUnit
   ips: number
   target: number
 }
@@ -59,7 +59,8 @@ type EChartsOption = ComposeOption<
 
 // fresh option per change, vue-echarts merges it into the chart
 const option = computed<EChartsOption>(() => {
-  const speedFactor = (props.target > 0 ? 1 : -1) * UNIT_SECONDS[props.unitSpeed]
+  const sign = props.target > 0 ? 1 : -1
+  const speedOf = (ips: number): number => sign * speedInUnit(ips, props.unitSpeed)
   return {
     tooltip: {},
     legend: {},
@@ -83,14 +84,14 @@ const option = computed<EChartsOption>(() => {
         animation: false,
         yAxisIndex: 1,
         color: colorSpeed,
-        data: props.data.slice(1).map((row) => [row.date, row.speed * speedFactor]),
+        data: props.data.slice(1).map((row) => [row.date, speedOf(row.speed)]),
         // mean speed line
         markLine: {
           symbol: "none",
           label: { show: false },
           silent: true,
           animation: true,
-          data: [{ yAxis: props.ips * speedFactor }],
+          data: [{ yAxis: speedOf(props.ips) }],
         },
       },
     ],
@@ -102,7 +103,7 @@ const option = computed<EChartsOption>(() => {
     },
     yAxis: [
       {
-        name: t("Items", "Wert"),
+        name: t("Value", "Wert"),
         position: "left",
         type: "value",
         nameTextStyle: { color: colorItems },

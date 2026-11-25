@@ -1,10 +1,10 @@
 import { readJson } from "@/shared/storage.ts"
-import type { Unit } from "@/shared/time.ts"
 
+import type { SpeedUnit } from "./helper.ts"
 import type { DataRowRedType } from "./types.ts"
 
 export interface EtaSettings {
-  unitSpeed: Unit
+  unitSpeed: SpeedUnit
   weightedReg: boolean
 }
 

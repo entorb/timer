@@ -3,9 +3,9 @@ import { computed } from "vue"
 import { t } from "@/shared/i18n.ts"
 import ProgressRing from "@/shared/ProgressRing.vue"
 
-import { formatDateTime, secondsToString, UNIT_SECONDS, type Unit } from "@/shared/time.ts"
+import { formatDateTime, secondsToString, UNIT_SECONDS } from "@/shared/time.ts"
 
-import { unitLabel } from "./helper.ts"
+import { type SpeedUnit, speedUnitLabel } from "./helper.ts"
 import { iconEta, iconSave, iconSpeed, iconTimeLastInput, iconTimeRunning } from "./icons.ts"
 import { type EtaEstimate, type EtaStats, progress } from "./stats.ts"
 import TooltipSpeed from "./TooltipSpeed.vue"
@@ -13,17 +13,17 @@ import TooltipSpeed from "./TooltipSpeed.vue"
 interface Props {
   stats: EtaStats
   est: EtaEstimate
-  unitSpeed: Unit
+  unitSpeed: SpeedUnit
   showDays: boolean
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  setUnit: [unit: Unit]
+  setUnit: [unit: SpeedUnit]
 }>()
 
-const units: Unit[] = ["sec", "min", "hour", "day"]
+const units: SpeedUnit[] = ["sec", "min", "hour", "day", "minPerItem"]
 
 const measured = computed(() => progress(props.stats.itemsDone, props.stats.itemsTotal))
 const pctMeasured = computed(() => Math.round(100 * measured.value))
@@ -96,7 +96,7 @@ function etaToString(): string {
             <TooltipSpeed
               :ips="stats.ips"
               :unit="unitSpeed"
-            />/{{ unitLabel(unitSpeed) }}
+            />{{ speedUnitLabel(unitSpeed) }}
           </span>
         </template>
         <q-list dense>
@@ -108,7 +108,7 @@ function etaToString(): string {
             :active="unit === unitSpeed"
             @click="emit('setUnit', unit)"
           >
-            <q-item-section>/{{ unitLabel(unit) }}</q-item-section>
+            <q-item-section>{{ speedUnitLabel(unit) }}</q-item-section>
           </q-item>
         </q-list>
       </q-btn-dropdown>

@@ -3,27 +3,24 @@ import { computed } from "vue"
 
 import { t } from "@/shared/i18n.ts"
 
-import { UNIT_SECONDS, type Unit } from "@/shared/time.ts"
+import type { Unit } from "@/shared/time.ts"
 
-import { helperValueToString, unitLabel } from "./helper.ts"
+import { helperValueToString, type SpeedUnit, speedInUnit as speedValue, unitLabel } from "./helper.ts"
 
 interface Props {
   ips: number
-  unit?: Unit
+  unit?: SpeedUnit
 }
 
 const props = withDefaults(defineProps<Props>(), {
   unit: "min",
 })
 
-const ipsInUnit = (unit: Unit): string =>
-  helperValueToString(Math.abs(props.ips * UNIT_SECONDS[unit]))
+const ipsInUnit = (unit: Unit): string => helperValueToString(Math.abs(speedValue(props.ips, unit)))
 
-function minPerItem(ips: number): string {
-  return helperValueToString(Math.abs(1 / (60 * ips)))
-}
+const minPerItem = (): string => helperValueToString(Math.abs(speedValue(props.ips, "minPerItem")))
 
-const speedInUnit = computed(() => ipsInUnit(props.unit))
+const speedInUnit = computed(() => helperValueToString(Math.abs(speedValue(props.ips, props.unit))))
 </script>
 
 <template>
@@ -31,7 +28,7 @@ const speedInUnit = computed(() => ipsInUnit(props.unit))
   <q-tooltip>
     {{ ipsInUnit('sec') }} / {{ unitLabel('sec') }}<br />
     {{ ipsInUnit('min') }} / {{ unitLabel('min') }}<br />
-    {{ minPerItem(props.ips) }} {{ unitLabel('min') }}/{{ t('item', 'Wert') }}<br />
+    {{ minPerItem() }} {{ unitLabel('min') }}/{{ t('item', 'Wert') }}<br />
     {{ ipsInUnit('hour') }} / {{ unitLabel('hour') }}<br />
     {{ ipsInUnit('day') }} / {{ unitLabel('day') }}
   </q-tooltip>
